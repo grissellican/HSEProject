@@ -1,0 +1,646 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+
+        <!-- BARRA SUPERIOR -->
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <a href="{% url 'teacher_dashboard' %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">{{ course.title }}</h1>
+                    <p class="text-xs text-gray-500">Gestión del curso</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <!-- Acceso rápido a clases en vivo -->
+                <a href="#clases-en-vivo" class="inline-flex items-center px-3 py-1.5 border border-[#7c3aed]/30 bg-[#7c3aed]/5 text-[#7c3aed] text-sm font-semibold hover:bg-[#7c3aed]/10 transition-all">
+                    <i class="fa-solid fa-video mr-1.5"></i> Clases en Vivo
+                </a>
+                <a href="{% url 'teacher_students_list' course_id=course.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-[#e5e9ff] hover:text-[#38657f] hover:border-[#38657f]/30 transition-all">
+                    <i class="fa-solid fa-users mr-1.5"></i> Estudiantes ({{ students|length }})
+                </a>
+                <form action="{% url 'logout' %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CUERPO PRINCIPAL -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-5xl mx-auto">
+
+                <!-- MENSAJES DE ALERTA -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i>{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- KPIs del curso -->
+                <div class="grid grid-cols-1 gap-8 sm:grid-cols-3 mb-12">
+                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #38657f;">
+                        <div>
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Estudiantes</p>
+                            <p class="text-3xl font-black text-gray-800">{{ students|length }}</p>
+                        </div>
+                        <div class="w-8 h-8 bg-[#B8973A] flex items-center justify-center">
+                            <i class="fa-solid fa-users text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #38657f;">
+                        <div>
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Módulos</p>
+                            <p class="text-3xl font-black text-gray-800">{{ modules|length }}</p>
+                        </div>
+                        <div class="w-8 h-8 bg-[#38657f] flex items-center justify-center">
+                            <i class="fa-solid fa-layer-group text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" {% if pending_in_course > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #38657f;"{% endif %}>
+                        <div>
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Pendientes de Revisión</p>
+                            <p class="text-3xl font-black {% if pending_in_course > 0 %}text-amber-600{% else %}text-gray-800{% endif %}">{{ pending_in_course }}</p>
+                        </div>
+                        <div class="w-8 h-8 {% if pending_in_course > 0 %}bg-amber-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                            <i class="fa-solid fa-clipboard-check text-white text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#38657f]{% endif %}"></i> MÓDULOS
+                    </a>
+                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                        <i class="fa-solid fa-file-contract mr-2 text-[#38657f]"></i> SÍLABO
+                    </a>
+                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                        <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
+                    </a>
+                    
+                    {% if course.allow_teacher_edit_syllabus %}
+                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+                        <i class="fa-solid fa-file-signature text-[#10b981]"></i> Editar Sílabo
+                    </a>
+                    <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+                        <i class="fa-solid fa-chart-pie text-[#f59e0b]"></i> Editar Evaluación
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- ========== SECCIÓN DE MÓDULOS ========== -->
+                <div class="mb-8 flex items-center justify-between" id="modulos">
+                    <div>
+                        <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-[#38657f]"></i>Módulos del Curso
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#38657f] transition-colors flex items-center" id="toggle-all-btn">
+                            <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
+                        </button>
+                        <div class="h-px w-8 bg-gray-200"></div>
+                        <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#1B5E37] text-white text-sm font-bold hover:bg-[#134529] transition-colors shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1.5"></i> Nuevo Módulo
+                        </a>
+                    </div>
+                </div>
+
+                {% for module in modules %}
+                <div class="bg-white border border-gray-200 shadow-sm mb-16 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #38657f;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
+                    <!-- Header del Módulo -->
+                    <div class="px-5 py-4 flex items-center justify-between bg-[#fafbff] border-b border-gray-200 cursor-pointer module-header select-none"
+                         data-target="module-body-{{ module.id }}">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="chevron-{{ module.id }}"></i>
+                            <div class="min-w-0">
+                                <h4 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                    <span class="text-[#38657f] font-black text-base">{{ module.order }}</span>
+                                    {{ module.title }}
+                                    {% if not module.is_visible %}
+                                        <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-black bg-gray-200 text-gray-500 uppercase tracking-wider"><i class="fa-solid fa-eye-slash mr-1"></i>Oculto</span>
+                                    {% endif %}
+                                </h4>
+                                {% if module.description %}<p class="text-sm text-gray-400 truncate max-w-sm">{{ module.description }}</p>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Acciones del módulo -->
+                        <div class="flex items-center gap-2 flex-shrink-0 ml-4" onclick="event.stopPropagation()">
+                            <!-- Menú Añadir -->
+                            <div class="dot-menu-wrapper mr-2">
+                                <button class="dot-menu-btn inline-flex items-center px-2.5 py-1.5 bg-[#38657f]/10 text-[#38657f] text-[11px] font-bold hover:bg-[#38657f]/20 transition-colors cursor-pointer rounded border-0" data-menu="addmenu-{{ module.id }}">
+                                    <i class="fa-solid fa-plus mr-1"></i> Añadir Recurso
+                                </button>
+                                <div class="dot-menu" id="addmenu-{{ module.id }}">
+                                    <a href="{% url 'teacher_material_create' module_id=module.id %}"><i class="fa-solid fa-file-lines text-blue-500"></i> Material</a>
+                                    <a href="{% url 'teacher_assignment_create' module_id=module.id %}"><i class="fa-solid fa-file-pen text-amber-500"></i> Tarea/Evaluación</a>
+                                    <div style="height:1px; background:#f3f4f6; margin:4px 0;"></div>
+                                    <a href="{% url 'teacher_announcement_create' module_id=module.id %}"><i class="fa-solid fa-bullhorn text-rose-500"></i> Aviso</a>
+                                    <a href="{% url 'teacher_link_create' module_id=module.id %}"><i class="fa-solid fa-link text-indigo-500"></i> Enlace</a>
+                                    <a href="{% url 'teacher_forum_create' module_id=module.id %}"><i class="fa-solid fa-comments text-emerald-500"></i> Foro</a>
+                                </div>
+                            </div>
+                            <!-- Menú 3 puntos -->
+                            <div class="dot-menu-wrapper">
+                                <button class="dot-menu-btn w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors cursor-pointer border-0 bg-transparent"
+                                        data-menu="dotmenu-{{ module.id }}" title="Más opciones">
+                                    <i class="fa-solid fa-ellipsis-vertical text-base"></i>
+                                </button>
+                                <div class="dot-menu" id="dotmenu-{{ module.id }}">
+                                    <a href="{% url 'teacher_module_update' module_id=module.id %}">
+                                        <i class="fa-solid fa-pen-to-square text-[#38657f]"></i> Editar módulo
+                                    </a>
+                                    <form action="{% url 'teacher_module_toggle_visibility' module_id=module.id %}" method="POST" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <i class="fa-solid {% if module.is_visible %}fa-eye-slash text-gray-500{% else %}fa-eye text-gray-500{% endif %}"></i>
+                                            {% if module.is_visible %}Ocultar{% else %}Mostrar{% endif %}
+                                        </button>
+                                    </form>
+                                    <div style="height:1px; background:#f3f4f6; margin:4px 0;"></div>
+                                    <form action="{% url 'teacher_module_delete' module_id=module.id %}" method="POST" class="m-0" onsubmit="return confirm('¿Eliminar este módulo y todo su contenido?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="danger">
+                                            <i class="fa-solid fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cuerpo colapsable del módulo -->
+                    <div class="module-body" id="module-body-{{ module.id }}" style="max-height: 2000px; opacity: 1;">
+                        <div class="p-5 space-y-4">
+
+                            <!-- Materiales -->
+                            {% if module.materials.all %}
+                            <div>
+                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-lines text-gray-400"></i> Materiales
+                                </p>
+                                <div class="space-y-1.5">
+                                    {% for mat in module.materials.all %}
+                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not mat.is_visible %}opacity-60{% endif %}">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 {% if mat.material_type == 'pdf' %}bg-red-50{% elif mat.material_type == 'video' %}bg-purple-50{% else %}bg-blue-50{% endif %}">
+                                                {% if mat.material_type == 'pdf' %}
+                                                    <i class="fa-solid fa-file-pdf text-red-500 text-base"></i>
+                                                {% elif mat.material_type == 'video' %}
+                                                    <i class="fa-solid fa-file-video text-purple-500 text-base"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-file text-blue-500 text-base"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                    {{ mat.title }}
+                                                    {% if not mat.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
+                                                </p>
+                                                <p class="text-xs text-gray-500">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            <form action="{% url 'teacher_material_toggle_visibility' material_id=mat.id %}" method="POST" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if mat.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                    <i class="fa-solid {% if mat.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{{ mat.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] w-6 h-6 flex items-center justify-center" title="Descargar">
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                            <form action="{% url 'teacher_material_delete' material_id=mat.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Tareas y Evaluaciones -->
+                            {% if module.assignments.all %}
+                            <div>
+                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-pen text-gray-400"></i> Tareas y Evaluaciones
+                                </p>
+                                <div class="space-y-1.5">
+                                    {% for assign in module.assignments.all %}
+                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not assign.is_visible %}opacity-60{% endif %}">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0
+                                                {% if assign.assignment_type == 'evaluacion' %}bg-orange-50
+                                                {% elif assign.assignment_type == 'examen_online' %}bg-teal-50
+                                                {% else %}bg-amber-50{% endif %}">
+                                                {% if assign.assignment_type == 'evaluacion' %}
+                                                    <i class="fa-solid fa-clipboard-question text-orange-500 text-base"></i>
+                                                {% elif assign.assignment_type == 'examen_online' %}
+                                                    <i class="fa-solid fa-laptop-code text-teal-500 text-base"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-file-pen text-amber-500 text-base"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                    {{ assign.title }}
+                                                    {% if not assign.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
+                                                </p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ assign.get_assignment_type_display }} · Máx: {{ assign.max_score }} pts
+                                                    {% if assign.due_date %} · Entrega: {{ assign.due_date|date:"d/m/Y H:i" }}{% endif %}
+                                                </p>
+                                                {% if assign.attached_file %}
+                                                <a href="{{ assign.attached_file.url }}" target="_blank" class="text-[10px] text-[#38657f] hover:underline font-semibold mt-0.5 inline-block">
+                                                    <i class="fa-solid fa-paperclip mr-0.5"></i> Doc. Guía
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 flex-shrink-0 text-sm">
+                                            <form action="{% url 'teacher_assignment_toggle_visibility' assignment_id=assign.id %}" method="POST" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if assign.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                    <i class="fa-solid {% if assign.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            {% if assign.assignment_type == 'examen_online' %}
+                                            <a href="{% url 'teacher_exam_questions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-teal-50 text-teal-700 font-semibold hover:bg-teal-100 transition-colors cursor-pointer text-[11px]">
+                                                <i class="fa-solid fa-list-check mr-1"></i> Preguntas
+                                            </a>
+                                            {% endif %}
+                                            <a href="{% url 'teacher_assignment_submissions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-[#38657f]/8 text-[#38657f] font-semibold hover:bg-[#38657f]/15 transition-colors cursor-pointer text-[11px]">
+                                                <i class="fa-solid fa-inbox mr-1"></i> Entregas ({{ assign.submissions.count }})
+                                            </a>
+                                            <!-- Mini menú 3 puntos para tarea -->
+                                            <div class="dot-menu-wrapper">
+                                                <button class="dot-menu-btn w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors cursor-pointer border-0 bg-transparent"
+                                                        data-menu="dotmenu-assign-{{ assign.id }}" title="Más opciones">
+                                                    <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                                                </button>
+                                                <div class="dot-menu" id="dotmenu-assign-{{ assign.id }}">
+                                                    <a href="{% url 'teacher_assignment_update' assignment_id=assign.id %}">
+                                                        <i class="fa-solid fa-pen-to-square text-[#38657f]"></i> Editar
+                                                    </a>
+                                                    <div style="height:1px; background:#f3f4f6; margin:4px 0;"></div>
+                                                    <form action="{% url 'teacher_assignment_delete' assignment_id=assign.id %}" method="POST" class="m-0" onsubmit="return confirm('¿Eliminar esta tarea/evaluación?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="danger">
+                                                            <i class="fa-solid fa-trash"></i> Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Avisos -->
+                            {% if module.announcements.all %}
+                            <div>
+                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullhorn text-gray-400"></i> Avisos
+                                </p>
+                                <div class="space-y-1.5">
+                                    {% for ann in module.announcements.all %}
+                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not ann.is_visible %}opacity-60{% endif %}">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-rose-50">
+                                                <i class="fa-solid fa-bullhorn text-rose-500 text-base"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                    {{ ann.title }}
+                                                    {% if not ann.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
+                                                </p>
+                                                <p class="text-xs text-gray-500">Publicado: {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            <form action="{% url 'teacher_announcement_toggle_visibility' pk=ann.id %}" method="POST" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if ann.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                    <i class="fa-solid {% if ann.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{% url 'teacher_announcement_update' pk=ann.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <form action="{% url 'teacher_announcement_delete' pk=ann.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este aviso?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Enlaces -->
+                            {% if module.links.all %}
+                            <div>
+                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-link text-gray-400"></i> Enlaces
+                                </p>
+                                <div class="space-y-1.5">
+                                    {% for link in module.links.all %}
+                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not link.is_visible %}opacity-60{% endif %}">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-indigo-50">
+                                                <i class="fa-solid fa-link text-indigo-500 text-base"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                    <a href="{{ link.url }}" target="_blank" class="hover:underline text-gray-800">{{ link.title }}</a>
+                                                    {% if not link.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
+                                                </p>
+                                                <p class="text-xs text-gray-500 truncate"><a href="{{ link.url }}" target="_blank" class="hover:underline text-indigo-400">{{ link.url }}</a></p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            <form action="{% url 'teacher_link_toggle_visibility' pk=link.id %}" method="POST" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if link.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                    <i class="fa-solid {% if link.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{% url 'teacher_link_update' pk=link.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <form action="{% url 'teacher_link_delete' pk=link.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este enlace?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Foros -->
+                            {% if module.forums.all %}
+                            <div>
+                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-comments text-gray-400"></i> Foros
+                                </p>
+                                <div class="space-y-1.5">
+                                    {% for forum in module.forums.all %}
+                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not forum.is_visible %}opacity-60{% endif %}">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-emerald-50">
+                                                <i class="fa-solid fa-comments text-emerald-500 text-base"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <a href="{% url 'teacher_forum_detail' pk=forum.id %}" class="text-base font-semibold text-gray-800 hover:text-[#38657f] transition-colors truncate">
+                                                    {{ forum.title }}
+                                                    {% if not forum.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
+                                                    {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
+                                                </a>
+                                                <p class="text-xs text-gray-500">
+                                                    Respuestas: {{ forum.replies.count }} · 
+                                                    Apertura: {{ forum.start_date|date:"d/m/Y H:i" }}
+                                                    {% if forum.end_date %} · Cierre: {{ forum.end_date|date:"d/m/Y H:i" }}{% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            <form action="{% url 'teacher_forum_toggle_visibility' pk=forum.id %}" method="POST" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if forum.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                    <i class="fa-solid {% if forum.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{% url 'teacher_forum_update' pk=forum.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <form action="{% url 'teacher_forum_delete' pk=forum.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este foro?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if not module.materials.all and not module.assignments.all and not module.announcements.all and not module.links.all and not module.forums.all %}
+                            <p class="text-sm text-gray-400 italic text-center py-4">Sin contenido aún. Usa los botones de arriba para agregar recursos.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-white border-2 border-dashed border-gray-200 p-12 text-center text-gray-400 mb-8">
+                    <div class="w-12 h-12 bg-[#38657f]/10 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-layer-group text-2xl text-[#38657f]"></i>
+                    </div>
+                    <p class="text-base font-semibold">Este curso aún no tiene módulos.</p>
+                    <p class="text-sm mt-1">¡Comienza creando uno con el botón de arriba!</p>
+                </div>
+                {% endfor %}
+
+
+                <!-- ========== SECCIÓN DE CLASES EN VIVO ========== -->
+                <div id="clases-en-vivo" class="mb-4 flex items-center justify-between mt-8">
+                    <h2 class="text-base font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-video text-[#7c3aed]"></i>Clases en Vivo
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <div class="h-px w-12 bg-gray-200"></div>
+                        <a href="{% url 'teacher_live_session_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#7c3aed] text-white text-sm font-bold hover:bg-[#6d28d9] transition-colors shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1.5"></i> Programar Sesión
+                        </a>
+                    </div>
+                </div>
+
+                {% if live_sessions %}
+                <div class="bg-white shadow-sm border border-gray-200 mb-8 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                    <th class="px-5 py-3 bg-gray-50">Sesión</th>
+                                    <th class="px-5 py-3 bg-gray-50">Plataforma</th>
+                                    <th class="px-5 py-3 bg-gray-50">Fecha</th>
+                                    <th class="px-5 py-3 bg-gray-50">Horario</th>
+                                    <th class="px-5 py-3 bg-gray-50">Enlace</th>
+                                    <th class="px-5 py-3 bg-gray-50 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-base text-gray-600">
+                                {% for s in live_sessions %}
+                                <tr class="hover:bg-[#e5e9ff]/40 transition-colors">
+                                    <td class="px-5 py-3.5 font-bold text-gray-800 text-sm">{{ s.title }}</td>
+                                    <td class="px-5 py-3.5">
+                                        {% if s.platform == 'meet' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-green-50 text-green-700 border border-green-200"><i class="fa-solid fa-video mr-1"></i>Google Meet</span>
+                                        {% elif s.platform == 'zoom' %}
+                                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200"><i class="fa-solid fa-video mr-1"></i>Zoom</span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-gray-50 text-gray-700 border border-gray-200">Otro</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-sm font-semibold text-gray-700">{{ s.scheduled_date|date:"d M, Y" }}</td>
+                                    <td class="px-5 py-3.5 text-sm font-mono text-gray-600">{{ s.start_time|time:"H:i" }}{% if s.end_time %} – {{ s.end_time|time:"H:i" }}{% endif %}</td>
+                                    <td class="px-5 py-3.5">
+                                        {% if s.is_finished %}
+                                            <span class="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-500 text-[11px] font-bold rounded"><i class="fa-solid fa-check-double mr-1"></i> Culminada</span>
+                                        {% else %}
+                                            <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-2.5 py-1 bg-[#7c3aed] text-white text-[11px] font-bold hover:bg-[#6d28d9] transition-colors"><i class="fa-solid fa-external-link mr-1"></i> Abrir</a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <a href="{% url 'teacher_live_session_update' session_id=s.id %}" class="text-[#38657f] hover:text-[#2b5068] text-sm cursor-pointer mr-3 inline-block" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <form action="{% url 'teacher_live_session_delete' session_id=s.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta sesión?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-red-400 hover:text-red-600 text-sm cursor-pointer bg-transparent border-0" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-white border-2 border-dashed border-gray-200 p-8 text-center text-gray-400 mb-8">
+                    <div class="w-10 h-10 bg-[#7c3aed]/10 flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-video text-[#7c3aed]"></i>
+                    </div>
+                    <p class="text-sm font-semibold">No hay sesiones en vivo programadas para este curso.</p>
+                </div>
+                {% endif %}
+
+                <!-- Aviso de Grabaciones Meet -->
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
+                    <i class="fa-brands fa-google-drive text-blue-500 text-lg mt-0.5"></i>
+                    <div>
+                        <h4 class="text-sm font-bold text-blue-800">Grabaciones de Google Meet</h4>
+                        <p class="text-xs text-blue-600 mt-1 leading-relaxed">Las grabaciones de las clases que realices a través de Google Meet se guardan automáticamente en tu cuenta de Google Drive, en la ruta: <strong class="font-semibold">Mi unidad > Meet Recordings</strong>.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+<script>
+// ── Módulos colapsables ───────────────────────────────────────
+document.querySelectorAll('.module-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+        var targetId = this.dataset.target;
+        var body = document.getElementById(targetId);
+        var moduleId = targetId.replace('module-body-', '');
+        var chevron = document.getElementById('chevron-' + moduleId);
+        if (!body) return;
+        if (body.classList.contains('collapsed')) {
+            body.style.maxHeight = '2000px';
+            body.style.opacity = '1';
+            body.classList.remove('collapsed');
+            if (chevron) chevron.classList.remove('rotated');
+        } else {
+            body.style.maxHeight = '0';
+            body.style.opacity = '0';
+            body.classList.add('collapsed');
+            if (chevron) chevron.classList.add('rotated');
+        }
+    });
+});
+
+let allCollapsed = false;
+function toggleAllModules() {
+    allCollapsed = !allCollapsed;
+    var btnText = document.getElementById('toggle-all-text');
+    var btnIcon = document.querySelector('#toggle-all-btn i');
+    
+    if (allCollapsed) {
+        if (btnText) btnText.textContent = "Expandir Todo";
+        if (btnIcon) { btnIcon.classList.remove('fa-compress'); btnIcon.classList.add('fa-expand'); }
+        
+        document.querySelectorAll('.module-body').forEach(function(body) {
+            body.style.maxHeight = '0';
+            body.style.opacity = '0';
+            body.classList.add('collapsed');
+        });
+        document.querySelectorAll('.chevron-icon').forEach(function(icon) {
+            icon.classList.add('rotated');
+        });
+    } else {
+        if (btnText) btnText.textContent = "Colapsar Todo";
+        if (btnIcon) { btnIcon.classList.remove('fa-expand'); btnIcon.classList.add('fa-compress'); }
+        
+        document.querySelectorAll('.module-body').forEach(function(body) {
+            body.style.maxHeight = '2000px';
+            body.style.opacity = '1';
+            body.classList.remove('collapsed');
+        });
+        document.querySelectorAll('.chevron-icon').forEach(function(icon) {
+            icon.classList.remove('rotated');
+        });
+    }
+}
+// ── Menús de 3 puntos ────────────────────────────────────────
+document.querySelectorAll('.dot-menu-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var menuId = this.dataset.menu;
+        var menu = document.getElementById(menuId);
+        if (!menu) return;
+        // Cerrar otros abiertos
+        document.querySelectorAll('.dot-menu.open').forEach(function(m) {
+            if (m !== menu) m.classList.remove('open');
+        });
+        menu.classList.toggle('open');
+    });
+});
+document.addEventListener('click', function() {
+    document.querySelectorAll('.dot-menu.open').forEach(function(m) {
+        m.classList.remove('open');
+    });
+});
+</script>
+</body>
+</html>

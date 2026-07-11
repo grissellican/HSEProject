@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas — {{ assignment.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+
+        <!-- BARRA SUPERIOR -->
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <a href="{% url 'teacher_course_detail' course_id=assignment.module.course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Preguntas — {{ assignment.title }}</h1>
+                    <p class="text-[10px] text-gray-400">{{ course.title }}</p>
+                </div>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
+                </button>
+            </form>
+        </div>
+
+        <!-- CUERPO -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- MENSAJES -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i>{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Info del Examen -->
+                <div class="bg-white border border-gray-200 shadow-sm p-5 mb-5 flex justify-between items-center" style="border-left: 3px solid #38657f;">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-teal-50 text-teal-700"><i class="fa-solid fa-laptop-code mr-1"></i>Examen Online</span>
+                            <span class="text-[10px] text-gray-400">Total preguntas: <strong>{{ questions.count }}</strong></span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">{{ assignment.title }}</h3>
+                        <p class="text-[11px] text-gray-500 mt-1">
+                            Puntaje total de las preguntas:
+                            <strong class="{% if total_points == assignment.max_score %}text-green-600{% else %}text-red-500{% endif %}">{{ total_points }}</strong>
+                            / Máximo de la tarea: <strong>{{ assignment.max_score }}</strong>
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'teacher_question_create' assignment_id=assignment.id %}" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1.5"></i> Añadir Pregunta
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Lista de Preguntas -->
+                <div class="space-y-3">
+                    {% for q in questions %}
+                    <div class="bg-white shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 flex items-start justify-between bg-gray-50/50">
+                            <div class="flex-1 pr-4">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-sm font-bold text-[#38657f]">Pregunta {{ q.order }}</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider
+                                        {% if q.question_type == 'multiple_choice' %}bg-[#38657f]/10 text-[#38657f]
+                                        {% elif q.question_type == 'text' %}bg-amber-100 text-amber-700
+                                        {% else %}bg-purple-100 text-purple-700{% endif %}">
+                                        {{ q.get_question_type_display }}
+                                    </span>
+                                    <span class="text-[10px] font-semibold text-gray-500">{{ q.points }} pts</span>
+                                </div>
+                                <p class="text-base text-gray-800 font-medium whitespace-pre-wrap">{{ q.text }}</p>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <a href="{% url 'teacher_question_update' question_id=q.id %}" class="w-7 h-7 flex items-center justify-center text-[#38657f] hover:bg-[#e5e9ff] rounded transition-colors cursor-pointer" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                </a>
+                                <form action="{% url 'teacher_question_delete' question_id=q.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta pregunta?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="w-7 h-7 flex items-center justify-center text-red-400 hover:bg-red-50 rounded transition-colors cursor-pointer bg-transparent border-0" title="Eliminar">
+                                        <i class="fa-solid fa-trash text-sm"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Opciones (solo para multiple choice) -->
+                        {% if q.question_type == 'multiple_choice' %}
+                        <div class="p-5">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Opciones de Respuesta</p>
+                            <ul class="space-y-1.5 mb-3">
+                                {% for choice in q.choices.all %}
+                                <li class="flex items-center justify-between text-sm px-3 py-2 {% if choice.is_correct %}bg-green-50 border border-green-200 text-green-800{% else %}bg-gray-50 border border-gray-100 text-gray-600{% endif %}">
+                                    <div class="flex items-center">
+                                        {% if choice.is_correct %}
+                                            <i class="fa-solid fa-circle-check text-green-500 mr-2"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-circle text-gray-300 mr-2"></i>
+                                        {% endif %}
+                                        <span>{{ choice.text }}</span>
+                                    </div>
+                                    <form action="{% url 'teacher_choice_delete' choice_id=choice.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar opción?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-gray-400 hover:text-red-500 text-[10px] cursor-pointer bg-transparent border-0"><i class="fa-solid fa-xmark"></i></button>
+                                    </form>
+                                </li>
+                                {% empty %}
+                                <li class="text-sm text-red-500 italic">No hay opciones definidas. Los estudiantes no podrán responder.</li>
+                                {% endfor %}
+                            </ul>
+                            <a href="{% url 'teacher_choice_create' question_id=q.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-600 text-[11px] font-semibold hover:bg-[#e5e9ff] hover:text-[#38657f] hover:border-[#38657f]/30 transition-colors cursor-pointer">
+                                <i class="fa-solid fa-plus mr-1"></i> Añadir Opción
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="bg-white border-2 border-dashed border-gray-200 p-10 text-center text-gray-400">
+                        <i class="fa-solid fa-list-check text-4xl mb-3 block text-gray-300"></i>
+                        Aún no has agregado preguntas a este examen.
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

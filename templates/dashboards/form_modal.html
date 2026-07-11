@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} - HSE Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {{ form.media }}
+    <style>
+        /* Estilos generales para inputs del formulario */
+        input[type="text"], input[type="number"], input[type="email"],
+        input[type="url"], input[type="date"], input[type="datetime-local"],
+        input[type="time"], input[type="file"], textarea, select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #111827;
+            background: #f9fafb;
+            transition: border-color 0.15s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2b3494;
+            box-shadow: 0 0 0 2px rgba(43,52,148,0.1);
+        }
+        
+        /* Contenedor de CheckboxSelectMultiple (lista de alumnos) */
+        div[id^="id_students"] {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+        }
+        
+        /* Ocultar checkbox real */
+        div[id^="id_students"] input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Estilo base del contenedor seleccionable (label) */
+        div[id^="id_students"] label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0;
+            width: 100%;
+        }
+
+        div[id^="id_students"] label:hover {
+            border-color: #d1d5db;
+            background-color: #f3f4f6;
+        }
+
+        /* Estilo cuando está seleccionado usando :has() */
+        div[id^="id_students"] label:has(input[type="checkbox"]:checked) {
+            background-color: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        /* Checkmark falso */
+        div[id^="id_students"] label::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: transparent;
+            transition: color 0.2s;
+            font-size: 1rem;
+        }
+
+        div[id^="id_students"] label:has(input[type="checkbox"]:checked)::after {
+            color: #22c55e;
+        }
+
+        /* Checkboxes normales (como el de Activo) */
+        input[type="checkbox"]:not(div[id^="id_students"] input) {
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            accent-color: #2b3494;
+        }
+    </style>
+</head>
+<body class="bg-gray-50/50 min-h-full py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+
+    <div class="max-w-xl w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-[#2b3494] px-6 py-4 flex items-center justify-between">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-folder-plus mr-2"></i> {{ title }}</h2>
+            <button onclick="window.history.back();" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <form method="POST" {% if is_file_form %}enctype="multipart/form-data"{% endif %} class="p-6 space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 gap-4">
+                {% for field in form %}
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1.5">{{ field.label }}</label>
+                    {% if field.name == 'students' %}
+                    <div class="mb-2">
+                        <input type="text" id="studentsSearchModal" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#2b3494] focus:outline-none focus:ring-1 focus:ring-[#2b3494]" placeholder="Buscar estudiante...">
+                    </div>
+                    {% endif %}
+                    {{ field }}
+                    {% if field.help_text %}<p class="text-[10px] text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+                    {% if field.errors %}<p class="text-xs text-red-500 mt-1 font-semibold">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 flex justify-end space-x-2.5">
+                <button type="button" onclick="window.history.back();" class="px-4 py-2 border border-gray-300 text-gray-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition-colors">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-[#2b3494] text-white text-xs font-semibold rounded-xl hover:bg-[#1e256b] transition-colors shadow-sm">Guardar Registro</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById("studentsSearchModal");
+            const studentsDiv = document.querySelector("div[id^='id_students']");
+            if (searchInput && studentsDiv) {
+                const labels = studentsDiv.querySelectorAll("label");
+                searchInput.addEventListener("input", function() {
+                    const term = searchInput.value.toLowerCase();
+                    labels.forEach(label => {
+                        const text = label.textContent.toLowerCase();
+                        if (text.includes(term)) {
+                            label.style.display = "flex";
+                        } else {
+                            label.style.display = "none";
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

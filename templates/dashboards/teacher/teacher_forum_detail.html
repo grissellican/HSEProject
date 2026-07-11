@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ forum.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
+                    <a href="{% url 'teacher_dashboard' %}" class="hover:text-[#38657f] font-medium">Panel</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'teacher_course_detail' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px]">{{ course.title }}</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <span class="text-gray-700 font-semibold truncate max-w-[150px]">Foro: {{ forum.title }}</span>
+                </nav>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+                <script>
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('teacher-sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+        
+        function moveReplyForm(parentId) {
+            const container = document.getElementById('reply-form-container');
+            const parentInput = document.getElementById('parent_id');
+            const defaultLocation = document.getElementById('default-form-location');
+            const mainReplyBtn = document.getElementById('main-reply-btn');
+            
+            if (parentId) {
+                // Move form under the reply
+                const replyDiv = document.getElementById('reply-' + parentId);
+                replyDiv.appendChild(container);
+                parentInput.value = parentId;
+                container.classList.remove('hidden');
+                
+                // Hide main reply button
+                if(mainReplyBtn) mainReplyBtn.style.display = 'none';
+            } else {
+                // Move form back to top
+                defaultLocation.appendChild(container);
+                parentInput.value = '';
+                if(parentId === '') {
+                    container.classList.remove('hidden');
+                    if(mainReplyBtn) mainReplyBtn.style.display = 'none';
+                } else {
+                    container.classList.add('hidden');
+                    if(mainReplyBtn) mainReplyBtn.style.display = 'inline-flex';
+                }
+            }
+        }
+    </script>        
+                <!-- Alertas -->
+                {% if messages %}
+                <div class="mb-4 space-y-2">
+                    {% for message in messages %}
+                    <div class="px-4 py-3 rounded {% if message.tags == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-600 border border-green-200{% endif %} font-medium text-sm">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Tema Principal del Foro -->
+                <div class="bg-white rounded-none shadow-sm border border-gray-300 p-8 mb-6 relative">
+                    {% if not forum.is_active %}
+                    <div class="absolute top-4 right-4 bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 uppercase tracking-widest border border-red-200">
+                        Cerrado
+                    </div>
+                    {% endif %}
+                    
+                    <h1 class="text-2xl font-black text-gray-800 mb-2">{{ forum.title }}</h1>
+                    <div class="flex items-center gap-4 text-xs font-medium text-gray-500 border-b border-gray-200 pb-4 mb-6">
+                        <span><i class="fa-regular fa-clock text-[#38657f] mr-1.5"></i> Apertura: {{ forum.start_date|date:"d M Y, H:i" }}</span>
+                        {% if forum.end_date %}<span><i class="fa-regular fa-clock text-[#38657f] mr-1.5"></i> Cierre: {{ forum.end_date|date:"d M Y, H:i" }}</span>{% endif %}
+                    </div>
+
+                    <div class="ck-content mt-6 mb-8 text-gray-700 text-base">
+                        {{ forum.content|safe }}
+                    </div>
+
+                    {% if forum.is_active %}
+                    <div class="mt-6 flex justify-end">
+                        <button id="main-reply-btn" onclick="moveReplyForm('')" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer rounded-sm">
+                            <i class="fa-solid fa-reply mr-1.5"></i> Responder
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="mt-6 p-4 bg-gray-50 text-center text-gray-500 font-medium text-sm border border-gray-200">
+                        Este foro está cerrado. No se pueden publicar nuevas respuestas.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Default Location for Formulario de Respuesta -->
+                <div id="default-form-location">
+                    <div id="reply-form-container" class="hidden bg-white shadow-sm border border-gray-300 p-6 mb-8 border-t-4 border-t-[#38657f]">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-reply text-[#38657f]"></i> Redactar Respuesta</h3>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_id" id="parent_id" value="">
+                            <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tu mensaje</label>
+                            {{ form.content }}
+                            {{ form.media }}
+                        </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" onclick="moveReplyForm(null)" class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-semibold text-sm rounded-sm">Cancelar</button>
+                                <button type="submit" class="px-5 py-2 bg-[#1B5E37] text-white hover:bg-[#134529] transition-colors font-bold text-sm shadow-sm rounded-sm">Publicar Respuesta</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista de Respuestas -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-comments text-[#38657f]"></i> Respuestas ({{ replies.count }})
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        {% for reply in replies %}
+                        <div id="reply-{{ reply.id }}" class="bg-white border border-gray-200 shadow-sm p-5 relative group">
+                            <div class="flex gap-4">
+                                <!-- Perfil (Avatar placeholder) -->
+                                <div class="w-10 h-10 bg-[#38657f]/10 text-[#38657f] rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                    {{ reply.author.first_name|first|default:reply.author.username|first|upper }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <p class="font-bold text-gray-800">{{ reply.author.get_full_name|default:reply.author.username }}</p>
+                                                {% if reply.author == forum.module.course.teacher %}
+                                                    <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full font-semibold">Docente</span>
+                                                {% else %}
+                                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full font-semibold">Estudiante</span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
+                                                Publicado: {{ reply.created_at|date:"d M Y, H:i" }}
+                                                {% if reply.updated_at|date:"d M Y, H:i" != reply.created_at|date:"d M Y, H:i" %}
+                                                <span class="text-gray-300 mx-1">|</span> Editado: {{ reply.updated_at|date:"d M Y, H:i" }}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                                            <form action="{% url 'teacher_forum_reply_delete' reply.id %}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta respuesta?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-600 transition-colors text-sm p-1" title="Eliminar respuesta">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="ck-content mt-2 text-gray-700 text-sm">
+                                        {{ reply.content|safe }}
+                                    </div>
+                                    {% if forum.is_active %}
+                                    <button type="button" onclick="moveReplyForm('{{ reply.id }}')" class="text-xs text-[#38657f] font-bold uppercase hover:underline mt-3 flex items-center gap-1">
+                                        <i class="fa-solid fa-reply"></i> Responder
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Nested replies -->
+                            {% if reply.nested_replies.all %}
+                            <div class="mt-4 border-l-2 border-[#38657f] pl-4 space-y-4 ml-14">
+                                {% for nested in reply.nested_replies.all %}
+                                <div class="flex gap-3 relative group/nested">
+                                    <div class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                        {{ nested.author.first_name|first|default:nested.author.username|first|upper }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <div>
+                                                <div class="flex items-center gap-2">
+                                                    <p class="font-bold text-gray-800 text-sm">{{ nested.author.get_full_name|default:nested.author.username }}</p>
+                                                    {% if nested.author == forum.module.course.teacher %}
+                                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] rounded-full font-semibold">Docente</span>
+                                                    {% else %}
+                                                        <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full font-semibold">Estudiante</span>
+                                                    {% endif %}
+                                                </div>
+                                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                                                    {{ nested.created_at|date:"d M Y, H:i" }}
+                                                </p>
+                                            </div>
+                                            <div class="flex items-center gap-1 opacity-0 group-hover/nested:opacity-100">
+                                                <form action="{% url 'teacher_forum_reply_delete' nested.id %}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta respuesta?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="text-red-400 hover:text-red-600 transition-colors text-sm p-1" title="Eliminar respuesta">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="ck-content mt-1 text-gray-700 text-sm">
+                                            {{ nested.content|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-12 bg-white border border-dashed border-gray-300">
+                            <i class="fa-regular fa-comments text-4xl text-gray-300 mb-3 block"></i>
+                            <p class="text-gray-500 font-medium">Aún no hay respuestas en este foro.</p>
+                            {% if forum.is_active %}
+                            <p class="text-sm text-gray-400 mt-1">Sé el primero en participar.</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

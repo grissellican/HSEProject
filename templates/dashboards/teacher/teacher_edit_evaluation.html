@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Sistema de Evaluación - {{ course.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {{ form.media }}
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">Sistema de Evaluación</h1>
+                    <p class="text-xs text-gray-500">{{ course.title }}</p>
+                </div>
+            </div>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto space-y-6">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-5 p-3 bg-green-50 border-l-4 border-green-500 rounded-r-md">
+                            <p class="text-xs font-semibold text-green-800"><i class="fa-solid fa-circle-check mr-1"></i> {{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <!-- FORMULARIO 1: Redacción de la evaluación -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-[#f59e0b]/10 flex items-center justify-center">
+                            <i class="fa-solid fa-align-left text-[#f59e0b] text-lg"></i>
+                        </div>
+                        <h2 class="text-xl font-black text-gray-800">Descripción General</h2>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_description" value="1">
+                        <div class="mb-4">
+                            <p class="text-xs text-gray-500 mb-2">Redacta una explicación corta sobre cómo se califica este curso.</p>
+                            {{ form.evaluation_system_description }}
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="px-5 py-2.5 bg-[#f59e0b] text-white rounded-xl font-bold hover:bg-[#d97706] transition-colors shadow-sm">
+                                <i class="fa-solid fa-save mr-2"></i> Guardar Descripción
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- LISTA DE IMÁGENES -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-[#10b981]/10 flex items-center justify-center">
+                            <i class="fa-solid fa-images text-[#10b981] text-lg"></i>
+                        </div>
+                        <h2 class="text-xl font-black text-gray-800">Imágenes y Rúbricas</h2>
+                    </div>
+                    
+                    {% if images %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        {% for img in images %}
+                        <div class="border border-gray-200 rounded-xl overflow-hidden relative group bg-gray-50">
+                            <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-full h-40 object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex justify-between items-end">
+                                <h3 class="text-white font-bold text-sm truncate pr-2">{{ img.title }}</h3>
+                                <a href="{% url 'teacher_evaluation_image_delete' img.id %}" class="text-red-400 hover:text-red-300" onclick="return confirm('¿Seguro que deseas eliminar esta imagen?')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-6 mb-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        <p class="text-gray-500 text-sm">No hay imágenes subidas aún.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- FORMULARIO 2: Subir nueva imagen -->
+                    <div class="pt-6 border-t border-gray-100">
+                        <h3 class="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wider">Añadir nueva imagen</h3>
+                        <form method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-4 items-end">
+                            {% csrf_token %}
+                            <input type="hidden" name="upload_image" value="1">
+                            <div class="flex-1 w-full">
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Título de la imagen</label>
+                                {{ img_form.title }}
+                            </div>
+                            <div class="flex-1 w-full">
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Archivo</label>
+                                {{ img_form.image }}
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-[#059669] transition-colors shadow-sm whitespace-nowrap">
+                                    <i class="fa-solid fa-upload mr-2"></i> Subir
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

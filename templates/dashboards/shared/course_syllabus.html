@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sílabo - {{ course.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% if request.user.role == 'student' %}
+        {% include 'dashboards/student/_student_sidebar.html' %}
+    {% elif request.user.role == 'teacher' %}
+        {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+    {% endif %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                {% if request.user.role == 'student' %}
+                <a href="{% url 'student_course_home' course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                {% elif request.user.role == 'teacher' %}
+                <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                {% endif %}
+                <div>
+                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">Sílabo del Curso</h1>
+                    <p class="text-xs text-gray-500">{{ course.title }}</p>
+                </div>
+            </div>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6 bg-[#f5f7fa]">
+            <div class="max-w-4xl mx-auto bg-white border border-gray-300 p-10 md:p-14 shadow-sm rounded-none">
+                
+                <!-- Título del documento -->
+                <div class="mb-12">
+                    <h1 class="text-4xl font-light text-gray-800 mb-2">Sílabo</h1>
+                </div>
+
+                {% if course.capacities %}
+                <div class="mb-12">
+                    <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Capacidades del Curso</h2>
+                    <div class="prose max-w-none text-gray-700 leading-relaxed text-base prose-ul:list-disc prose-ol:list-decimal prose-li:my-1">
+                        {{ course.capacities|safe }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if course.syllabus_introduction or course.syllabus_objectives or course.syllabus_units.exists %}
+                    
+                    {% if course.syllabus_introduction %}
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Introducción</h2>
+                        <div class="prose max-w-none text-gray-700 leading-relaxed text-base">
+                            {{ course.syllabus_introduction|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if course.syllabus_objectives %}
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Objetivos Específicos</h2>
+                        <!-- Respetamos el formato original del editor -->
+                        <div class="prose max-w-none text-gray-700 leading-relaxed text-base">
+                            {{ course.syllabus_objectives|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if course.syllabus_units.exists %}
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Unidades</h2>
+                        <table class="w-full border-collapse border border-gray-200 text-sm text-gray-700 text-left">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="py-3 px-6 font-semibold w-16 text-center">N°</th>
+                                    <th class="py-3 px-6 font-semibold">Título de la Unidad / Módulo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for unit in course.syllabus_units.all %}
+                                <tr class="border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+                                    <td class="py-4 px-6 text-center font-medium text-gray-500">{{ forloop.counter }}</td>
+                                    <td class="py-4 px-6">{{ unit.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                <div class="text-center py-16">
+                    <i class="fa-regular fa-file-lines text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 font-medium">El sílabo aún no ha sido publicado para este curso.</p>
+                </div>
+                {% endif %}
+                
+            </div>
+        </main>
+    </div>
+</body>
+</html>

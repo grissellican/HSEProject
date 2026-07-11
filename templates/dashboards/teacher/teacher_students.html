@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudiantes — {{ course.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden font-sans text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        
+        <!-- BARRA SUPERIOR -->
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <a href="{% url 'teacher_course_detail' course_id=course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Estudiantes — {{ course.title }}</h1>
+                    <p class="text-[10px] text-gray-400">Listado de matriculados</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <form action="{% url 'logout' %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CUERPO -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-7xl mx-auto">
+
+                <!-- Info del curso -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">{{ course.title }}</h3>
+                            <p class="text-sm text-gray-400 mt-0.5">{{ student_grades|length }} estudiantes matriculados · {{ total_assignments }} tareas/evaluaciones en total</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-green-50 text-green-600">
+                            <i class="fa-solid fa-users text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Calificaciones -->
+                <div class="bg-white shadow-xs border border-gray-200/60 rounded-xl">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-ranking-star mr-2 text-amber-500"></i>Resumen de Calificaciones</h3>
+                        <p class="text-sm text-gray-400 mt-0.5">Promedio ponderado de todas las tareas y evaluaciones calificadas.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/70 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3.5">Estudiante</th>
+                                    <th class="px-6 py-3.5">Email</th>
+                                    <th class="px-6 py-3.5 text-center">Entregas</th>
+                                    <th class="px-6 py-3.5 text-center">Calificadas</th>
+                                    <th class="px-6 py-3.5 text-center">Puntaje</th>
+                                    <th class="px-6 py-3.5 text-center">Promedio</th>
+                                    <th class="px-6 py-3.5 text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-base text-gray-600">
+                                {% for sg in student_grades %}
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-gray-800">{{ sg.student.first_name }} {{ sg.student.lastname }}</td>
+                                    <td class="px-6 py-4 font-mono text-sm text-gray-500">{{ sg.student.email }}</td>
+                                    <td class="px-6 py-4 text-center text-sm">
+                                        <span class="font-semibold">{{ sg.submitted }}</span>
+                                        <span class="text-gray-400">/ {{ sg.total_assignments }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-sm font-semibold">{{ sg.graded }}</td>
+                                    <td class="px-6 py-4 text-center text-sm">
+                                        {% if sg.total_max > 0 %}
+                                            <span class="font-semibold">{{ sg.total_score }}</span>
+                                            <span class="text-gray-400">/ {{ sg.total_max }}</span>
+                                        {% else %}
+                                            <span class="text-gray-400">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        {% if sg.avg_percentage != None %}
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold
+                                                {% if sg.avg_percentage >= 70 %}bg-green-50 text-green-700
+                                                {% elif sg.avg_percentage >= 50 %}bg-amber-50 text-amber-700
+                                                {% else %}bg-red-50 text-red-700{% endif %}">
+                                                {{ sg.avg_percentage }}%
+                                            </span>
+                                        {% else %}
+                                            <span class="text-sm text-gray-400">Sin calificar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <a href="{% url 'teacher_student_grades_detail' course_id=course.id student_id=sg.student.id %}" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-colors" title="Ver Notas Detalladas">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-10 text-center text-gray-400 text-sm">
+                                        <i class="fa-solid fa-users text-3xl mb-2 block"></i>
+                                        No hay estudiantes matriculados en este curso.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

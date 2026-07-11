@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            background-image: url("{% static 'images/fondo-3.jpg' %}");
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="h-full w-full bg-cover bg-center bg-no-repeat flex items-center justify-start pl-12 md:pl-24 lg:pl-36">
+
+    <div class="bg-white w-full max-w-sm p-10 rounded-3xl shadow-2xl border border-gray-100/50 backdrop-blur-xs flex flex-col items-center">
+        
+        <div class="mb-6 flex justify-center w-full">
+            <img src="{% static 'images/logo.jpeg' %}" alt="HSE Academy Logo" class="h-24 object-contain">
+        </div>
+
+        <div class="w-full text-left mb-6">
+            <h2 class="text-xl font-medium text-gray-700 tracking-tight">Iniciar Sesion</h2>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="w-full mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
+                    <p class="text-xs font-medium text-red-800">{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="space-y-5 w-full" action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            
+            <div class="w-full">
+                <label for="email" class="block text-xs font-medium text-gray-500 mb-1.5 pl-1">GMAIL</label>
+                <input id="email" name="email" type="text" required value="{{ request.POST.email }}"
+                    class="block w-full rounded-2xl border border-gray-300 bg-gray-50/50 px-4 py-3 text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none sm:text-sm transition-all duration-200 shadow-xs">
+            </div>
+
+            <div class="w-full">
+                <label for="password" class="block text-xs font-medium text-gray-500 mb-1.5 pl-1">CONTRASEÑA</label>
+                <input id="password" name="password" type="password" required
+                    class="block w-full rounded-2xl border border-gray-300 bg-gray-50/50 px-4 py-3 text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none sm:text-sm transition-all duration-200 shadow-xs">
+            </div>
+
+            <div class="pt-2">
+                <button type="submit"
+                    class="flex w-full justify-center rounded-2xl bg-[#2b3494] py-3 px-4 text-sm font-semibold text-white shadow-md hover:bg-[#1e246b] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer text-center">
+                    Sign In
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</body>
+</html>

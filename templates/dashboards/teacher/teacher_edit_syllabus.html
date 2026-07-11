@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Sílabo - {{ course.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {{ form.media }}
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">Editar Sílabo y Evaluación</h1>
+                    <p class="text-xs text-gray-500">{{ course.title }}</p>
+                </div>
+            </div>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-5 p-3 bg-green-50 border-l-4 border-green-500 rounded-r-md">
+                            <p class="text-xs font-semibold text-green-800"><i class="fa-solid fa-circle-check mr-1"></i> {{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    {% csrf_token %}
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase text-xs tracking-wider">Introducción</label>
+                            <p class="text-xs text-gray-500 mb-2">Breve descripción del curso, metodología y propósito.</p>
+                            {{ form.syllabus_introduction }}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase text-xs tracking-wider">Objetivos</label>
+                            <p class="text-xs text-gray-500 mb-2">Qué logrará el estudiante al finalizar este curso.</p>
+                            {{ form.syllabus_objectives }}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase text-xs tracking-wider">Unidades y Módulos</label>
+                            <p class="text-xs text-gray-500 mb-4">Agrega las unidades del sílabo una por una.</p>
+                            
+                            {{ unit_formset.management_form }}
+                            
+                            <div id="unit-formset-container" class="space-y-3">
+                                {% for unit_form in unit_formset %}
+                                    <div class="unit-form flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                        {% for hidden in unit_form.hidden_fields %}
+                                            {{ hidden }}
+                                        {% endfor %}
+                                        
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-semibold text-gray-600 mb-1">Título de la Unidad</label>
+                                            {{ unit_form.title }}
+                                            <div class="text-xs text-red-500 mt-1">{{ unit_form.title.errors }}</div>
+                                        </div>
+                                        
+                                        <div class="w-20">
+                                            <label class="block text-xs font-semibold text-gray-600 mb-1 text-center">Orden</label>
+                                            {{ unit_form.order }}
+                                            <div class="text-xs text-red-500 mt-1">{{ unit_form.order.errors }}</div>
+                                        </div>
+                                        
+                                        {% if unit_form.instance.pk %}
+                                        <div class="flex items-end h-full pb-2">
+                                            <label class="flex items-center text-xs text-red-500 hover:text-red-700 cursor-pointer" title="Eliminar">
+                                                {{ unit_form.DELETE }}
+                                                <span class="ml-1"><i class="fa-solid fa-trash"></i></span>
+                                            </label>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <button type="button" id="add-unit-btn" class="mt-4 text-sm font-semibold text-[#38657f] hover:text-[#2b5068] flex items-center transition-colors">
+                                <i class="fa-solid fa-plus-circle mr-1"></i> Agregar nueva unidad
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end gap-3">
+                        <a href="{% url 'teacher_course_detail' course.id %}" class="px-5 py-2.5 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition-colors">Cancelar</a>
+                        <button type="submit" class="px-5 py-2.5 bg-[#38657f] text-white rounded-xl font-bold hover:bg-[#2b5068] transition-colors shadow-sm">
+                            <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('unit-formset-container');
+            const addButton = document.getElementById('add-unit-btn');
+            const totalFormsInput = document.getElementById('id_syllabus_units-TOTAL_FORMS');
+            
+            if(addButton && container && totalFormsInput) {
+                addButton.addEventListener('click', function() {
+                    const forms = container.querySelectorAll('.unit-form');
+                    let formCount = forms.length;
+                    let newFormIndex = parseInt(totalFormsInput.value);
+                    
+                    if (formCount > 0) {
+                        let templateForm = forms[0].cloneNode(true);
+                        
+                        // Remove hidden ID input if exists
+                        const hiddenId = templateForm.querySelector('input[type="hidden"][id$="-id"]');
+                        if (hiddenId) hiddenId.remove();
+                        
+                        // Remove DELETE checkbox container if exists
+                        const deleteLabel = templateForm.querySelector('label[title="Eliminar"]');
+                        if (deleteLabel) {
+                            const deleteContainer = deleteLabel.closest('.flex.items-end');
+                            if(deleteContainer) deleteContainer.remove();
+                        }
+                        
+                        // Update names and ids
+                        templateForm.innerHTML = templateForm.innerHTML.replace(/-0-/g, `-${newFormIndex}-`).replace(/_0_/g, `_${newFormIndex}_`);
+                        
+                        // Clear input values
+                        const inputs = templateForm.querySelectorAll('input:not([type=hidden])');
+                        inputs.forEach(input => {
+                            if(input.type !== 'checkbox') {
+                                input.value = '';
+                            } else {
+                                input.checked = false;
+                            }
+                        });
+                        
+                        // Set default order
+                        const orderInput = templateForm.querySelector(`input[id="id_syllabus_units-${newFormIndex}-order"]`);
+                        if (orderInput) orderInput.value = formCount + 1;
+                        
+                        // Remove errors if any
+                        const errors = templateForm.querySelectorAll('.text-red-500.mt-1');
+                        errors.forEach(err => err.innerHTML = '');
+                        
+                        container.appendChild(templateForm);
+                        totalFormsInput.value = newFormIndex + 1;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

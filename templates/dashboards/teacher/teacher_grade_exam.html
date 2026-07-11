@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificar Examen - {{ submission.student.first_name }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50/50 min-h-full py-10 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <a href="{% url 'teacher_assignment_submissions' assignment_id=assignment.id %}" class="text-gray-400 hover:text-gray-600 text-base font-semibold mb-2 inline-block"><i class="fa-solid fa-arrow-left mr-1"></i> Volver a Entregas</a>
+                <h1 class="text-3xl font-bold text-gray-800">Calificar Examen</h1>
+                <p class="text-base text-gray-500 mt-1">Estudiante: <span class="font-bold text-[#2b3494]">{{ submission.student.first_name }} {{ submission.student.lastname }}</span></p>
+            </div>
+            <div class="bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-200 text-center">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Puntaje Automático</p>
+                <p class="text-2xl font-bold text-teal-600">{{ total_auto_score }} <span class="text-base text-gray-400 font-medium">pts</span></p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-[#2b3494] px-6 py-4 flex items-center justify-between">
+                <h2 class="text-base font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-laptop-code mr-2"></i> {{ assignment.title }}</h2>
+                <span class="text-sm font-semibold text-blue-200">Enviado: {{ submission.submitted_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <form method="POST" class="p-6">
+                {% csrf_token %}
+                
+                <div class="space-y-8">
+                    {% for resp in responses %}
+                    <div class="p-5 rounded-xl border {% if resp.question.question_type == 'multiple_choice' %}bg-gray-50 border-gray-200{% else %}bg-blue-50/30 border-blue-100{% endif %}">
+                        
+                        <!-- Header de la Pregunta -->
+                        <div class="flex items-start justify-between mb-3 border-b border-gray-200/60 pb-3">
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold text-[#2b3494] uppercase tracking-wider">Pregunta {{ resp.question.order }}</span>
+                                <p class="text-base font-semibold text-gray-800 mt-1 whitespace-pre-wrap">{{ resp.question.text }}</p>
+                            </div>
+                            <div class="ml-4 text-right flex-shrink-0">
+                                <span class="inline-block px-2 py-1 bg-white border border-gray-200 rounded text-[10px] font-bold text-gray-500">
+                                    Valor: {{ resp.question.points }} pts
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Respuesta del Estudiante -->
+                        <div class="mb-4">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Respuesta del Estudiante:</p>
+                            
+                            {% if resp.question.question_type == 'multiple_choice' %}
+                                {% if resp.selected_choice %}
+                                    <div class="flex items-center text-base font-medium {% if resp.selected_choice.is_correct %}text-green-700{% else %}text-red-600{% endif %}">
+                                        {% if resp.selected_choice.is_correct %}
+                                            <i class="fa-solid fa-check-circle mr-2"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-xmark-circle mr-2"></i>
+                                        {% endif %}
+                                        {{ resp.selected_choice.text }}
+                                    </div>
+                                {% else %}
+                                    <p class="text-base text-gray-400 italic">No respondió.</p>
+                                {% endif %}
+
+                            {% elif resp.question.question_type == 'text' %}
+                                <div class="bg-white p-4 rounded-lg border border-gray-200 text-base text-gray-700 prose max-w-none">
+                                    {% if resp.text_answer %}{{ resp.text_answer|safe }}{% else %}<span class="text-gray-400 italic">No respondió.</span>{% endif %}
+                                </div>
+
+                            {% elif resp.question.question_type == 'file' %}
+                                {% if resp.file_answer %}
+                                    <a href="{{ resp.file_answer.url }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-base font-semibold text-[#2b3494] hover:bg-gray-50">
+                                        <i class="fa-solid fa-download mr-2"></i> Descargar Archivo Entregado
+                                    </a>
+                                {% else %}
+                                    <p class="text-base text-gray-400 italic">No adjuntó archivo.</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Sección de Calificación -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
+                            {% if resp.question.question_type == 'multiple_choice' %}
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-gray-500"><i class="fa-solid fa-robot mr-1"></i> Autocalificado</span>
+                                    <span class="text-base font-bold {% if resp.score > 0 %}text-green-600{% else %}text-red-500{% endif %}">{{ resp.score }} / {{ resp.question.points }} pts</span>
+                                </div>
+                            {% else %}
+                                <!-- Calificación Manual -->
+                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                                    <div class="sm:col-span-1">
+                                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Puntaje Asignado</label>
+                                        <input type="number" name="score_{{ resp.id }}" value="{{ resp.score|default_if_none:'' }}" min="0" max="{{ resp.question.points }}" step="0.01" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Máx. {{ resp.question.points }}">
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Retroalimentación (Opcional)</label>
+                                        <input type="text" name="feedback_{{ resp.id }}" value="{{ resp.feedback }}" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Ej. Excelente análisis...">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-8 pt-5 border-t border-gray-200 flex justify-end space-x-3">
+                    <a href="{% url 'teacher_assignment_submissions' assignment_id=assignment.id %}" class="px-5 py-2.5 border border-gray-300 text-gray-600 text-base font-semibold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">Cancelar</a>
+                    <button type="submit" class="px-5 py-2.5 bg-[#2b3494] text-white text-base font-semibold rounded-xl hover:bg-[#1e256b] transition-colors shadow-sm cursor-pointer">
+                        <i class="fa-solid fa-save mr-1.5"></i> Guardar Calificaciones
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

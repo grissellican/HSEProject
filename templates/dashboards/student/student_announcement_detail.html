@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ announcement.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/student/_student_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium">Mi Tablero</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px]">{{ course.title }}</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="hover:text-[#38657f] font-medium">Módulos</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <span class="text-gray-700 font-semibold truncate max-w-[150px]">Aviso: {{ announcement.title }}</span>
+                </nav>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+
+                <div class="bg-white rounded-none shadow-sm border border-gray-300 p-8 md:p-12 mb-6">
+                    <div class="flex items-start gap-4 mb-8">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 bg-rose-50 text-rose-500 border border-rose-100">
+                            <i class="fa-solid fa-bullhorn text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-black text-gray-800 tracking-tight leading-tight mb-2">{{ announcement.title }}</h1>
+                            <div class="flex items-center gap-4 text-sm font-medium text-gray-500">
+                                <span><i class="fa-solid fa-layer-group text-[#38657f] mr-1.5"></i> {{ module.title }}</span>
+                                <span><i class="fa-regular fa-clock text-[#38657f] mr-1.5"></i> Publicado {{ announcement.publish_date|date:"d M Y, H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ck-content mt-6 border-t border-gray-200 pt-8 text-gray-700 text-base">
+                        {{ announcement.content|safe }}
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-6">
+                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors rounded-md shadow-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver a Módulos
+                    </a>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

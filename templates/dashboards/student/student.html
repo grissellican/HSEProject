@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tablero - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/student/_student_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+
+        <!-- Top bar -->
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="hidden md:block">
+                    <h1 class="text-base font-bold text-[#38657f]">Mi Tablero</h1>
+                    <p class="text-[10px] text-gray-400">Bienvenido, {{ request.user.first_name }}</p>
+                </div>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Cerrar Sesión
+                </button>
+            </form>
+        </div>
+
+        <!-- Body -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-6xl mx-auto">
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i>{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Section header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider">Mis Cursos</h2>
+                        <p class="text-sm text-gray-400 mt-0.5">Selecciona un curso para acceder a su contenido.</p>
+                    </div>
+                    <div class="h-px flex-1 bg-gray-200 ml-4"></div>
+                </div>
+
+                <!-- Course cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for c in courses %}
+                    <a href="{% url 'student_course_home' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-lg hover:border-[#38657f]/30 hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden">
+
+                        <!-- Course image -->
+                        {% with img=c.get_cover_image %}
+                        {% if img %}
+                        <div class="h-36 overflow-hidden relative">
+                            <img src="{{ img }}" alt="{{ c.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        </div>
+                        {% else %}
+                        <div class="h-36 bg-gradient-to-br from-[#38657f] via-[#2b5068] to-[#1B5E37] flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
+                            <i class="fa-solid fa-book-open text-5xl text-white/40 relative z-10"></i>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        <div class="p-5 flex-1 flex flex-col">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-[10px] px-2.5 py-0.5 uppercase tracking-wider font-bold bg-[#38657f]/8 text-[#38657f] rounded-full">{{ c.category }}</span>
+                            </div>
+                            <h3 class="text-base font-black text-gray-800 mb-3 leading-snug group-hover:text-[#38657f] transition-colors">{{ c.title }}</h3>
+
+                            <div class="mt-auto space-y-1.5 text-sm text-gray-500">
+                                {% if c.teacher %}
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-chalkboard-user mr-2 text-[#B8973A] w-4"></i>
+                                    <span class="text-gray-600">{{ c.teacher.first_name }} {{ c.teacher.lastname }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-calendar mr-2 text-gray-400 w-4"></i>
+                                    {{ c.start_date|date:"d M, Y"|default:"Por definir" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-5 py-3 bg-gray-50/80 border-t border-gray-100 flex items-center justify-between text-sm">
+                            <span class="text-gray-400 font-medium">Ingresar al curso</span>
+                            <i class="fa-solid fa-arrow-right text-[#38657f] group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="col-span-full bg-white border-2 border-dashed border-gray-200 p-16 text-center text-gray-400 rounded-xl">
+                        <div class="w-16 h-16 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                            <i class="fa-solid fa-graduation-cap text-3xl text-[#38657f]"></i>
+                        </div>
+                        <p class="text-base font-semibold text-gray-500">Aún no estás matriculado en ningún curso.</p>
+                        <p class="text-sm mt-1">Contacta al administrador para inscribirte.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

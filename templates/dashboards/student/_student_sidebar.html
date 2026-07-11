@@ -1,0 +1,203 @@
+{% load static %}
+{% comment %}
+_student_sidebar.html — Sidebar compartido del panel estudiantil
+Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pending_count
+{% endcomment %}
+
+<style>
+    :root {
+        --hse-green:   #1B5E37;
+        --hse-green-dk:#134529;
+        --hse-blue:    #38657f;
+        --hse-blue-dk: #2b5068;
+        --hse-gold:    #B8973A;
+        --hse-hover:   #e5e9ff;
+        --hse-purple:  #7c3aed;
+    }
+    body { font-family: 'Inter', sans-serif; }
+
+    /* Sidebar */
+    #student-sidebar {
+        width: 250px;
+        transition: width 0.22s cubic-bezier(.4,0,.2,1), transform 0.3s ease-in-out;
+        overflow: hidden;
+    }
+    @media (max-width: 767px) {
+        #student-sidebar { transform: translateX(-100%); }
+        body.sidebar-mobile-open #student-sidebar { transform: translateX(0); }
+    }
+    #student-sidebar.collapsed { width: 72px; }
+    #student-sidebar .sidebar-label { transition: opacity 0.15s, width 0.15s; }
+    #student-sidebar.collapsed .sidebar-label { opacity: 0; width: 0; overflow: hidden; white-space: nowrap; }
+    #student-sidebar.collapsed .logo-text { display: none; }
+    #student-sidebar.collapsed .sidebar-section-label { display: none; }
+    #student-sidebar.collapsed .user-text { display: none; }
+
+    /* Toggle icon rotation */
+    .toggle-icon { transition: transform 0.22s cubic-bezier(.4,0,.2,1); }
+    #student-sidebar.collapsed .toggle-icon { transform: rotate(180deg); }
+
+    /* Sidebar items */
+    .sidebar-item {
+        border-left: 3px solid transparent;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .sidebar-item:hover {
+        background: var(--hse-hover);
+        border-left-color: var(--hse-blue);
+        color: var(--hse-blue);
+    }
+    .sidebar-item-active {
+        background: var(--hse-hover);
+        border-left: 3px solid var(--hse-green);
+        color: var(--hse-green);
+        font-weight: 700;
+    }
+
+    /* Main layout offset */
+    .main-content {
+        padding-left: 0;
+        transition: padding-left 0.22s cubic-bezier(.4,0,.2,1);
+    }
+    @media (min-width: 768px) {
+        .main-content { padding-left: 250px; }
+        body.sidebar-collapsed .main-content { padding-left: 72px; }
+    }
+
+    /* Topbar */
+    .header-topbar {
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumb-nav a { transition: color 0.15s; }
+    .breadcrumb-nav a:hover { color: var(--hse-blue); }
+</style>
+
+<!-- Mobile Overlay -->
+<div id="mobile-sidebar-overlay" class="fixed inset-0 bg-gray-900/50 z-30 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
+<aside id="student-sidebar" class="flex flex-col fixed inset-y-0 left-0 bg-white border-r border-gray-200 shadow-sm z-40">
+
+    <!-- Logo -->
+    <div class="flex items-center h-14 flex-shrink-0 px-3 border-b border-gray-100 overflow-hidden">
+        <a href="{% url 'student_dashboard' %}" class="flex items-center space-x-2 min-w-0">
+            <img src="{% static 'images/logo.jpeg' %}" alt="HSE Academy" class="h-8 w-auto object-contain flex-shrink-0">
+            <div class="logo-text min-w-0">
+                <span class="text-base font-black text-[#38657f] tracking-tight leading-none block truncate">HSE Academy</span>
+                <span class="text-[10px] font-semibold text-[#B8973A] uppercase tracking-widest">Estudiante</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- User Profile (NO clickeable) -->
+    <div class="flex-shrink-0 border-b border-gray-100 p-4 block">
+        <div class="flex items-center space-x-3">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="Perfil" class="w-11 h-11 rounded-full object-cover flex-shrink-0 border-2 border-[#38657f]/20">
+            {% else %}
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#38657f] to-[#1B5E37] flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <span class="text-lg font-black text-white leading-none">{{ request.user.first_name|first|upper }}</span>
+                </div>
+            {% endif %}
+            <div class="min-w-0 user-text">
+                <p class="text-sm font-bold text-gray-800 truncate">{{ request.user.first_name }} {{ request.user.lastname }}</p>
+                <p class="text-[11px] text-gray-400 truncate">{{ request.user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="flex-1 flex flex-col overflow-y-auto pt-3 pb-3">
+        <nav class="flex-1 px-2 space-y-0.5">
+
+            <!-- Tablero -->
+            <a href="{% url 'student_dashboard' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'dashboard' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
+                <i class="fa-solid fa-graduation-cap w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <span class="sidebar-label">Mi Tablero</span>
+            </a>
+
+            <!-- Sección: Académico -->
+            <div class="pt-5 pb-2 px-3 sidebar-section-label">
+                <p class="text-[10px] font-black text-[#B8973A] uppercase tracking-[0.2em]">Académico</p>
+            </div>
+
+            <!-- Calificaciones -->
+            <a href="{% url 'student_grades' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'grades' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
+                <i class="fa-solid fa-chart-column w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <span class="sidebar-label">Calificaciones</span>
+            </a>
+
+            <!-- Actividades Pendientes -->
+            <a href="{% url 'student_pending' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'pending' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
+                <i class="fa-solid fa-clock w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <span class="sidebar-label flex items-center gap-2">
+                    Pendientes
+                    {% if pending_count and pending_count > 0 %}
+                    <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 text-[10px] font-black bg-amber-500 text-white rounded-full">{{ pending_count }}</span>
+                    {% endif %}
+                </span>
+            </a>
+
+            <!-- Sección: Recursos -->
+            <div class="pt-5 pb-2 px-3 sidebar-section-label">
+                <p class="text-[10px] font-black text-[#B8973A] uppercase tracking-[0.2em]">Recursos</p>
+            </div>
+
+            <!-- Mis Archivos -->
+            <a href="{% url 'student_files' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'files' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
+                <i class="fa-solid fa-folder-open w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <span class="sidebar-label">Mis Archivos</span>
+            </a>
+
+        </nav>
+    </div>
+
+    <!-- Sidebar Toggle -->
+    <div class="flex-shrink-0 border-t border-gray-100">
+        <button id="sidebar-toggle" class="w-full h-12 flex items-center justify-center text-gray-400 hover:text-[#38657f] hover:bg-[#e5e9ff] transition-colors cursor-pointer" title="Colapsar/Expandir panel">
+            <i class="fa-solid fa-angles-left text-base toggle-icon"></i>
+        </button>
+    </div>
+</aside>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('student-sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    const COLLAPSED_KEY = 'hse_student_sidebar_collapsed';
+
+    // Desktop Collapse Logic
+    const saved = localStorage.getItem(COLLAPSED_KEY) === 'true';
+    if (saved) {
+        document.body.classList.add('sidebar-collapsed');
+        sidebar.classList.add('collapsed');
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+            sidebar.classList.toggle('collapsed', isCollapsed);
+            localStorage.setItem(COLLAPSED_KEY, isCollapsed);
+        });
+    }
+
+    // Mobile Sidebar Logic
+    window.toggleMobileSidebar = function() {
+        const isOpen = document.body.classList.toggle('sidebar-mobile-open');
+        if (isOpen) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        } else {
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+    };
+
+    if (overlay) {
+        overlay.addEventListener('click', window.toggleMobileSidebar);
+    }
+});
+</script>

@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificaciones - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+    {% include 'dashboards/student/_student_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none"><i class="fa-solid fa-bars text-lg"></i></button>
+                <div class="hidden md:block"><h1 class="text-base font-bold text-[#38657f]">Mis Calificaciones</h1></div>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Cerrar Sesión</button></form>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-5xl mx-auto">
+
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-[#38657f]"></i> Calificaciones
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-0.5">Actividades calificadas por tus docentes.</p>
+                    </div>
+                    <div class="h-px flex-1 bg-gray-200 ml-4"></div>
+                </div>
+
+                {% for group in grades_by_course %}
+                <div class="mb-10">
+                    <h3 class="text-sm font-black text-[#38657f] uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-book text-[#B8973A]"></i> {{ group.course.title }}
+                    </h3>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
+                                    <th class="px-5 py-3">Actividad</th>
+                                    <th class="px-5 py-3">Tipo</th>
+                                    <th class="px-5 py-3 text-center">Calificación</th>
+                                    <th class="px-5 py-3 text-center">Porcentaje</th>
+                                    <th class="px-5 py-3">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                {% for sub in group.submissions %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-5 py-3.5 text-sm font-semibold text-gray-700">{{ sub.assignment.title }}</td>
+                                    <td class="px-5 py-3.5 text-xs text-gray-500">{{ sub.assignment.get_assignment_type_display }}</td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        <span class="text-sm font-black {% if sub.percentage >= 70 %}text-green-600{% elif sub.percentage >= 50 %}text-amber-600{% else %}text-red-600{% endif %}">
+                                            {{ sub.score }}/{{ sub.assignment.max_score }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-full
+                                            {% if sub.percentage >= 70 %}bg-green-50 text-green-700{% elif sub.percentage >= 50 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %}">
+                                            {{ sub.percentage }}%
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.graded_at|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-xl">
+                    <div class="w-14 h-14 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-chart-column text-2xl text-[#38657f]"></i>
+                    </div>
+                    <p class="text-base font-semibold text-gray-500">Aún no tienes calificaciones registradas.</p>
+                </div>
+                {% endfor %}
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>
