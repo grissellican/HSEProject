@@ -199,6 +199,25 @@
                         
                         <div class="space-y-4 mb-5">
                             <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Intentos Permitidos</p>
+                                <p class="text-sm font-semibold text-gray-700">
+                                    {% if assignment.max_attempts > 0 %}
+                                        {% if submission %}
+                                            {{ submission.attempts }} / {{ assignment.max_attempts }}
+                                        {% else %}
+                                            0 / {{ assignment.max_attempts }}
+                                        {% endif %}
+                                    {% else %}
+                                        {% if submission %}
+                                            {{ submission.attempts }} (Ilimitados)
+                                        {% else %}
+                                            0 (Ilimitados)
+                                        {% endif %}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div>
                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fecha de Entrega</p>
                                 <p class="text-sm font-semibold text-gray-700">
                                     {% if submission and submission.submitted_at %}

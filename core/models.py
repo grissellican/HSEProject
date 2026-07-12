@@ -157,6 +157,7 @@ class Assignment(models.Model):
     assignment_type = models.CharField(max_length=30, choices=ASSIGNMENT_TYPES, default='tarea', verbose_name="Tipo")
     due_date = models.DateTimeField(null=True, blank=True, verbose_name="Fecha Límite de Entrega")
     max_score = models.DecimalField(max_digits=5, decimal_places=2, default=20, verbose_name="Puntaje Máximo")
+    max_attempts = models.PositiveIntegerField(default=1, verbose_name="Número de intentos permitidos", help_text="Déjalo en 0 para intentos ilimitados.")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
 
@@ -173,6 +174,7 @@ class Submission(models.Model):
     file = models.FileField(upload_to='submissions/%Y/%m/', blank=True, null=True, verbose_name="Archivo Entregado")
     text_content = models.TextField(blank=True, verbose_name="Respuesta de Texto")
     submitted_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Entrega")
+    attempts = models.PositiveIntegerField(default=1, verbose_name="Intentos realizados")
     # Calificación
     score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Calificación")
     feedback = models.TextField(blank=True, verbose_name="Retroalimentación del Docente")

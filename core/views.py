@@ -1565,7 +1565,8 @@ def student_assignment_detail(request, assignment_id):
         is_past_due = True
         can_submit = False
     if submission:
-        can_submit = False  # Ya entregó
+        if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
+            can_submit = False
     
     form = StudentSubmissionForm()
     
@@ -1594,9 +1595,11 @@ def student_submit_assignment(request, assignment_id):
         module__course__students=request.user
     )
     
-    # No permitir si ya entregó
-    if Submission.objects.filter(assignment=assignment, student=request.user).exists():
-        messages.warning(request, 'Ya has realizado una entrega para esta actividad.')
+    sub = Submission.objects.filter(assignment=assignment, student=request.user).first()
+    
+    # No permitir si alcanzó el límite de intentos
+    if sub and assignment.max_attempts > 0 and sub.attempts >= assignment.max_attempts:
+        messages.warning(request, 'Has alcanzado el límite de intentos para esta actividad.')
         return redirect('student_assignment_detail', assignment_id=assignment_id)
     
     # No permitir si pasó la fecha
@@ -1605,15 +1608,24 @@ def student_submit_assignment(request, assignment_id):
         return redirect('student_assignment_detail', assignment_id=assignment_id)
     
     if request.method == 'POST':
-        form = StudentSubmissionForm(request.POST, request.FILES)
+        form = StudentSubmissionForm(request.POST, request.FILES, instance=sub)
         if form.is_valid():
-            sub = form.save(commit=False)
-            sub.assignment = assignment
-            sub.student = request.user
-            sub.save()
+            submission_instance = form.save(commit=False)
+            if not sub:
+                submission_instance.assignment = assignment
+                submission_instance.student = request.user
+                submission_instance.attempts = 1
+            else:
+                submission_instance.attempts = sub.attempts + 1
+                submission_instance.score = None
+                submission_instance.graded_at = None
+                # Borrar archivos anteriores
+                submission_instance.files.all().delete()
+            
+            submission_instance.save()
             
             for f in request.FILES.getlist('file'):
-                SubmissionFile.objects.create(submission=sub, file=f)
+                SubmissionFile.objects.create(submission=submission_instance, file=f)
                 
             messages.success(request, '¡Entrega realizada con éxito!')
             
@@ -1652,7 +1664,8 @@ def student_evaluation_detail(request, assignment_id):
         is_past_due = True
         can_submit = False
     if submission:
-        can_submit = False
+        if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
+            can_submit = False
     
     form = StudentSubmissionForm()
     
