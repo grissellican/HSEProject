@@ -101,8 +101,10 @@ DATABASES = {
 
 # Si hay una URL de base de datos en las variables de entorno (como en Render/Aiven), la usamos
 if os.environ.get('DATABASE_URL'):
+    # Aiven da la URL con ?ssl-mode=REQUIRED, pero el driver de MySQL en Python espera ssl_mode
+    db_url = os.environ.get('DATABASE_URL').replace('ssl-mode=', 'ssl_mode=')
     DATABASES['default'] = dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=db_url,
         conn_max_age=600,
         conn_health_checks=True,
     )
