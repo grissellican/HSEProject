@@ -103,8 +103,8 @@ DATABASES = {
 if os.environ.get('DATABASE_URL'):
     # Aiven da la URL con ?ssl-mode=REQUIRED, pero el driver de MySQL en Python espera ssl_mode
     db_url = os.environ.get('DATABASE_URL').replace('ssl-mode=', 'ssl_mode=')
-    DATABASES['default'] = dj_database_url.config(
-        default=db_url,
+    DATABASES['default'] = dj_database_url.parse(
+        db_url,
         conn_max_age=600,
         conn_health_checks=True,
     )
