@@ -7,19 +7,8 @@
     <title>Perfil del Docente - HSE Academy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- TinyMCE CDN (Versión comunitaria libre de API Keys) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
-    <script>
-        tinymce.init({
-            selector: '.tinymce-editor',
-            plugins: 'advlist autolink lists link image charmap preview anchor pagebreak',
-            toolbar_mode: 'floating',
-            toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat',
-            language: 'es',
-            menubar: false,
-            height: 400
-        });
-    </script>
+    {{ form.media }}
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden font-sans text-gray-900">
 

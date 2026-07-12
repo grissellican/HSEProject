@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900 font-sans">
     {% include 'dashboards/student/_student_sidebar.html' %}
@@ -34,7 +35,7 @@
                 <!-- Main Content Column -->
                 <div class="flex-1">
 
-                    {% if messages %}{% for message in messages %}<div class="mb-6 p-4 bg-[#38657f]/10 border-l-4 border-[#38657f] text-sm font-semibold text-[#38657f] flex items-center gap-3 rounded-r-md"><i class="fa-solid fa-circle-check text-lg"></i>{{ message }}</div>{% endfor %}{% endif %}
+                    {% if messages %}{% for message in messages %}<div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#38657f]/10 border-[#38657f] text-[#38657f]{% endif %}"><i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %} text-lg"></i>{{ message }}</div>{% endfor %}{% endif %}
 
                     <!-- Assignment info card -->
                     <div class="bg-white rounded-md border border-gray-200 shadow-sm mb-6" style="border-top: 3px solid #38657f;">
@@ -48,7 +49,7 @@
                                     <p class="text-lg font-bold text-gray-800">{{ assignment.max_score }} <span class="text-sm font-normal text-gray-500">pts</span></p>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fecha Límite</p>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fecha de entrega</p>
                                     <p class="text-sm font-bold text-gray-800 mt-1">{{ assignment.due_date|date:"d M Y, H:i"|default:"Sin límite" }}</p>
                                 </div>
                                 <div>
@@ -77,7 +78,8 @@
                                 {% endif %}
 
                                 {% if assignment.attached_file %}
-                                <div class="{% if assignment.description %}pt-4 border-t border-gray-200{% endif %}">
+                                <div class="{% if assignment.description or assignment.delivery_specifications %}pt-4 border-t border-gray-200{% endif %}">
+                                    <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">Documento de guía</h3>
                                     <a href="{{ assignment.attached_file.url }}" download class="inline-flex items-center text-[#38657f] hover:text-[#2c5065] text-sm font-semibold transition-colors">
                                         <i class="fa-solid fa-download mr-1.5"></i> Descargar Documento
                                     </a>
@@ -137,29 +139,37 @@
                         <div id="eval-form-container">
                             <form method="POST" action="{% url 'student_submit_assignment' assignment_id=assignment.id %}" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-md p-8 text-center cursor-pointer hover:border-[#38657f] hover:bg-[#38657f]/5 transition-all mb-6"
+                                <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer hover:border-[#38657f] hover:bg-[#38657f]/5 transition-all mb-4"
                                      onclick="document.getElementById('dropzone-file-input').click()">
                                     <div id="dropzone-icon">
-                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-3"></i>
-                                        <p class="text-sm font-semibold text-gray-600 mb-1">Arrastra tu archivo aquí o haz clic</p>
-                                        <p class="text-xs text-gray-400">Archivos PDF, DOC, ZIP, imágenes</p>
+                                        <i class="fa-solid fa-cloud-arrow-up text-xl text-gray-400 mb-2"></i>
+                                        <p class="text-xs font-semibold text-gray-600 mb-1">Arrastra tus archivos aquí o haz clic</p>
+                                        <p class="text-[10px] text-gray-400">Archivos PDF, DOC, ZIP, imágenes</p>
                                     </div>
                                     <div id="dropzone-file-name" class="hidden">
-                                        <i class="fa-solid fa-file-circle-check text-3xl text-[#38657f] mb-3"></i>
-                                        <p class="text-sm font-bold text-gray-800" id="selected-file-name"></p>
+                                        <i class="fa-solid fa-file-circle-check text-xl text-[#38657f] mb-2"></i>
+                                        <p class="text-xs font-bold text-gray-800" id="selected-file-name"></p>
                                     </div>
                                     {{ form.file }}
                                 </div>
-                                <div class="mb-6">
-                                    <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Comentario Adicional (Opcional)</label>
+                                <div id="selected-files-list" class="mb-4 space-y-2 empty:hidden"></div>
+                                <div class="mb-4">
+                                    <label class="block text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1">Comentario Adicional (Opcional)</label>
                                     {{ form.text_content }}
                                 </div>
                                 <div class="flex justify-end">
-                                    <button type="submit" class="px-6 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">
+                                    <button type="submit" class="px-6 py-2 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">
                                         Enviar Entrega
                                     </button>
                                 </div>
                             </form>
+                            
+                            {% if assignment.evaluation_criteria %}
+                            <div class="mt-8 pt-6 border-t border-gray-100">
+                                <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">Criterios de Evaluación</h3>
+                                <div class="text-gray-700 text-sm ck-content max-w-none bg-gray-50 p-4 rounded border border-gray-100">{{ assignment.evaluation_criteria|safe }}</div>
+                            </div>
+                            {% endif %}
                         </div>
                         <div id="eval-timeout-msg" class="hidden text-center py-6">
                             <i class="fa-solid fa-clock-rotate-left text-3xl text-red-500 mb-3"></i>
@@ -215,14 +225,18 @@
 
                         {% if submission %}
                         <div class="pt-4 border-t border-gray-100">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Archivo Entregado</p>
-                            {% if submission.file %}
-                            <a href="{{ submission.file.url }}" download class="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200 hover:border-[#38657f]/50 transition-colors group">
-                                <i class="fa-solid fa-file text-gray-400 group-hover:text-[#38657f]"></i>
-                                <span class="text-xs font-semibold text-gray-600 truncate w-full">{{ submission.file.name }}</span>
-                            </a>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Archivos Entregados</p>
+                            {% if submission.files.all %}
+                                <div class="space-y-2">
+                                {% for s_file in submission.files.all %}
+                                <a href="{{ s_file.file.url }}" download class="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200 hover:border-[#38657f]/50 transition-colors group">
+                                    <i class="fa-solid fa-file text-gray-400 group-hover:text-[#38657f]"></i>
+                                    <span class="text-xs font-semibold text-gray-600 truncate w-full">{{ s_file.file.name|cut:"submissions/" }}</span>
+                                </a>
+                                {% endfor %}
+                                </div>
                             {% else %}
-                            <p class="text-xs text-gray-500 italic">Sin archivo</p>
+                            <p class="text-xs text-gray-500 italic">Sin archivos adjuntos</p>
                             {% endif %}
                         </div>
                         {% endif %}
@@ -240,15 +254,80 @@
         const iconDiv = document.getElementById('dropzone-icon');
         const nameDiv = document.getElementById('dropzone-file-name');
         const nameLabel = document.getElementById('selected-file-name');
+        let allFiles = new DataTransfer();
+
+        function updateDropzoneUI() {
+            const listContainer = document.getElementById('selected-files-list');
+            if (listContainer) listContainer.innerHTML = '';
+
+            if (allFiles.files.length > 0) { 
+                iconDiv.classList.add('hidden'); 
+                nameDiv.classList.remove('hidden'); 
+                
+                let countText = allFiles.files.length === 1 ? '1 archivo seleccionado' : allFiles.files.length + ' archivos seleccionados';
+                nameLabel.innerHTML = countText + ' <span class="text-[10px] text-gray-500 block font-normal">(Haz clic para agregar más)</span>';
+                
+                if (listContainer) {
+                    for (let i = 0; i < allFiles.files.length; i++) {
+                        const file = allFiles.files[i];
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'flex items-center justify-between p-2 bg-gray-50 border border-gray-200 rounded text-sm';
+                        
+                        const fileName = document.createElement('span');
+                        fileName.className = 'text-gray-600 truncate font-semibold';
+                        fileName.textContent = file.name;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'text-red-500 hover:text-red-700 ml-2 focus:outline-none';
+                        removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                        removeBtn.onclick = function() { removeFile(i); };
+                        
+                        fileItem.appendChild(fileName);
+                        fileItem.appendChild(removeBtn);
+                        listContainer.appendChild(fileItem);
+                    }
+                }
+            } else {
+                iconDiv.classList.remove('hidden'); 
+                nameDiv.classList.add('hidden'); 
+            }
+        }
+
+        window.removeFile = function(index) {
+            let dt = new DataTransfer();
+            for (let i = 0; i < allFiles.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(allFiles.files[i]);
+                }
+            }
+            allFiles = dt;
+            if (fileInput) fileInput.files = allFiles.files;
+            updateDropzoneUI();
+        };
+
         if (fileInput) {
             fileInput.addEventListener('change', function() {
-                if (fileInput.files.length > 0) { iconDiv.classList.add('hidden'); nameDiv.classList.remove('hidden'); nameLabel.textContent = fileInput.files[0].name; }
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    allFiles.items.add(fileInput.files[i]);
+                }
+                fileInput.files = allFiles.files;
+                updateDropzoneUI();
             });
         }
         if (dropzone) {
             ['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, function(ev) { ev.preventDefault(); dropzone.classList.add('border-[#38657f]','bg-[#38657f]/5'); }));
             ['dragleave','drop'].forEach(e => dropzone.addEventListener(e, function(ev) { ev.preventDefault(); dropzone.classList.remove('border-[#38657f]','bg-[#38657f]/5'); }));
-            dropzone.addEventListener('drop', function(e) { e.preventDefault(); if(e.dataTransfer.files.length>0){fileInput.files=e.dataTransfer.files;fileInput.dispatchEvent(new Event('change'));} });
+            dropzone.addEventListener('drop', function(e) { 
+                e.preventDefault(); 
+                if(e.dataTransfer.files.length>0){
+                    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                        allFiles.items.add(e.dataTransfer.files[i]);
+                    }
+                    fileInput.files = allFiles.files;
+                    updateDropzoneUI();
+                } 
+            });
         }
         
         {% if assignment.due_date and can_submit and has_accepted %}

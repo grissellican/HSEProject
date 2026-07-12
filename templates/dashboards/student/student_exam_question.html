@@ -25,6 +25,7 @@
             border-color: #38657f;
         }
     </style>
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900 font-sans relative">
     
@@ -136,8 +137,9 @@
                                     <p class="text-sm font-bold text-gray-800" id="exam-selected-name"></p>
                                     <p class="text-xs text-gray-400 mt-2">Haz clic nuevamente para cambiar</p>
                                 </div>
-                                <input type="file" name="file_answer" id="exam-file-input" class="hidden" required>
+                                <input type="file" name="file_answer" id="exam-file-input" class="hidden" multiple required>
                             </div>
+                            <div id="exam-selected-files-list" class="mt-4 space-y-2 empty:hidden"></div>
                             {% endif %}
 
                             <div class="flex flex-col md:flex-row items-center justify-between pt-6 mt-8 border-t border-gray-100 gap-4">
@@ -169,23 +171,81 @@
         const fi = document.getElementById('exam-file-input');
         const dropzone = document.getElementById('dropzone');
         
+        let allFiles = new DataTransfer();
+
+        function updateExamDropzoneUI() {
+            const listContainer = document.getElementById('exam-selected-files-list');
+            if (listContainer) listContainer.innerHTML = '';
+
+            if (allFiles.files.length > 0) {
+                document.getElementById('exam-upload-icon').classList.add('hidden');
+                document.getElementById('exam-file-name').classList.remove('hidden');
+                
+                let countText = allFiles.files.length === 1 ? '1 archivo seleccionado' : allFiles.files.length + ' archivos seleccionados';
+                document.getElementById('exam-selected-name').innerHTML = countText + ' <span class="text-[10px] text-gray-500 block font-normal">(Haz clic para agregar más)</span>';
+                
+                if (listContainer) {
+                    for (let i = 0; i < allFiles.files.length; i++) {
+                        const file = allFiles.files[i];
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'flex items-center justify-between p-2 bg-gray-50 border border-gray-200 rounded text-sm';
+                        
+                        const fileName = document.createElement('span');
+                        fileName.className = 'text-gray-600 truncate font-semibold';
+                        fileName.textContent = file.name;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'text-red-500 hover:text-red-700 ml-2 focus:outline-none';
+                        removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                        removeBtn.onclick = function() { removeExamFile(i); };
+                        
+                        fileItem.appendChild(fileName);
+                        fileItem.appendChild(removeBtn);
+                        listContainer.appendChild(fileItem);
+                    }
+                }
+            } else {
+                document.getElementById('exam-upload-icon').classList.remove('hidden');
+                document.getElementById('exam-file-name').classList.add('hidden');
+            }
+        }
+
+        window.removeExamFile = function(index) {
+            let dt = new DataTransfer();
+            for (let i = 0; i < allFiles.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(allFiles.files[i]);
+                }
+            }
+            allFiles = dt;
+            if (fi) fi.files = allFiles.files;
+            updateExamDropzoneUI();
+        };
+
         if (fi) {
             fi.addEventListener('change', function() {
-                if (fi.files.length > 0) {
-                    document.getElementById('exam-upload-icon').classList.add('hidden');
-                    document.getElementById('exam-file-name').classList.remove('hidden');
-                    document.getElementById('exam-selected-name').textContent = fi.files[0].name;
-                } else {
-                    document.getElementById('exam-upload-icon').classList.remove('hidden');
-                    document.getElementById('exam-file-name').classList.add('hidden');
+                for (let i = 0; i < fi.files.length; i++) {
+                    allFiles.items.add(fi.files[i]);
                 }
+                fi.files = allFiles.files;
+                updateExamDropzoneUI();
             });
         }
         
         if (dropzone) {
             ['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, function(ev) { ev.preventDefault(); dropzone.classList.add('border-[#38657f]','bg-[#38657f]/5'); }));
             ['dragleave','drop'].forEach(e => dropzone.addEventListener(e, function(ev) { ev.preventDefault(); dropzone.classList.remove('border-[#38657f]','bg-[#38657f]/5'); }));
-            dropzone.addEventListener('drop', function(e) { e.preventDefault(); if(e.dataTransfer.files.length>0){fi.files=e.dataTransfer.files;fi.dispatchEvent(new Event('change'));} });
+            dropzone.addEventListener('drop', function(e) { 
+                e.preventDefault(); 
+                if(e.dataTransfer.files.length>0){
+                    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                        allFiles.items.add(e.dataTransfer.files[i]);
+                    }
+                    fi.files = allFiles.files;
+                    updateExamDropzoneUI();
+                } 
+            });
         }
         
         {% if due_date_iso %}

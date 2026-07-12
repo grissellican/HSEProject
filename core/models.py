@@ -151,10 +151,12 @@ class Assignment(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assignments', verbose_name="Módulo")
     title = models.CharField(max_length=200, verbose_name="Título")
     description = models.TextField(blank=True, verbose_name="Instrucciones")
+    delivery_specifications = models.TextField(blank=True, verbose_name="Especificaciones de Entrega")
+    evaluation_criteria = models.TextField(blank=True, verbose_name="Criterios de Evaluación")
     attached_file = models.FileField(upload_to='assignments/docs/', blank=True, null=True, verbose_name="Documento Guía")
     assignment_type = models.CharField(max_length=30, choices=ASSIGNMENT_TYPES, default='tarea', verbose_name="Tipo")
     due_date = models.DateTimeField(null=True, blank=True, verbose_name="Fecha Límite de Entrega")
-    max_score = models.DecimalField(max_digits=5, decimal_places=2, default=100, verbose_name="Puntaje Máximo")
+    max_score = models.DecimalField(max_digits=5, decimal_places=2, default=20, verbose_name="Puntaje Máximo")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
 
@@ -192,6 +194,15 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.student.first_name} - {self.assignment.title}"
+
+
+class SubmissionFile(models.Model):
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='files', verbose_name="Entrega")
+    file = models.FileField(upload_to='submissions/%Y/%m/', verbose_name="Archivo")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Archivo de {self.submission.student.first_name} para {self.submission.assignment.title}"
 
 
 class LiveSession(models.Model):
@@ -316,6 +327,15 @@ class QuestionResponse(models.Model):
 
     def __str__(self):
         return f"Respuesta a {self.question.id} por {self.submission.student.first_name}"
+
+
+class QuestionResponseFile(models.Model):
+    response = models.ForeignKey(QuestionResponse, on_delete=models.CASCADE, related_name='files', verbose_name="Respuesta")
+    file = models.FileField(upload_to='submissions/exam_files/', verbose_name="Archivo Adjunto")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Archivo para pregunta {self.response.question.id}"
 
 
 class ExamAttempt(models.Model):

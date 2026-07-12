@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Evaluación - {{ course.title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
 
@@ -48,7 +50,7 @@
                     </div>
                     
                     {% if course.evaluation_system_description %}
-                    <div class="prose prose-base max-w-none text-gray-700 leading-relaxed mb-10">
+                    <div class="ck-content max-w-none text-gray-700 leading-relaxed mb-10 text-base">
                         {{ course.evaluation_system_description|safe }}
                     </div>
                     {% endif %}
@@ -56,7 +58,7 @@
                     {% if evaluation_images %}
                         <div class="grid grid-cols-1 gap-10">
                             {% for img in evaluation_images %}
-                            <div class="border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-white group">
+                            <div class="border border-gray-100 rounded-none overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-white group">
                                 <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100 flex items-center">
                                     <div class="w-8 h-8 rounded-full bg-[#38657f]/10 flex items-center justify-center mr-3 group-hover:bg-[#38657f]/20 transition-colors">
                                         <i class="fa-solid fa-image text-[#38657f] text-sm"></i>
@@ -64,7 +66,7 @@
                                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">{{ img.title }}</h3>
                                 </div>
                                 <div class="p-8 bg-[#f8fafc] flex justify-center items-center">
-                                    <img src="{{ img.image.url }}" alt="{{ img.title }}" class="max-w-full h-auto rounded-lg shadow-sm border border-gray-200 group-hover:shadow-md transition-shadow duration-300">
+                                    <img src="{{ img.image.url }}" alt="{{ img.title }}" class="max-w-2xl w-full h-auto shadow-sm border border-gray-200 group-hover:shadow-md transition-shadow duration-300">
                                 </div>
                             </div>
                             {% endfor %}

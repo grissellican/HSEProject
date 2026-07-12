@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
     {% include 'dashboards/student/_student_sidebar.html' %}
@@ -60,9 +61,9 @@
                                         <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]">{{ sub.file.name|cut:"submissions/" }}</span>
                                     </div>
                                 </td>
-                                <td class="px-5 py-3.5 text-sm text-gray-600">{{ sub.assignment.title }}</td>
-                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.assignment.module.course.title }}</td>
-                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.submitted_at|date:"d/m/Y H:i" }}</td>
+                                <td class="px-5 py-3.5 text-sm text-gray-600">{{ sub.submission.assignment.title }}</td>
+                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.submission.assignment.module.course.title }}</td>
+                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.uploaded_at|date:"d/m/Y H:i" }}</td>
                                 <td class="px-5 py-3.5 text-center">
                                     <a href="{{ sub.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#38657f]/8 text-[#38657f] hover:bg-[#38657f]/15 transition-colors">
                                         <i class="fa-solid fa-download text-sm"></i>
@@ -96,13 +97,13 @@
                                         <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
                                             <i class="fa-solid fa-file text-indigo-500 text-sm"></i>
                                         </div>
-                                        <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]">{{ qr.file_answer.name|cut:"submissions/exam_files/" }}</span>
+                                        <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]">{{ qr.file.name|cut:"submissions/exam_files/" }}</span>
                                     </div>
                                 </td>
-                                <td class="px-5 py-3.5 text-sm text-gray-600">{{ qr.submission.assignment.title }}</td>
-                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ qr.submission.assignment.module.course.title }}</td>
+                                <td class="px-5 py-3.5 text-sm text-gray-600">{{ qr.response.submission.assignment.title }}</td>
+                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ qr.response.submission.assignment.module.course.title }}</td>
                                 <td class="px-5 py-3.5 text-center">
-                                    <a href="{{ qr.file_answer.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition-colors">
+                                    <a href="{{ qr.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition-colors">
                                         <i class="fa-solid fa-download text-sm"></i>
                                     </a>
                                 </td>

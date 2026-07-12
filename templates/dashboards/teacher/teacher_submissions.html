@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
 
@@ -68,9 +70,24 @@
                             </div>
                             <h3 class="text-lg font-bold text-gray-800">{{ assignment.title }}</h3>
                             {% if assignment.description %}
-                                <div class="text-sm text-gray-500 mt-2 prose prose-sm max-w-none">{{ assignment.description|safe }}</div>
+                                <div class="mt-4">
+                                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Instrucciones</h4>
+                                    <div class="text-sm text-gray-700 ck-content max-w-none">{{ assignment.description|safe }}</div>
+                                </div>
                             {% endif %}
-                            {% if assignment.due_date %}<p class="text-[10px] text-gray-400 mt-1.5"><i class="fa-solid fa-clock mr-1"></i>Fecha límite: {{ assignment.due_date|date:"d/m/Y H:i" }}</p>{% endif %}
+                            {% if assignment.delivery_specifications %}
+                                <div class="mt-4">
+                                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Especificaciones de Entrega</h4>
+                                    <div class="text-sm text-gray-700 ck-content max-w-none">{{ assignment.delivery_specifications|safe }}</div>
+                                </div>
+                            {% endif %}
+                            {% if assignment.evaluation_criteria %}
+                                <div class="mt-4">
+                                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Criterios de Evaluación</h4>
+                                    <div class="text-sm text-gray-700 ck-content max-w-none">{{ assignment.evaluation_criteria|safe }}</div>
+                                </div>
+                            {% endif %}
+                            {% if assignment.due_date %}<p class="text-[10px] text-gray-400 mt-3"><i class="fa-solid fa-clock mr-1"></i>Fecha límite: {{ assignment.due_date|date:"d/m/Y H:i" }}</p>{% endif %}
                         </div>
                     </div>
                 </div>
@@ -118,8 +135,14 @@
                                     <td class="px-5 py-3.5 font-semibold text-gray-800 text-base">{{ sub.student.first_name }} {{ sub.student.lastname }}</td>
                                     <td class="px-5 py-3.5 text-sm text-gray-500">{{ sub.submitted_at|date:"d/m/Y H:i" }}</td>
                                     <td class="px-5 py-3.5">
-                                        {% if sub.file %}
-                                            <a href="{{ sub.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] text-sm font-semibold"><i class="fa-solid fa-download mr-1"></i>Descargar</a>
+                                        {% if sub.files.all %}
+                                            <div class="flex flex-col gap-1">
+                                            {% for s_file in sub.files.all %}
+                                                <a href="{{ s_file.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] text-sm font-semibold truncate max-w-[150px]" title="{{ s_file.file.name|cut:'submissions/' }}">
+                                                    <i class="fa-solid fa-download mr-1"></i>{{ s_file.file.name|cut:'submissions/'|truncatechars:20 }}
+                                                </a>
+                                            {% endfor %}
+                                            </div>
                                         {% elif sub.text_content %}
                                             <span class="text-sm text-gray-500" title="{{ sub.text_content }}"><i class="fa-solid fa-comment mr-1"></i>Texto</span>
                                         {% else %}

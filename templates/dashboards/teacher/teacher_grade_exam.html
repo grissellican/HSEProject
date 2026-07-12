@@ -7,6 +7,7 @@
     <title>Calificar Examen - {{ submission.student.first_name }} - HSE Academy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="bg-gray-50/50 min-h-full py-10 px-4 sm:px-6 lg:px-8">
 
@@ -74,10 +75,14 @@
                                 </div>
 
                             {% elif resp.question.question_type == 'file' %}
-                                {% if resp.file_answer %}
-                                    <a href="{{ resp.file_answer.url }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-base font-semibold text-[#2b3494] hover:bg-gray-50">
-                                        <i class="fa-solid fa-download mr-2"></i> Descargar Archivo Entregado
+                                {% if resp.files.all %}
+                                    <div class="space-y-2">
+                                    {% for r_file in resp.files.all %}
+                                    <a href="{{ r_file.file.url }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-base font-semibold text-[#2b3494] hover:bg-gray-50 w-full sm:w-auto">
+                                        <i class="fa-solid fa-download mr-2"></i> Descargar archivo ({{ r_file.file.name|cut:"submissions/exam_files/" }})
                                     </a>
+                                    {% endfor %}
+                                    </div>
                                 {% else %}
                                     <p class="text-base text-gray-400 italic">No adjuntó archivo.</p>
                                 {% endif %}

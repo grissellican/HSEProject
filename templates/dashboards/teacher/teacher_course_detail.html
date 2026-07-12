@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
 
@@ -577,11 +578,14 @@ document.querySelectorAll('.module-header').forEach(function(header) {
         var chevron = document.getElementById('chevron-' + moduleId);
         if (!body) return;
         if (body.classList.contains('collapsed')) {
+            body.style.overflow = 'hidden';
             body.style.maxHeight = '2000px';
             body.style.opacity = '1';
             body.classList.remove('collapsed');
             if (chevron) chevron.classList.remove('rotated');
+            setTimeout(() => { if (!body.classList.contains('collapsed')) body.style.overflow = 'visible'; }, 300);
         } else {
+            body.style.overflow = 'hidden';
             body.style.maxHeight = '0';
             body.style.opacity = '0';
             body.classList.add('collapsed');
@@ -601,6 +605,7 @@ function toggleAllModules() {
         if (btnIcon) { btnIcon.classList.remove('fa-compress'); btnIcon.classList.add('fa-expand'); }
         
         document.querySelectorAll('.module-body').forEach(function(body) {
+            body.style.overflow = 'hidden';
             body.style.maxHeight = '0';
             body.style.opacity = '0';
             body.classList.add('collapsed');
@@ -613,9 +618,11 @@ function toggleAllModules() {
         if (btnIcon) { btnIcon.classList.remove('fa-expand'); btnIcon.classList.add('fa-compress'); }
         
         document.querySelectorAll('.module-body').forEach(function(body) {
+            body.style.overflow = 'hidden';
             body.style.maxHeight = '2000px';
             body.style.opacity = '1';
             body.classList.remove('collapsed');
+            setTimeout(() => { if (!body.classList.contains('collapsed')) body.style.overflow = 'visible'; }, 300);
         });
         document.querySelectorAll('.chevron-icon').forEach(function(icon) {
             icon.classList.remove('rotated');
@@ -639,6 +646,12 @@ document.querySelectorAll('.dot-menu-btn').forEach(function(btn) {
 document.addEventListener('click', function() {
     document.querySelectorAll('.dot-menu.open').forEach(function(m) {
         m.classList.remove('open');
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.module-body:not(.collapsed)').forEach(body => {
+        body.style.overflow = 'visible';
     });
 });
 </script>

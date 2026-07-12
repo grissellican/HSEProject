@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.db.models import Avg, Count, Q
-from .models import Course, Module, Material, Assignment, Submission, LiveSession, Question, Choice, QuestionResponse, ExamAttempt, ModuleAnnouncement, ModuleLink, ModuleForum, ForumReply
+from .models import Course, Module, Material, Assignment, Submission, LiveSession, Question, Choice, QuestionResponse, ExamAttempt, ModuleAnnouncement, ModuleLink, ModuleForum, ForumReply, SubmissionFile, QuestionResponseFile
 from .forms import UserForm, CourseForm, ModuleForm, MaterialForm, AssignmentForm, GradeForm, LiveSessionForm, TeacherProfileForm, StudentSubmissionForm
 
 User = get_user_model()
@@ -766,6 +766,9 @@ def teacher_grade_exam_submission(request, submission):
                 if score_str:
                     try:
                         resp.score = float(score_str)
+                        if resp.score > float(resp.question.points):
+                            messages.warning(request, f'La puntuación ingresada para una pregunta excedía el máximo ({resp.question.points}) y fue ajustada.')
+                            resp.score = float(resp.question.points)
                     except ValueError:
                         resp.score = 0
                 resp.feedback = feedback_str
@@ -1341,18 +1344,16 @@ def student_pending(request):
 # --- MIS ARCHIVOS ---
 @_student_required
 def student_files(request):
-    submissions_with_files = Submission.objects.filter(
-        student=request.user,
-        file__isnull=False
-    ).exclude(file='').select_related('assignment__module__course').order_by('-submitted_at')
+    submissions_with_files = SubmissionFile.objects.filter(
+        submission__student=request.user
+    ).select_related('submission__assignment__module__course').order_by('-uploaded_at')
     
     # Also include exam file responses
-    exam_files = QuestionResponse.objects.filter(
-        submission__student=request.user,
-        file_answer__isnull=False
-    ).exclude(file_answer='').select_related(
-        'submission__assignment__module__course', 'question'
-    ).order_by('-submission__submitted_at')
+    exam_files = QuestionResponseFile.objects.filter(
+        response__submission__student=request.user
+    ).select_related(
+        'response__submission__assignment__module__course', 'response__question'
+    ).order_by('-uploaded_at')
     
     context = {
         'submissions_with_files': submissions_with_files,
@@ -1610,6 +1611,10 @@ def student_submit_assignment(request, assignment_id):
             sub.assignment = assignment
             sub.student = request.user
             sub.save()
+            
+            for f in request.FILES.getlist('file'):
+                SubmissionFile.objects.create(submission=sub, file=f)
+                
             messages.success(request, '¡Entrega realizada con éxito!')
             
             # Redirect based on assignment type
@@ -1617,6 +1622,8 @@ def student_submit_assignment(request, assignment_id):
                 return redirect('student_assignment_detail', assignment_id=assignment_id)
             else:
                 return redirect('student_evaluation_detail', assignment_id=assignment_id)
+        else:
+            print("Form errors:", form.errors)
     
     messages.error(request, 'Error al procesar la entrega.')
     return redirect('student_assignment_detail', assignment_id=assignment_id)
@@ -1804,8 +1811,10 @@ def student_exam_question(request, assignment_id, q):
         elif question.question_type == 'text':
             response.text_answer = request.POST.get('text_answer', '')
         elif question.question_type == 'file':
-            if 'file_answer' in request.FILES:
-                response.file_answer = request.FILES['file_answer']
+            response.save() # save first to get id
+            files = request.FILES.getlist('file_answer')
+            for f in files:
+                QuestionResponseFile.objects.create(response=response, file=f)
         
         response.save()
         

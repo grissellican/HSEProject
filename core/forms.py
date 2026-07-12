@@ -31,10 +31,7 @@ class TeacherProfileForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={
                 'class': 'w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#38657f]/10 file:text-[#38657f] hover:file:bg-[#38657f]/20 cursor-pointer'
             }),
-            'presentation': forms.Textarea(attrs={
-                'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#38657f] focus:ring-1 focus:ring-[#38657f] text-sm tinymce-editor',
-                'rows': 15
-            }),
+            'presentation': CKEditor5Widget(attrs={'class': 'django_ckeditor_5'}, config_name='extends'),
             'show_phone': forms.CheckboxInput(attrs={
                 'class': 'rounded border-gray-300 text-[#38657f] focus:ring-[#38657f] h-5 w-5'
             }),
@@ -152,10 +149,12 @@ class MaterialForm(forms.ModelForm):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['title', 'description', 'attached_file', 'assignment_type', 'due_date', 'max_score', 'is_visible']
+        fields = ['title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'assignment_type', 'due_date', 'max_score', 'is_visible']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Análisis de Riesgos Laborales'}),
-            'description': CKEditor5Widget(config_name='default'),
+            'description': CKEditor5Widget(config_name='extends'),
+            'delivery_specifications': CKEditor5Widget(config_name='extends'),
+            'evaluation_criteria': CKEditor5Widget(config_name='extends'),
             'attached_file': forms.ClearableFileInput(attrs={'class': _input_cls}),
             'assignment_type': forms.Select(attrs={'class': _input_cls}),
             'due_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
@@ -177,6 +176,15 @@ class GradeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['score'].widget.attrs['max'] = max_score
         self.fields['score'].label = f"Calificación (máx. {max_score})"
+        self.max_score_val = max_score
+
+    def clean_score(self):
+        score = self.cleaned_data.get('score')
+        if score is not None and self.max_score_val is not None:
+            if score > float(self.max_score_val):
+                from django.core.exceptions import ValidationError
+                raise ValidationError(f"La calificación no puede ser mayor a {self.max_score_val}.")
+        return score
 
 
 class LiveSessionForm(forms.ModelForm):
@@ -286,18 +294,39 @@ class ExamTextAnswerForm(forms.Form):
         label=""
     )
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def to_python(self, data):
+        if not data:
+            return []
+        return data
+    
+    def clean(self, data, initial=None):
+        if not data and self.required:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(self.error_messages['required'], code='required')
+        return data
+
 # --- FORMULARIOS DEL ESTUDIANTE ---
 
 class StudentSubmissionForm(forms.ModelForm):
     """Formulario para que el estudiante suba su entrega (archivo + comentario)."""
+    file = MultipleFileField(
+        widget=MultipleFileInput(attrs={
+            'class': 'hidden',
+            'id': 'dropzone-file-input',
+            'multiple': True,
+        }),
+        required=False,
+        label='Archivo de Entrega'
+    )
+    
     class Meta:
         model = Submission
-        fields = ['file', 'text_content']
+        fields = ['text_content']
         widgets = {
-            'file': forms.ClearableFileInput(attrs={
-                'class': 'hidden',
-                'id': 'dropzone-file-input',
-            }),
             'text_content': forms.Textarea(attrs={
                 'class': 'w-full rounded-xl border border-gray-300 px-4 py-3 bg-gray-50 focus:border-[#38657f] focus:ring-1 focus:ring-[#38657f] text-sm',
                 'rows': 4,
@@ -305,6 +334,5 @@ class StudentSubmissionForm(forms.ModelForm):
             }),
         }
         labels = {
-            'file': 'Archivo de Entrega',
             'text_content': 'Comentario de Entrega',
         }

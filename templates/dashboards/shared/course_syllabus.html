@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sílabo - {{ course.title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
 </head>
 <body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
 
@@ -48,7 +50,7 @@
                 {% if course.capacities %}
                 <div class="mb-12">
                     <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Capacidades del Curso</h2>
-                    <div class="prose max-w-none text-gray-700 leading-relaxed text-base prose-ul:list-disc prose-ol:list-decimal prose-li:my-1">
+                    <div class="ck-content max-w-none text-gray-700 leading-relaxed text-base">
                         {{ course.capacities|safe }}
                     </div>
                 </div>
@@ -59,7 +61,7 @@
                     {% if course.syllabus_introduction %}
                     <div class="mb-12">
                         <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Introducción</h2>
-                        <div class="prose max-w-none text-gray-700 leading-relaxed text-base">
+                        <div class="ck-content max-w-none text-gray-700 leading-relaxed text-base">
                             {{ course.syllabus_introduction|safe }}
                         </div>
                     </div>
@@ -69,7 +71,7 @@
                     <div class="mb-12">
                         <h2 class="text-2xl font-normal text-[#38657f] mb-6 border-b border-gray-200 pb-3">Objetivos Específicos</h2>
                         <!-- Respetamos el formato original del editor -->
-                        <div class="prose max-w-none text-gray-700 leading-relaxed text-base">
+                        <div class="ck-content max-w-none text-gray-700 leading-relaxed text-base">
                             {{ course.syllabus_objectives|safe }}
                         </div>
                     </div>
