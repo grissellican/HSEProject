@@ -1497,9 +1497,16 @@ def student_forum_detail(request, forum_id):
     else:
         form = ForumReplyForm()
         
+    can_view_replies = True
+    if forum.forum_type == 'cerrado':
+        has_participated = forum.replies.filter(author=request.user).exists()
+        if not has_participated:
+            can_view_replies = False
+            
     context = {
         'forum': forum,
         'replies': forum.replies.filter(parent__isnull=True).order_by('created_at').prefetch_related('nested_replies'),
+        'can_view_replies': can_view_replies,
         'form': form,
         'course': forum.module.course,
         'module': forum.module,

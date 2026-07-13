@@ -271,7 +271,6 @@ class LiveSession(models.Model):
         import datetime
         now = timezone.localtime(timezone.now())
         
-        # If there's an end_time, use that. Otherwise assume 1 hour duration.
         end_t = self.end_time if self.end_time else (
             datetime.datetime.combine(datetime.date.today(), self.start_time) + datetime.timedelta(hours=1)
         ).time()
@@ -389,6 +388,11 @@ class ModuleForum(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='forums', verbose_name="Módulo")
     title = models.CharField(max_length=200, verbose_name="Título del Foro")
     content = models.TextField(verbose_name="Contenido del Foro")
+    FORUM_TYPES = (
+        ('abierto', 'Foro Abierto'),
+        ('cerrado', 'Foro Cerrado'),
+    )
+    forum_type = models.CharField(max_length=20, choices=FORUM_TYPES, default='abierto', verbose_name="Tipo de Foro", help_text="En foros cerrados, el alumno debe responder primero para ver otras respuestas.")
     start_date = models.DateTimeField(verbose_name="Fecha de Inicio")
     end_date = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Cierre")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")

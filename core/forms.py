@@ -271,10 +271,11 @@ class LinkForm(forms.ModelForm):
 class ForumForm(forms.ModelForm):
     class Meta:
         model = ModuleForum
-        fields = ['title', 'content', 'start_date', 'end_date', 'is_visible']
+        fields = ['title', 'content', 'forum_type', 'start_date', 'end_date', 'is_visible']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Título del foro...'}),
             'content': CKEditor5Widget(attrs={'class': 'django_ckeditor_5'}, config_name='default'),
+            'forum_type': forms.Select(attrs={'class': _input_cls}),
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
