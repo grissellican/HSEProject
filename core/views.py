@@ -1323,7 +1323,7 @@ def student_grades(request):
 # --- ACTIVIDADES PENDIENTES ---
 @_student_required
 def student_pending(request):
-    pending = Assignment.objects.filter(
+    pending_assignments = Assignment.objects.filter(
         module__course__students=request.user,
         module__is_visible=True,
         is_visible=True,
@@ -1331,10 +1331,31 @@ def student_pending(request):
         Q(due_date__gte=timezone.now()) | Q(due_date__isnull=True)
     ).exclude(
         submissions__student=request.user
-    ).select_related('module__course').order_by('due_date')
+    ).select_related('module__course')
+    
+    pending_forums = ModuleForum.objects.filter(
+        module__course__students=request.user,
+        module__is_visible=True,
+        is_visible=True,
+    ).filter(
+        Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True)
+    ).exclude(
+        replies__author=request.user
+    ).select_related('module__course')
+    
+    pending_items = []
+    for asg in pending_assignments:
+        pending_items.append({'type': 'assignment', 'obj': asg, 'date': asg.due_date})
+    for forum in pending_forums:
+        pending_items.append({'type': 'forum', 'obj': forum, 'date': forum.end_date})
+        
+    import datetime
+    def sort_key(item):
+        return item['date'] if item['date'] else (timezone.now() + datetime.timedelta(days=3650))
+    pending_items.sort(key=sort_key)
     
     context = {
-        'pending': pending,
+        'pending_items': pending_items,
         'sidebar_active': 'pending',
     }
     context.update(_student_sidebar_context(request))
