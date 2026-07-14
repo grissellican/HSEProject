@@ -1498,7 +1498,7 @@ def student_forum_detail(request, forum_id):
         form = ForumReplyForm()
         
     can_view_replies = True
-    if forum.forum_type == 'cerrado':
+    if forum.forum_type == 'cerrado' and forum.is_active:
         has_participated = forum.replies.filter(author=request.user).exists()
         if not has_participated:
             can_view_replies = False
