@@ -101,6 +101,16 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     .dot-menu .danger { color: #ef4444; }
     .dot-menu .danger:hover { background: #fef2f2; }
 
+    /* CKEditor link fixes (Tailwind reset fix) */
+    .ck-content a {
+        color: var(--hse-blue);
+        text-decoration: underline;
+        font-weight: 500;
+    }
+    .ck-content a:hover {
+        color: var(--hse-blue-dk);
+    }
+
     /* Module item rows */
     .content-row {
         display: flex; align-items: center; justify-content: space-between;

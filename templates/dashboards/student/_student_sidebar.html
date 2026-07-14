@@ -73,6 +73,16 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
     /* Breadcrumbs */
     .breadcrumb-nav a { transition: color 0.15s; }
     .breadcrumb-nav a:hover { color: var(--hse-blue); }
+
+    /* CKEditor link fixes (Tailwind reset fix) */
+    .ck-content a {
+        color: var(--hse-blue);
+        text-decoration: underline;
+        font-weight: 500;
+    }
+    .ck-content a:hover {
+        color: var(--hse-blue-dk);
+    }
 </style>
 
 <!-- Mobile Overlay -->

@@ -201,7 +201,8 @@ CKEDITOR_5_CONFIGS = {
                 'tableColumn', 'tableRow', 'mergeTableCells',
                 'tableProperties', 'tableCellProperties'
             ]
-        }
+        },
+        'removePlugins': ['MediaEmbedToolbar', 'MediaEmbed', 'AutoMediaEmbed']
     },
     'extends': {
         'toolbar': [
@@ -236,7 +237,8 @@ CKEDITOR_5_CONFIGS = {
                 'tableColumn', 'tableRow', 'mergeTableCells',
                 'tableProperties', 'tableCellProperties'
             ]
-        }
+        },
+        'removePlugins': ['MediaEmbedToolbar', 'MediaEmbed', 'AutoMediaEmbed']
     }
 }
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = "any" # Permite a estudiantes subir imágenes
