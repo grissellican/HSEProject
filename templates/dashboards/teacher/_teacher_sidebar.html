@@ -227,6 +227,43 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
 </aside>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const contents = document.querySelectorAll('.ck-content');
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    
+    contents.forEach(content => {
+        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+        const nodesToReplace = [];
+        let node;
+        while (node = walker.nextNode()) {
+            if (node.parentNode && node.parentNode.tagName === 'A') continue;
+            if (node.nodeValue.match(urlRegex)) {
+                nodesToReplace.push(node);
+            }
+        }
+        
+        nodesToReplace.forEach(node => {
+            const fragment = document.createDocumentFragment();
+            const parts = node.nodeValue.split(urlRegex);
+            parts.forEach(part => {
+                if (part.match(urlRegex)) {
+                    const a = document.createElement('a');
+                    a.href = part;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.textContent = part;
+                    fragment.appendChild(a);
+                } else if (part) {
+                    fragment.appendChild(document.createTextNode(part));
+                }
+            });
+            node.parentNode.replaceChild(fragment, node);
+        });
+    });
+});
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('teacher-sidebar');
     const toggleBtn = document.getElementById('sidebar-toggle');
