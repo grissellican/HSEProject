@@ -19,6 +19,7 @@
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
                     <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
