@@ -48,9 +48,16 @@
                                 <p class="text-xs text-gray-400 mt-0.5">{{ material.get_material_type_display }} · {{ module.title }} · Subido {{ material.uploaded_at|date:"d/m/Y" }}</p>
                             </div>
                         </div>
-                        <a href="{{ material.file.url }}" download class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold rounded-lg hover:bg-[#2b5068] transition-colors shadow-sm flex-shrink-0">
-                            <i class="fa-solid fa-download mr-1.5"></i> Descargar
-                        </a>
+                        <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
+                            {% if material.file_basename %}
+                            <span class="hidden md:inline-block text-sm font-medium text-gray-500 truncate max-w-[200px]" title="{{ material.file_basename }}">
+                                {{ material.file_basename }}
+                            </span>
+                            {% endif %}
+                            <a href="{{ material.file.url }}" download class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold rounded-lg hover:bg-[#2b5068] transition-colors shadow-sm">
+                                <i class="fa-solid fa-download mr-1.5"></i> Descargar
+                            </a>
+                        </div>
                     </div>
 
                     {% if material.description %}
@@ -60,18 +67,40 @@
                     {% endif %}
                 </div>
 
-                <!-- PDF Viewer -->
-                {% if material.material_type == 'pdf' %}
+                <!-- Document Viewer -->
+                {% if material.material_type == 'pdf' or material.is_office_document %}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                    <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors" onclick="toggleViewer()">
                         <span class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-eye text-[#38657f]"></i> Vista Previa del Documento
                         </span>
+                        <button class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i id="viewer-icon" class="fa-solid fa-chevron-up transition-transform"></i>
+                        </button>
                     </div>
-                    <div class="w-full" style="height: 75vh;">
+                    <div id="document-viewer" class="w-full transition-all duration-300" style="height: 75vh;">
+                        {% if material.material_type == 'pdf' %}
                         <iframe src="{{ material.file.url }}" class="w-full h-full border-0" title="Vista previa PDF"></iframe>
+                        {% elif material.is_office_document %}
+                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ material.file.url|urlencode }}" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
+                        {% endif %}
                     </div>
                 </div>
+
+                <script>
+                    function toggleViewer() {
+                        const viewer = document.getElementById('document-viewer');
+                        const icon = document.getElementById('viewer-icon');
+                        viewer.classList.toggle('hidden');
+                        if (viewer.classList.contains('hidden')) {
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                        } else {
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                        }
+                    }
+                </script>
                 {% endif %}
 
             </div>

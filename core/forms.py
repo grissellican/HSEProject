@@ -156,12 +156,11 @@ class ModuleForm(forms.ModelForm):
 class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
-        fields = ['title', 'description', 'file', 'material_type', 'is_visible']
+        fields = ['title', 'description', 'file', 'is_visible']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Guía de Seguridad Industrial'}),
             'description': CKEditor5Widget(config_name='default'),
             'file': forms.ClearableFileInput(attrs={'class': _input_cls}),
-            'material_type': forms.Select(attrs={'class': _input_cls}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
         }
 

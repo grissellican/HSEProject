@@ -138,6 +138,33 @@ class Material(models.Model):
     class Meta:
         ordering = ['uploaded_at']
 
+    def save(self, *args, **kwargs):
+        if self.file and self.file.name:
+            import os
+            ext = os.path.splitext(self.file.name)[1].lower()
+            if ext == '.pdf':
+                self.material_type = 'pdf'
+            elif ext in ['.mp4', '.avi', '.mov', '.wmv', '.mkv']:
+                self.material_type = 'video'
+            else:
+                self.material_type = 'document'
+        super().save(*args, **kwargs)
+
+    @property
+    def file_basename(self):
+        import os
+        if self.file and self.file.name:
+            return os.path.basename(self.file.name)
+        return ''
+
+    @property
+    def is_office_document(self):
+        import os
+        if self.file and self.file.name:
+            ext = os.path.splitext(self.file.name)[1].lower()
+            return ext in ['.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx']
+        return False
+
     def __str__(self):
         return self.title
 
