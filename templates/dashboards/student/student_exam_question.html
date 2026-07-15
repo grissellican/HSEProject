@@ -144,17 +144,27 @@
                             {% endif %}
 
                             <div class="flex flex-col md:flex-row items-center justify-between pt-6 mt-8 border-t border-gray-100 gap-4">
+                                {% if not assignment.allow_backtracking %}
                                 <p class="text-sm text-gray-500 font-medium flex items-center gap-2">
                                     <i class="fa-solid fa-circle-info text-amber-500"></i> Revisa tu respuesta, no podrás retroceder.
                                 </p>
-                                <button type="submit" class="w-full md:w-auto px-6 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors shadow-sm">
+                                {% else %}
+                                <div>
+                                    {% if question_num > 1 %}
+                                    <a href="{% url 'student_exam_question' assignment_id=assignment.id q=question_num|add:'-2' %}" class="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors inline-flex items-center gap-2">
+                                        <i class="fa-solid fa-arrow-left"></i> Anterior
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                <button type="submit" class="w-full md:w-auto px-6 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors shadow-sm {% if assignment.allow_backtracking and question_num == 1 %}ml-auto{% endif %}">
                                     {% if question_num == total_questions %}
                                         <span class="flex items-center justify-center gap-2">
                                             <i class="fa-solid fa-flag-checkered"></i> Finalizar Examen
                                         </span>
                                     {% else %}
                                         <span class="flex items-center justify-center gap-2">
-                                            Siguiente Pregunta <i class="fa-solid fa-arrow-right"></i>
+                                            Siguiente <i class="fa-solid fa-arrow-right"></i>
                                         </span>
                                     {% endif %}
                                 </button>

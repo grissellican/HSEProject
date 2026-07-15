@@ -1882,6 +1882,13 @@ def student_exam_question(request, assignment_id, q):
     
     if q < 0 or q >= total:
         return redirect('student_exam_finish', assignment_id=assignment_id)
+        
+    # Enforce navigation rules
+    if q > attempt.current_question_index:
+        return redirect('student_exam_question', assignment_id=assignment_id, q=attempt.current_question_index)
+        
+    if not assignment.allow_backtracking and q < attempt.current_question_index:
+        return redirect('student_exam_question', assignment_id=assignment_id, q=attempt.current_question_index)
     
     question_id = q_order[q]
     question = get_object_or_404(Question, id=question_id, assignment=assignment)
@@ -1925,10 +1932,12 @@ def student_exam_question(request, assignment_id, q):
         
         response.save()
         
-        # Advance to next question
+        # Advance to next question only if we are at the furthest question
+        if q == attempt.current_question_index:
+            attempt.current_question_index = q + 1
+            attempt.save()
+        
         next_q = q + 1
-        attempt.current_question_index = next_q
-        attempt.save()
         
         if next_q >= total:
             return redirect('student_exam_finish', assignment_id=assignment_id)
