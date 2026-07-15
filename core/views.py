@@ -992,6 +992,11 @@ def admin_platform_settings(request):
             form.save()
             messages.success(request, "Configuración actualizada exitosamente.")
             return redirect('admin_platform_settings')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error}")
+            messages.error(request, "No se pudo actualizar la configuración. Revisa los errores.")
     else:
         form = PlatformSettingForm(instance=settings)
         
