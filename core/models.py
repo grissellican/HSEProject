@@ -373,6 +373,8 @@ class ExamAttempt(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True, verbose_name="Fin del Examen")
     current_question_index = models.PositiveIntegerField(default=0, verbose_name="Pregunta Actual")
     is_completed = models.BooleanField(default=False, verbose_name="Completado")
+    question_order = models.JSONField(default=list, blank=True, verbose_name="Orden de Preguntas")
+    choice_orders = models.JSONField(default=dict, blank=True, verbose_name="Orden de Opciones")
 
     def __str__(self):
         return f"Intento de {self.submission.student.first_name} — {self.submission.assignment.title}"

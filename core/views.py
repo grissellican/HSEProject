@@ -1838,9 +1838,24 @@ def student_exam_start(request, assignment_id):
             assignment=assignment,
             student=request.user
         )
+        
+        import random
+        # Mezclar preguntas
+        q_ids = list(assignment.questions.values_list('id', flat=True))
+        random.shuffle(q_ids)
+        
+        # Mezclar alternativas de preguntas de opción múltiple
+        c_orders = {}
+        for question in assignment.questions.filter(question_type='multiple_choice'):
+            c_ids = list(question.choices.values_list('id', flat=True))
+            random.shuffle(c_ids)
+            c_orders[str(question.id)] = c_ids
+            
         ExamAttempt.objects.create(
             submission=submission,
-            current_question_index=0
+            current_question_index=0,
+            question_order=q_ids,
+            choice_orders=c_orders
         )
         return redirect('student_exam_question', assignment_id=assignment_id, q=0)
     
@@ -1862,13 +1877,14 @@ def student_exam_question(request, assignment_id, q):
     if attempt.is_completed:
         return redirect('student_exam_detail', assignment_id=assignment_id)
     
-    questions = list(assignment.questions.all())
-    total = len(questions)
+    q_order = attempt.question_order
+    total = len(q_order)
     
     if q < 0 or q >= total:
         return redirect('student_exam_finish', assignment_id=assignment_id)
     
-    question = questions[q]
+    question_id = q_order[q]
+    question = get_object_or_404(Question, id=question_id, assignment=assignment)
     existing_response = QuestionResponse.objects.filter(submission=submission, question=question).first()
     
     if request.method == 'POST':
@@ -1919,13 +1935,21 @@ def student_exam_question(request, assignment_id, q):
         return redirect('student_exam_question', assignment_id=assignment_id, q=next_q)
     
     text_form = None
+    choices_list = []
+    
     if question.question_type == 'text':
         from .forms import ExamTextAnswerForm
         text_form = ExamTextAnswerForm(initial={'text_answer': existing_response.text_answer if existing_response else ''})
+    elif question.question_type == 'multiple_choice':
+        choice_ids = attempt.choice_orders.get(str(question.id), [])
+        choices_qs = question.choices.filter(id__in=choice_ids)
+        choices_dict = {c.id: c for c in choices_qs}
+        choices_list = [choices_dict[cid] for cid in choice_ids if cid in choices_dict]
         
     context = {
         'assignment': assignment,
         'question': question,
+        'choices': choices_list,
         'question_num': q + 1,
         'total_questions': total,
         'existing_response': existing_response,
