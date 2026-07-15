@@ -139,6 +139,7 @@ urlpatterns = [
     path('student/evaluacion/<int:assignment_id>/aceptar/', views.student_evaluation_accept, name='student_evaluation_accept'),
     path('student/examen/<int:assignment_id>/', views.student_exam_detail, name='student_exam_detail'),
     path('student/examen/<int:assignment_id>/empezar/', views.student_exam_start, name='student_exam_start'),
+    path('student/examen/<int:assignment_id>/todo/', views.student_exam_all, name='student_exam_all'),
     path('student/examen/<int:assignment_id>/pregunta/<int:q>/', views.student_exam_question, name='student_exam_question'),
     path('student/examen/<int:assignment_id>/finalizar/', views.student_exam_finish, name='student_exam_finish'),
 ]

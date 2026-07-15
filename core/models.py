@@ -187,6 +187,7 @@ class Assignment(models.Model):
     max_attempts = models.PositiveIntegerField(default=1, verbose_name="Número de intentos permitidos", help_text="Déjalo en 0 para intentos ilimitados.")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
     allow_backtracking = models.BooleanField(default=False, verbose_name="Permitir retroceder a preguntas anteriores (Exámenes)")
+    show_all_questions = models.BooleanField(default=False, verbose_name="Mostrar todas las preguntas en una sola página (Exámenes)")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
 
     class Meta:

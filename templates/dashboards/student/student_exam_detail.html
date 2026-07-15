@@ -107,7 +107,6 @@
                     {% elif not attempt %}
                     <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
                         <i class="fa-solid fa-clipboard-question text-4xl text-[#38657f] mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">¿Listo para empezar?</h3>
                         <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Una vez que comiences, el tiempo empezará a correr y no podrás pausarlo.</p>
                         <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
                             Empezar Examen
@@ -122,8 +121,13 @@
                                 <h3 class="text-xl font-bold text-gray-800 mb-2">Atención antes de empezar</h3>
                                 
                                 <div class="bg-amber-50 border border-amber-100 rounded-md p-4 my-4 text-left text-sm text-gray-700 space-y-2">
+                                    {% if assignment.show_all_questions %}
+                                    <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>El examen consta de <strong>{{ total_questions }} preguntas</strong> mostradas todas en una sola página.</p>
+                                    <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i><strong>Solo tienes un intento.</strong> No podrás pausar el tiempo.</p>
+                                    {% else %}
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>El examen consta de <strong>{{ total_questions }} preguntas</strong> presentadas una por una.</p>
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i><strong>Solo tienes un intento.</strong> No podrás retroceder ni pausar el tiempo.</p>
+                                    {% endif %}
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>Verifica tu <strong>conexión a internet</strong>.</p>
                                 </div>
                                 <p class="text-sm font-semibold text-gray-600 mb-2">¿Estás seguro de que deseas iniciar el examen ahora?</p>
@@ -143,7 +147,11 @@
                         <i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-blue-200"></i>
                         <h3 class="text-xl font-bold mb-2">Examen en curso</h3>
                         <p class="text-blue-100 text-sm mb-6 max-w-md mx-auto">Continúa respondiendo el examen donde te quedaste.</p>
+                        {% if assignment.show_all_questions %}
+                        <a href="{% url 'student_exam_all' assignment_id=assignment.id %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#38657f] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
+                        {% else %}
                         <a href="{% url 'student_exam_question' assignment_id=assignment.id q=attempt.current_question_index %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#38657f] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
+                        {% endif %}
                     </div>
 
                     {% else %}

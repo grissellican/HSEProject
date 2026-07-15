@@ -168,7 +168,7 @@ class MaterialForm(forms.ModelForm):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'assignment_type', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'allow_backtracking']
+        fields = ['title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'assignment_type', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'allow_backtracking', 'show_all_questions']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Análisis de Riesgos Laborales'}),
             'description': CKEditor5Widget(config_name='extends'),
@@ -181,6 +181,7 @@ class AssignmentForm(forms.ModelForm):
             'max_attempts': forms.NumberInput(attrs={'class': _input_cls, 'min': 0, 'step': '1'}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
             'allow_backtracking': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'show_all_questions': forms.CheckboxInput(attrs={'class': _check_cls}),
         }
 
 

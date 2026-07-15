@@ -1822,6 +1822,8 @@ def student_exam_start(request, assignment_id):
     if existing:
         attempt = ExamAttempt.objects.filter(submission=existing).first()
         if attempt and not attempt.is_completed:
+            if assignment.show_all_questions:
+                return redirect('student_exam_all', assignment_id=assignment_id)
             # Redirigir a la pregunta actual
             return redirect('student_exam_question', assignment_id=assignment_id, q=attempt.current_question_index)
         messages.info(request, 'Ya has completado este examen.')
@@ -1857,9 +1859,108 @@ def student_exam_start(request, assignment_id):
             question_order=q_ids,
             choice_orders=c_orders
         )
+        if assignment.show_all_questions:
+            return redirect('student_exam_all', assignment_id=assignment_id)
         return redirect('student_exam_question', assignment_id=assignment_id, q=0)
     
     return redirect('student_exam_detail', assignment_id=assignment_id)
+
+# --- TODAS LAS PREGUNTAS DEL EXAMEN (Misma página) ---
+@_student_required
+def student_exam_all(request, assignment_id):
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id,
+        assignment_type='examen_online',
+        module__course__students=request.user
+    )
+    if not assignment.show_all_questions:
+        return redirect('student_exam_detail', assignment_id=assignment_id)
+        
+    submission = get_object_or_404(Submission, assignment=assignment, student=request.user)
+    attempt = get_object_or_404(ExamAttempt, submission=submission)
+    
+    if attempt.is_completed:
+        return redirect('student_exam_detail', assignment_id=assignment_id)
+        
+    from django.utils import timezone
+    import datetime
+    
+    q_order = attempt.question_order
+    
+    if request.method == 'POST':
+        # Check if due date is passed with a 1-minute grace period
+        if assignment.due_date and timezone.now() > assignment.due_date + datetime.timedelta(minutes=1):
+            messages.error(request, 'El tiempo del examen ha expirado.')
+            return redirect('student_exam_finish', assignment_id=assignment_id)
+            
+        for q_id in q_order:
+            question = get_object_or_404(Question, id=q_id, assignment=assignment)
+            response, created = QuestionResponse.objects.get_or_create(
+                submission=submission,
+                question=question
+            )
+            
+            if question.question_type == 'multiple_choice':
+                choice_id = request.POST.get(f'choice_{q_id}')
+                if choice_id:
+                    try:
+                        choice = Choice.objects.get(id=choice_id, question=question)
+                        response.selected_choice = choice
+                        if choice.is_correct:
+                            response.score = question.points
+                        else:
+                            response.score = 0
+                    except Choice.DoesNotExist:
+                        pass
+            elif question.question_type == 'text':
+                response.text_answer = request.POST.get(f'text_{q_id}', '')
+            elif question.question_type == 'file':
+                response.save()
+                files = request.FILES.getlist(f'file_{q_id}')
+                for f in files:
+                    QuestionResponseFile.objects.create(response=response, file=f)
+                    
+            response.save()
+            
+        return redirect('student_exam_finish', assignment_id=assignment_id)
+        
+    # GET: Prepare all questions
+    prepared_questions = []
+    for idx, q_id in enumerate(q_order):
+        question = get_object_or_404(Question, id=q_id, assignment=assignment)
+        existing_response = QuestionResponse.objects.filter(submission=submission, question=question).first()
+        
+        item = {
+            'question': question,
+            'question_num': idx + 1,
+            'existing_response': existing_response,
+        }
+        
+        if question.question_type == 'text':
+            from .forms import ExamTextAnswerForm
+            item['text_form'] = ExamTextAnswerForm(
+                initial={'text_answer': existing_response.text_answer if existing_response else ''},
+                prefix=f'text_{q_id}'
+            )
+        elif question.question_type == 'multiple_choice':
+            choice_ids = attempt.choice_orders.get(str(question.id), [])
+            choices_qs = question.choices.filter(id__in=choice_ids)
+            choices_dict = {c.id: c for c in choices_qs}
+            item['choices'] = [choices_dict[cid] for cid in choice_ids if cid in choices_dict]
+            
+        prepared_questions.append(item)
+        
+    context = {
+        'assignment': assignment,
+        'prepared_questions': prepared_questions,
+        'course': assignment.module.course,
+        'sidebar_active': 'dashboard',
+        'due_date_iso': assignment.due_date.isoformat() if assignment.due_date else None,
+    }
+    context.update(_student_sidebar_context(request))
+    return render(request, 'dashboards/student/student_exam_all.html', context)
+
 
 
 # --- PREGUNTA DEL EXAMEN ---

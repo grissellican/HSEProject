@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ assignment.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900 font-sans">
+    {% include 'dashboards/student/_student_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <!-- Topbar -->
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium transition-colors">Mi Tablero</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px] transition-colors">{{ course.title }}</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_exam_detail' assignment_id=assignment.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[150px] transition-colors">{{ assignment.title }}</a>
+                </nav>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
+                </button>
+            </form>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+
+                {% if messages %}
+                {% for message in messages %}
+                <div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#38657f]/10 border-[#38657f] text-[#38657f]{% endif %}">
+                    <i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %} text-lg"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Exam Header -->
+                <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 flex flex-col md:flex-row items-center justify-between mb-6" style="border-top: 3px solid #38657f;">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">{{ assignment.title }}</h1>
+                        <p class="text-xs font-semibold text-gray-500 uppercase mt-1">{{ prepared_questions|length }} preguntas</p>
+                    </div>
+                    {% if due_date_iso %}
+                    <div class="mt-4 md:mt-0 px-4 py-2 bg-red-50 border border-red-100 rounded text-center">
+                        <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Tiempo Restante</p>
+                        <p class="text-lg font-black text-red-700 font-mono" id="countdown-timer">--:--:--</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% for item in prepared_questions %}
+                    {% with question=item.question q_num=item.question_num existing=item.existing_response choices=item.choices text_form=item.text_form %}
+                    <div class="bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden" id="q-{{ question.id }}">
+                        <!-- Encabezado de la pregunta -->
+                        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-[#38657f] flex items-center gap-2">
+                                <span class="flex items-center justify-center w-6 h-6 rounded bg-[#38657f] text-white text-xs">{{ q_num }}</span>
+                                Pregunta
+                            </h2>
+                            <span class="px-2.5 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-gray-500">
+                                {{ question.points|floatformat:0 }} pts
+                            </span>
+                        </div>
+
+                        <div class="p-6 md:p-8">
+                            <div class="text-gray-800 text-base font-medium mb-6 leading-relaxed">{{ question.text|linebreaks }}</div>
+
+                            {% if question.question_type == 'multiple_choice' %}
+                            <div class="space-y-3">
+                                {% for choice in choices %}
+                                <label class="flex items-start p-4 border rounded-md cursor-pointer transition-colors relative group 
+                                    has-[:checked]:bg-[#38657f]/5 has-[:checked]:border-[#38657f] has-[:checked]:shadow-sm
+                                    hover:bg-gray-50 border-gray-200">
+                                    <div class="flex items-center h-5">
+                                        <input type="radio" name="choice_{{ question.id }}" value="{{ choice.id }}" required class="w-4 h-4 text-[#38657f] border-gray-300 focus:ring-[#38657f]" {% if existing and existing.selected_choice_id == choice.id %}checked{% endif %}>
+                                    </div>
+                                    <div class="ml-3 text-sm text-gray-700 font-medium pt-0.5 leading-snug">
+                                        {{ choice.text }}
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+
+                            {% elif question.question_type == 'text' %}
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tu Respuesta</label>
+                                <textarea name="text_{{ question.id }}" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-[#38657f] focus:border-[#38657f] text-sm text-gray-800 transition-colors" placeholder="Escribe tu respuesta aquí..." required>{{ existing.text_answer|default:'' }}</textarea>
+                            </div>
+
+                            {% elif question.question_type == 'file' %}
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Adjuntar Archivo(s)</label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-gray-50">
+                                    <div class="space-y-1 text-center">
+                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
+                                        <div class="flex text-sm text-gray-600 justify-center">
+                                            <input type="file" name="file_{{ question.id }}" multiple required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#38657f]/10 file:text-[#38657f] hover:file:bg-[#38657f]/20 cursor-pointer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+
+                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
+                        <i class="fa-solid fa-check-double text-4xl text-green-500 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Finalizar Evaluación</h3>
+                        <p class="text-sm text-gray-500 mb-6">Asegúrate de haber contestado todas las preguntas antes de entregar.</p>
+                        <button type="submit" class="w-full md:w-auto px-10 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
+                            Entregar Examen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    {% if due_date_iso %}
+    <script>
+        const dueDate = new Date("{{ due_date_iso }}").getTime();
+        const timerElement = document.getElementById('countdown-timer');
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = dueDate - now;
+
+            if (distance < 0) {
+                timerElement.innerHTML = "00:00:00";
+                timerElement.classList.add('animate-pulse');
+                document.querySelector('form').submit(); // Auto submit
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerElement.innerHTML = 
+                String(hours).padStart(2, '0') + ":" + 
+                String(minutes).padStart(2, '0') + ":" + 
+                String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+    {% endif %}
+</body>
+</html>
