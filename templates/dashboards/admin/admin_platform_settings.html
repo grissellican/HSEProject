@@ -88,6 +88,18 @@
                                 {% endif %}
                             </div>
 
+                            <!-- Color Principal -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">{{ form.primary_color.label }}</label>
+                                <div class="mt-1">
+                                    {{ form.primary_color }}
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">{{ form.primary_color.help_text }}</p>
+                                {% if form.primary_color.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.primary_color.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
                         </div>
                         
                         <div class="mt-8 flex justify-end">
