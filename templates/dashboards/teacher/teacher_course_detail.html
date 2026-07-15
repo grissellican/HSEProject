@@ -221,8 +221,8 @@
                                                 {% endif %}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate">
-                                                    {{ mat.title }}
+                                                <p class="text-base font-semibold text-gray-800 truncate hover:text-[#38657f] transition-colors">
+                                                    <a href="{% url 'teacher_material_detail' material_id=mat.id %}">{{ mat.title }}</a>
                                                     {% if not mat.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
                                                 <p class="text-xs text-gray-500">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y" }}</p>

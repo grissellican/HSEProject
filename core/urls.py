@@ -57,6 +57,7 @@ urlpatterns = [
     
     # Materiales
     path('teacher/modulo/<int:module_id>/material/nuevo/', views.teacher_material_create, name='teacher_material_create'),
+    path('teacher/material/<int:material_id>/detalle/', views.teacher_material_detail, name='teacher_material_detail'),
     path('teacher/material/<int:material_id>/eliminar/', views.teacher_material_delete, name='teacher_material_delete'),
     path('teacher/material/<int:material_id>/toggle/', views.teacher_material_toggle_visibility, name='teacher_material_toggle_visibility'),
     

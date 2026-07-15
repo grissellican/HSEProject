@@ -387,6 +387,23 @@ def teacher_material_create(request, module_id):
 
 
 @_teacher_required
+def teacher_material_detail(request, material_id):
+    material = get_object_or_404(
+        Material,
+        id=material_id,
+        module__course__teacher=request.user
+    )
+    context = {
+        'material': material,
+        'course': material.module.course,
+        'module': material.module,
+        'sidebar_active': 'curso',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/teacher/teacher_material_detail.html', context)
+
+
+@_teacher_required
 def teacher_material_delete(request, material_id):
     material = get_object_or_404(Material, id=material_id, module__course__teacher=request.user)
     course_id = material.module.course.id

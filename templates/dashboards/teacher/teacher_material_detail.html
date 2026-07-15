@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ material.title }} - HSE Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+</head>
+<body class="h-full flex overflow-hidden bg-[#f5f7fa] text-gray-900">
+
+    {% include 'dashboards/teacher/_teacher_sidebar.html' %}
+
+    <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
+                    <a href="{% url 'teacher_dashboard' %}" class="hover:text-[#38657f] font-medium">Mi Tablero</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'teacher_course_detail' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px]">{{ course.title }}</a>
+                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <span class="text-gray-700 font-semibold truncate max-w-[150px]">{{ material.title }}</span>
+                </nav>
+            </div>
+            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
+        </div>
+
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- Material info card -->
+                <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6 md:p-8 mb-6">
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-md flex items-center justify-center flex-shrink-0
+                                {% if material.material_type == 'pdf' %}bg-red-50 text-red-500{% elif material.material_type == 'video' %}bg-purple-50 text-purple-500{% else %}bg-blue-50 text-blue-500{% endif %}">
+                                <i class="{% if material.material_type == 'pdf' %}fa-solid fa-file-pdf{% elif material.material_type == 'video' %}fa-solid fa-play{% else %}fa-solid fa-file{% endif %} text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-black text-gray-800">{{ material.title }}</h1>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ material.get_material_type_display }} · {{ module.title }} · Subido {{ material.uploaded_at|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
+                            {% if material.file_basename %}
+                            <span class="hidden md:inline-block text-sm font-medium text-gray-500 truncate max-w-[200px]" title="{{ material.file_basename }}">
+                                {{ material.file_basename }}
+                            </span>
+                            {% endif %}
+                            <a href="{{ material.file.url }}" download class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold rounded-md hover:bg-[#2b5068] transition-colors shadow-sm">
+                                <i class="fa-solid fa-download mr-1.5"></i> Descargar
+                            </a>
+                        </div>
+                    </div>
+
+                    {% if material.description %}
+                    <div class="border-t border-gray-100 pt-4">
+                        <div class="text-gray-600 prose prose-sm max-w-none">{{ material.description|safe }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Document Viewer -->
+                {% if material.material_type == 'pdf' or material.is_office_document %}
+                <div class="bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors" onclick="toggleViewer()">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-eye text-[#38657f]"></i> Vista Previa del Documento
+                        </span>
+                        <button class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i id="viewer-icon" class="fa-solid fa-chevron-up transition-transform"></i>
+                        </button>
+                    </div>
+                    <div id="document-viewer" class="w-full transition-all duration-300" style="height: 75vh;">
+                        {% if material.material_type == 'pdf' %}
+                        <iframe src="{{ material.file.url }}" class="w-full h-full border-0" title="Vista previa PDF"></iframe>
+                        {% elif material.is_office_document %}
+                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ material.file.url|urlencode }}" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <script>
+                    function toggleViewer() {
+                        const viewer = document.getElementById('document-viewer');
+                        const icon = document.getElementById('viewer-icon');
+                        viewer.classList.toggle('hidden');
+                        if (viewer.classList.contains('hidden')) {
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                        } else {
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                        }
+                    }
+                </script>
+                {% endif %}
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
