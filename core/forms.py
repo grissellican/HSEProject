@@ -344,7 +344,7 @@ class PlatformSettingForm(forms.ModelForm):
     class Meta:
         from .models import PlatformSetting
         model = PlatformSetting
-        fields = ['company_name', 'logo', 'primary_color']
+        fields = ['company_name', 'logo']
         widgets = {
             'company_name': forms.TextInput(attrs={
                 'class': 'w-full rounded-md border-gray-300 shadow-sm focus:border-[#38657f] focus:ring-[#38657f] sm:text-sm',
@@ -353,9 +353,5 @@ class PlatformSettingForm(forms.ModelForm):
             'logo': forms.ClearableFileInput(attrs={
                 'class': 'w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#e5e9ff] file:text-[#38657f] hover:file:bg-blue-100',
                 'accept': 'image/*'
-            }),
-            'primary_color': forms.TextInput(attrs={
-                'type': 'color',
-                'class': 'h-10 w-20 cursor-pointer rounded border border-gray-300 p-1',
-            }),
+            })
         }
