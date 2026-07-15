@@ -2140,3 +2140,7 @@ def admin_evaluation_image_delete(request, image_id):
     img.delete()
     messages.success(request, 'Imagen eliminada.')
     return redirect('admin_edit_evaluation', course_id=course_id)
+
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)

@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada - {{ platform_settings.company_name|default:"QHSE Academy" }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {% if platform_settings and platform_settings.logo %}
+        <link rel="icon" href="{{ platform_settings.logo.url }}">
+    {% else %}
+        <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    {% endif %}
+</head>
+<body class="h-full font-sans text-gray-900 bg-gray-50 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-md w-full space-y-8 text-center">
+        <div class="flex justify-center">
+            {% if platform_settings and platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.company_name }} Logo" class="h-20 object-contain">
+            {% else %}
+                <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-20 object-contain">
+            {% endif %}
+        </div>
+        
+        <div>
+            <h1 class="text-9xl font-black text-gray-200">404</h1>
+            <h2 class="mt-4 text-3xl font-bold text-gray-900 tracking-tight">Página no encontrada</h2>
+            <p class="mt-2 text-sm text-gray-500">
+                Lo sentimos, no pudimos encontrar la página que estás buscando. Es posible que haya sido eliminada, movida o que la dirección sea incorrecta.
+            </p>
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+            <a href="javascript:history.back()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Regresar
+            </a>
+            
+            <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-[#2b3494] hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md transition-colors">
+                <i class="fa-solid fa-house mr-2"></i> Ir al Inicio
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
