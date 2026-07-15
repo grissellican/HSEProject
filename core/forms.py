@@ -374,3 +374,27 @@ class PlatformSettingForm(forms.ModelForm):
                 'accept': 'image/*'
             })
         }
+
+class AttendanceUploadForm(forms.Form):
+    date = forms.DateField(
+        label='Fecha de la Clase',
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'w-full rounded-lg border-gray-300 focus:border-[#38657f] focus:ring-[#38657f]'
+        })
+    )
+    description = forms.CharField(
+        label='Descripción / Tema (Opcional)',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full rounded-lg border-gray-300 focus:border-[#38657f] focus:ring-[#38657f]',
+            'placeholder': 'Ej. Clase introductoria'
+        })
+    )
+    file = forms.FileField(
+        label='Archivo Excel (.xlsx)',
+        widget=forms.FileInput(attrs={
+            'class': 'w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#38657f] hover:file:bg-blue-100',
+            'accept': '.xlsx'
+        })
+    )
