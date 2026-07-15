@@ -126,8 +126,8 @@
 
             <div class="grid grid-cols-1 gap-4">
                 {% for field in form %}
-                <div>
-                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5">{{ field.label }}</label>
+                <div id="wrapper_{{ field.name }}">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% if field.name == 'students' %}
                     <div class="mb-2">
                         <input type="text" id="studentsSearchTeacher" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#38657f] focus:outline-none focus:ring-1 focus:ring-[#38657f]" placeholder="Buscar estudiante...">
@@ -170,6 +170,61 @@
                         }
                     });
                 });
+            }
+
+            const assignmentTypeSelect = document.getElementById('id_assignment_type');
+            if (assignmentTypeSelect) {
+                function updateFields() {
+                    const selectedType = assignmentTypeSelect.value;
+                    const allFields = ['title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'allow_backtracking', 'show_all_questions'];
+                    
+                    const fieldsForTareaEval = ['title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'due_date', 'max_score', 'max_attempts', 'is_visible'];
+                    const fieldsForExamen = ['title', 'description', 'attached_file', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'show_all_questions', 'allow_backtracking'];
+                    
+                    let activeFields = [];
+                    if (selectedType === 'tarea' || selectedType === 'evaluacion') {
+                        activeFields = fieldsForTareaEval;
+                    } else if (selectedType === 'examen_online') {
+                        activeFields = fieldsForExamen;
+                    }
+                    
+                    // Show/Hide fields
+                    allFields.forEach(f => {
+                        const wrapper = document.getElementById('wrapper_' + f);
+                        if (wrapper) {
+                            if (activeFields.includes(f)) {
+                                wrapper.style.display = 'block';
+                            } else {
+                                wrapper.style.display = 'none';
+                            }
+                        }
+                    });
+                    
+                    // Custom logic for Exam mode
+                    if (selectedType === 'examen_online') {
+                        const showAllCheckbox = document.getElementById('id_show_all_questions');
+                        const backtrackingWrapper = document.getElementById('wrapper_allow_backtracking');
+                        const backtrackingCheckbox = document.getElementById('id_allow_backtracking');
+                        
+                        function handleShowAllChange() {
+                            if (showAllCheckbox.checked) {
+                                backtrackingWrapper.style.display = 'none';
+                                backtrackingCheckbox.checked = false;
+                            } else {
+                                backtrackingWrapper.style.display = 'block';
+                            }
+                        }
+                        
+                        if (showAllCheckbox) {
+                            showAllCheckbox.removeEventListener('change', handleShowAllChange);
+                            showAllCheckbox.addEventListener('change', handleShowAllChange);
+                            handleShowAllChange();
+                        }
+                    }
+                }
+                
+                assignmentTypeSelect.addEventListener('change', updateFields);
+                updateFields();
             }
         });
     </script>
