@@ -480,3 +480,38 @@ class PlatformSetting(models.Model):
 
     def __str__(self):
         return "Configuración Global"
+
+
+# ==========================================
+# ASISTENCIAS
+# ==========================================
+
+class AttendanceRegister(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='attendance_registers')
+    date = models.DateField(verbose_name="Fecha de Clase")
+    description = models.CharField(max_length=200, blank=True, verbose_name="Tema o Descripción")
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+
+    def __str__(self):
+        return f"Asistencia {self.course.title} - {self.date}"
+
+class AttendanceRecord(models.Model):
+    STATUS_CHOICES = (
+        ('present', 'Presente (P)'),
+        ('absent', 'Ausente (A)'),
+        ('late', 'Tarde (T)'),
+    )
+    register = models.ForeignKey(AttendanceRegister, on_delete=models.CASCADE, related_name='records')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attendance_records')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='present')
+    observations = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ('register', 'student')
+
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.get_status_display()} ({self.register.date})"

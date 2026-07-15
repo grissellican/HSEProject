@@ -21,6 +21,11 @@ urlpatterns = [
     path('admin/estudiantes/', views.admin_section_students, name='admin_estudiantes'),
     path('admin/cursos/', views.admin_section_courses, name='admin_cursos'),
     path('admin/configuracion/', views.admin_platform_settings, name='admin_platform_settings'),
+    
+    # Asistencias para Admin
+    path('admin/asistencias/', views.admin_attendance_reports, name='admin_attendance_reports'),
+    path('admin/asistencias/curso/<int:course_id>/', views.admin_attendance_course_detail, name='admin_attendance_course_detail'),
+    path('admin/asistencias/estudiante/<int:student_id>/', views.admin_attendance_student_detail, name='admin_attendance_student_detail'),
 
     # Acciones CRUD - Cuentas de Usuarios
     path('admin/usuarios/nuevo/', views.user_create, name='user_create_generic'),
@@ -96,9 +101,11 @@ urlpatterns = [
     path('teacher/sesion/<int:session_id>/editar/', views.teacher_live_session_update, name='teacher_live_session_update'),
     path('teacher/sesion/<int:session_id>/eliminar/', views.teacher_live_session_delete, name='teacher_live_session_delete'),
     
-    # Estudiantes y Calificaciones
+    # Estudiantes, Calificaciones y Asistencias
     path('teacher/curso/<int:course_id>/estudiantes/', views.teacher_students_list, name='teacher_students_list'),
     path('teacher/curso/<int:course_id>/estudiante/<int:student_id>/notas/', views.teacher_student_grades_detail, name='teacher_student_grades_detail'),
+    path('teacher/curso/<int:course_id>/asistencias/', views.teacher_attendance_upload, name='teacher_attendance_upload'),
+    path('teacher/curso/<int:course_id>/asistencias/plantilla/', views.teacher_download_attendance_template, name='teacher_download_attendance_template'),
     
     # Exámenes Online
     path('teacher/examen/<int:assignment_id>/preguntas/', views.teacher_exam_questions, name='teacher_exam_questions'),

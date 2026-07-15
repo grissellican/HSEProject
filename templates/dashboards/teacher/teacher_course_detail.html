@@ -104,9 +104,12 @@
                     <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
                         <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
                     </a>
+                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                        <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
+                    </a>
                     
                     {% if course.allow_teacher_edit_syllabus %}
-                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm ml-auto">
                         <i class="fa-solid fa-file-signature text-[#10b981]"></i> Editar Sílabo
                     </a>
                     <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">

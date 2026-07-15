@@ -30,6 +30,10 @@
                     <i class="fa-solid fa-book"></i> <span>Cursos y Aulas</span>
                 </a>
 
+                <a href="{% url 'admin_attendance_reports' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if sidebar_active == 'asistencias' or section == 'asistencias' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <i class="fa-solid fa-user-check"></i> <span>Asistencias</span>
+                </a>
+
                 <a href="{% url 'admin_platform_settings' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if sidebar_active == 'configuracion' or section == 'configuracion' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
                     <i class="fa-solid fa-cog"></i> <span>Configuración</span>
                 </a>

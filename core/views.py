@@ -2170,3 +2170,204 @@ def admin_evaluation_image_delete(request, image_id):
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
+
+# ==========================================
+# ASISTENCIAS (DOCENTE Y ADMINISTRADOR)
+# ==========================================
+
+@_teacher_required
+def teacher_download_attendance_template(request, course_id):
+    import openpyxl
+    from django.http import HttpResponse
+    
+    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    students = course.students.all().order_by('first_name', 'last_name')
+    
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Asistencia"
+    
+    # Headers
+    ws.append(["ID", "Estudiante", "Estado (P/A/T)", "Observaciones"])
+    
+    # Data
+    for student in students:
+        ws.append([student.id, student.get_full_name(), "P", ""])
+        
+    # Formatting
+    for cell in ws[1]:
+        cell.font = openpyxl.styles.Font(bold=True)
+        
+    ws.column_dimensions['A'].width = 10
+    ws.column_dimensions['B'].width = 40
+    ws.column_dimensions['C'].width = 15
+    ws.column_dimensions['D'].width = 30
+        
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="Plantilla_Asistencia_{course.title}.xlsx"'
+    wb.save(response)
+    return response
+
+@_teacher_required
+def teacher_attendance_upload(request, course_id):
+    from .forms import AttendanceUploadForm
+    from .models import AttendanceRegister, AttendanceRecord
+    import openpyxl
+    
+    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    
+    if request.method == 'POST':
+        form = AttendanceUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.cleaned_data['file']
+            date = form.cleaned_data['date']
+            description = form.cleaned_data['description']
+            
+            try:
+                wb = openpyxl.load_workbook(file)
+                ws = wb.active
+                
+                if ws.max_row <= 1:
+                    messages.error(request, 'El archivo Excel está vacío o no tiene el formato correcto.')
+                    return redirect('teacher_attendance_upload', course_id=course.id)
+                
+                register = AttendanceRegister.objects.create(
+                    course=course,
+                    date=date,
+                    description=description,
+                    uploaded_by=request.user
+                )
+                
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    if not row or not row[0]:
+                        continue
+                    
+                    try:
+                        student_id = int(row[0])
+                        status_str = str(row[2]).strip().upper() if len(row) > 2 and row[2] else 'P'
+                        observations = str(row[3]) if len(row) > 3 and row[3] else ''
+                        
+                        status_map = {'P': 'present', 'A': 'absent', 'T': 'late'}
+                        status = status_map.get(status_str, 'present')
+                        
+                        student = course.students.filter(id=student_id).first()
+                        if student:
+                            AttendanceRecord.objects.create(
+                                register=register,
+                                student=student,
+                                status=status,
+                                observations=observations
+                            )
+                    except ValueError:
+                        continue
+                
+                messages.success(request, f'Asistencia registrada exitosamente para la fecha {date}.')
+                return redirect('teacher_attendance_upload', course_id=course.id)
+                
+            except Exception as e:
+                messages.error(request, f'Error al procesar el archivo Excel: {str(e)}')
+                return redirect('teacher_attendance_upload', course_id=course.id)
+    else:
+        form = AttendanceUploadForm()
+        
+    registers = course.attendance_registers.all().prefetch_related('records')
+        
+    context = {
+        'section': 'curso_detalle',
+        'course': course,
+        'form': form,
+        'registers': registers,
+        'sidebar_active': 'curso',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/teacher/teacher_attendance_upload.html', context)
+
+@_admin_required
+def admin_attendance_reports(request):
+    from .models import Course, User
+    courses = Course.objects.all()
+    students = User.objects.filter(role='student').order_by('first_name', 'last_name')
+    
+    context = {
+        'courses': courses,
+        'students': students,
+        'sidebar_active': 'asistencias',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_attendance_reports.html', context)
+
+@_admin_required
+def admin_attendance_course_detail(request, course_id):
+    from .models import Course, AttendanceRecord
+    course = get_object_or_404(Course, id=course_id)
+    registers = course.attendance_registers.all()
+    
+    students_data = []
+    total_classes = registers.count()
+    
+    for student in course.students.all():
+        records = AttendanceRecord.objects.filter(student=student, register__course=course)
+        presents = records.filter(status='present').count()
+        absents = records.filter(status='absent').count()
+        lates = records.filter(status='late').count()
+        
+        attended = presents + lates
+        percentage = (attended / total_classes * 100) if total_classes > 0 else 0
+        
+        students_data.append({
+            'student': student,
+            'presents': presents,
+            'absents': absents,
+            'lates': lates,
+            'percentage': round(percentage, 1),
+        })
+        
+    students_data.sort(key=lambda x: x['student'].get_full_name())
+    
+    context = {
+        'course': course,
+        'registers': registers,
+        'students_data': students_data,
+        'total_classes': total_classes,
+        'sidebar_active': 'asistencias',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_attendance_course_detail.html', context)
+
+@_admin_required
+def admin_attendance_student_detail(request, student_id):
+    from .models import User, AttendanceRecord
+    student = get_object_or_404(User, id=student_id, role='student')
+    
+    courses_data = []
+    for course in student.enrolled_courses.all():
+        registers = course.attendance_registers.all()
+        total_classes = registers.count()
+        
+        records = AttendanceRecord.objects.filter(student=student, register__course=course)
+        presents = records.filter(status='present').count()
+        absents = records.filter(status='absent').count()
+        lates = records.filter(status='late').count()
+        
+        attended = presents + lates
+        percentage = (attended / total_classes * 100) if total_classes > 0 else 0
+        
+        courses_data.append({
+            'course': course,
+            'total_classes': total_classes,
+            'presents': presents,
+            'absents': absents,
+            'lates': lates,
+            'percentage': round(percentage, 1),
+        })
+        
+    records_history = AttendanceRecord.objects.filter(student=student).select_related('register', 'register__course').order_by('-register__date')
+    
+    context = {
+        'student': student,
+        'courses_data': courses_data,
+        'records_history': records_history,
+        'sidebar_active': 'asistencias',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_attendance_student_detail.html', context)
