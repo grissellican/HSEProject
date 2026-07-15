@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/docentes/', views.admin_section_teachers, name='admin_docentes'),
     path('admin/estudiantes/', views.admin_section_students, name='admin_estudiantes'),
     path('admin/cursos/', views.admin_section_courses, name='admin_cursos'),
+    path('admin/configuracion/', views.admin_platform_settings, name='admin_platform_settings'),
 
     # Acciones CRUD - Cuentas de Usuarios
     path('admin/usuarios/nuevo/', views.user_create, name='user_create_generic'),

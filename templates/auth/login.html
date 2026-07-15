@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - HSE Academy</title>
+    <title>Iniciar Sesión - {{ platform_settings.company_name|default:"QHSE Academy" }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -13,14 +13,22 @@
             background-color: #e5e7eb;
         }
     </style>
-    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    {% if platform_settings and platform_settings.logo %}
+        <link rel="icon" href="{{ platform_settings.logo.url }}">
+    {% else %}
+        <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    {% endif %}
 </head>
 <body class="h-full w-full bg-cover bg-center bg-no-repeat flex items-center justify-start pl-12 md:pl-24 lg:pl-36">
 
     <div class="bg-white w-full max-w-sm p-10 rounded-3xl shadow-2xl border border-gray-100/50 backdrop-blur-xs flex flex-col items-center">
         
         <div class="mb-6 flex justify-center w-full">
-            <img src="{% static 'images/logo.jpeg' %}" alt="HSE Academy Logo" class="h-24 object-contain">
+            {% if platform_settings and platform_settings.logo %}
+                <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.company_name }} Logo" class="h-24 object-contain">
+            {% else %}
+                <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-24 object-contain">
+            {% endif %}
         </div>
 
         <div class="w-full text-left mb-6">

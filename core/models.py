@@ -428,3 +428,28 @@ class ForumReply(models.Model):
 
     def __str__(self):
         return f"Respuesta de {self.author.first_name} en {self.forum.title}"
+
+
+class PlatformSetting(models.Model):
+    """Modelo Singleton para la configuración global de la plataforma."""
+    company_name = models.CharField(max_length=100, default="QHSE Academy", verbose_name="Nombre de la Empresa")
+    logo = models.ImageField(upload_to='platform/', blank=True, null=True, verbose_name="Logo de la Empresa")
+    primary_color = models.CharField(max_length=20, default="#1B5E37", verbose_name="Color Principal (HEX)", help_text="Opcional. Ej: #1B5E37")
+    
+    class Meta:
+        verbose_name = "Configuración de Plataforma"
+        verbose_name_plural = "Configuraciones de Plataforma"
+
+    def save(self, *args, **kwargs):
+        # Asegurar que solo exista un registro
+        if not self.pk and PlatformSetting.objects.exists():
+            return
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_settings(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return "Configuración Global"

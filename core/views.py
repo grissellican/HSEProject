@@ -978,6 +978,30 @@ def teacher_profile(request):
 # --- SECCIONES DEL PANEL ADMINISTRADOR ---
 
 @login_required
+def admin_platform_settings(request):
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    
+    from .models import PlatformSetting
+    from .forms import PlatformSettingForm
+    
+    settings = PlatformSetting.get_settings()
+    
+    if request.method == 'POST':
+        form = PlatformSettingForm(request.POST, request.FILES, instance=settings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Configuración actualizada exitosamente.")
+            return redirect('admin_platform_settings')
+    else:
+        form = PlatformSettingForm(instance=settings)
+        
+    context = {
+        'section': 'configuracion',
+        'form': form,
+    }
+    return render(request, 'dashboards/admin/admin_platform_settings.html', context)
+
+@login_required
 def admin_panel_general(request):
     if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
     context = get_dashboard_metrics('general')

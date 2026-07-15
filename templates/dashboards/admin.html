@@ -4,53 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - HSE Academy</title>
+    <title>Panel de Administración - {{ platform_settings.company_name|default:"QHSE Academy" }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    {% if platform_settings and platform_settings.logo %}
+        <link rel="icon" href="{{ platform_settings.logo.url }}">
+    {% else %}
+        <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    {% endif %}
 </head>
 <body class="h-full flex overflow-hidden font-sans text-gray-900">
 
     <!-- BARRA LATERAL (SIDEBAR) -->
-    <aside class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-gray-200">
-        <div class="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-100">
-            <span class="text-lg font-bold text-[#2b3494] tracking-tight">HSE <span class="text-gray-500 font-medium">Control</span></span>
-        </div>
-        
-        <div class="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
-            <nav class="mt-2 flex-1 px-4 space-y-1">
-                <a href="{% url 'admin_panel_general' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if section == 'general' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <i class="fa-solid fa-chart-pie"></i> <span>Panel General</span>
-                </a>
+    {% include 'dashboards/admin/_admin_sidebar.html' with sidebar_active=section %}
 
-                <!-- CORRECCIÓN REQUERIMIENTO: Gestión de Administradores -->
-                <a href="{% url 'admin_usuarios' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if section == 'usuarios' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <i class="fa-solid fa-user-shield"></i> <span>Gestión de Admins</span>
-                </a>
-
-                <a href="{% url 'admin_docentes' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if section == 'docentes' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <i class="fa-solid fa-chalkboard-user"></i> <span>Docentes</span>
-                </a>
-
-                <a href="{% url 'admin_estudiantes' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if section == 'estudiantes' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <i class="fa-solid fa-graduation-cap"></i> <span>Estudiantes</span>
-                </a>
-
-                <a href="{% url 'admin_cursos' %}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm transition-all {% if section == 'cursos' %}bg-blue-50 font-semibold text-[#2b3494]{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <i class="fa-solid fa-book"></i> <span>Cursos y Aulas</span>
-                </a>
-            </nav>
-        </div>
-
-        <div class="flex-shrink-0 flex border-t border-gray-100 p-4 bg-gray-50/50">
-            <div class="flex items-center">
-                <div class="ml-3">
-                    <p class="text-xs font-semibold text-gray-700">Super Admin Principal</p>
-                    <p class="text-[10px] text-gray-400 font-medium">admin@hseacademy.com</p>
-                </div>
-            </div>
-        </div>
-    </aside>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="md:pl-64 flex flex-col flex-1 w-0 overflow-hidden">
