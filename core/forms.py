@@ -22,6 +22,26 @@ class UserForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        is_student = False
+        if self.instance and self.instance.pk and self.instance.role == 'student':
+            is_student = True
+        elif 'initial' in kwargs and kwargs['initial'] and kwargs['initial'].get('role') == 'student':
+            is_student = True
+        elif len(args) > 0 and args[0].get('role') == 'student':
+            is_student = True
+            
+        if is_student:
+            self.fields['enrolled_courses'] = forms.ModelMultipleChoiceField(
+                queryset=Course.objects.filter(is_active=True),
+                required=False,
+                label="Matricular en Cursos (Aulas Virtuales)",
+                widget=forms.CheckboxSelectMultiple()
+            )
+            if self.instance and self.instance.pk:
+                self.fields['enrolled_courses'].initial = self.instance.enrolled_courses.all()
+
 
 class TeacherProfileForm(forms.ModelForm):
     class Meta:

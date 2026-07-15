@@ -28,7 +28,8 @@
         }
         
         /* Contenedor de CheckboxSelectMultiple (lista de alumnos) */
-        div[id^="id_students"] {
+        /* Contenedor de CheckboxSelectMultiple (lista de alumnos / lista de cursos) */
+        div[id^="id_students"], div[id^="id_enrolled_courses"] {
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
@@ -41,12 +42,12 @@
         }
         
         /* Ocultar checkbox real */
-        div[id^="id_students"] input[type="checkbox"] {
+        div[id^="id_students"] input[type="checkbox"], div[id^="id_enrolled_courses"] input[type="checkbox"] {
             display: none;
         }
 
         /* Estilo base del contenedor seleccionable (label) */
-        div[id^="id_students"] label {
+        div[id^="id_students"] label, div[id^="id_enrolled_courses"] label {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -62,13 +63,13 @@
             width: 100%;
         }
 
-        div[id^="id_students"] label:hover {
+        div[id^="id_students"] label:hover, div[id^="id_enrolled_courses"] label:hover {
             border-color: #d1d5db;
             background-color: #f3f4f6;
         }
 
         /* Estilo cuando está seleccionado usando :has() */
-        div[id^="id_students"] label:has(input[type="checkbox"]:checked) {
+        div[id^="id_students"] label:has(input[type="checkbox"]:checked), div[id^="id_enrolled_courses"] label:has(input[type="checkbox"]:checked) {
             background-color: #f0fdf4;
             border-color: #86efac;
             color: #166534;
@@ -76,7 +77,7 @@
         }
 
         /* Checkmark falso */
-        div[id^="id_students"] label::after {
+        div[id^="id_students"] label::after, div[id^="id_enrolled_courses"] label::after {
             content: '\f00c';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
@@ -85,12 +86,12 @@
             font-size: 1rem;
         }
 
-        div[id^="id_students"] label:has(input[type="checkbox"]:checked)::after {
+        div[id^="id_students"] label:has(input[type="checkbox"]:checked)::after, div[id^="id_enrolled_courses"] label:has(input[type="checkbox"]:checked)::after {
             color: #22c55e;
         }
 
         /* Checkboxes normales (como el de Activo) */
-        input[type="checkbox"]:not(div[id^="id_students"] input) {
+        input[type="checkbox"]:not(div[id^="id_students"] input, div[id^="id_enrolled_courses"] input) {
             width: 1.1rem;
             height: 1.1rem;
             margin-right: 0.5rem;
@@ -102,7 +103,7 @@
 </head>
 <body class="bg-gray-50/50 min-h-full py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
 
-    <div class="max-w-xl w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="bg-[#2b3494] px-6 py-4 flex items-center justify-between">
             <h2 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-folder-plus mr-2"></i> {{ title }}</h2>
             <button onclick="window.history.back();" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -111,13 +112,13 @@
         <form method="POST" {% if is_file_form %}enctype="multipart/form-data"{% endif %} class="p-6 space-y-4">
             {% csrf_token %}
             
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 {% for field in form %}
-                <div>
+                <div class="{% if field.name == 'students' or field.name == 'enrolled_courses' or field.name == 'welcome_description' or field.name == 'capacities' %}md:col-span-2{% endif %}">
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1.5">{{ field.label }}</label>
-                    {% if field.name == 'students' %}
+                    {% if field.name == 'students' or field.name == 'enrolled_courses' %}
                     <div class="mb-2">
-                        <input type="text" id="studentsSearchModal" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#2b3494] focus:outline-none focus:ring-1 focus:ring-[#2b3494]" placeholder="Buscar estudiante...">
+                        <input type="text" id="studentsSearchModal" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#2b3494] focus:outline-none focus:ring-1 focus:ring-[#2b3494]" placeholder="Buscar...">
                     </div>
                     {% endif %}
                     {{ field }}
@@ -137,7 +138,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const searchInput = document.getElementById("studentsSearchModal");
-            const studentsDiv = document.querySelector("div[id^='id_students']");
+            const studentsDiv = document.querySelector("div[id^='id_students']") || document.querySelector("div[id^='id_enrolled_courses']");
             if (searchInput && studentsDiv) {
                 const labels = studentsDiv.querySelectorAll("label");
                 searchInput.addEventListener("input", function() {

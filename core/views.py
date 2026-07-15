@@ -1080,6 +1080,8 @@ def user_create(request, target_role=None):
             if form.cleaned_data['password']:
                 user.password = make_password(form.cleaned_data['password'])
             user.save()
+            if 'enrolled_courses' in form.cleaned_data:
+                user.enrolled_courses.set(form.cleaned_data['enrolled_courses'])
             messages.success(request, f'Cuenta registrada de manera exitosa.')
             
             if target_role == 'teacher': return redirect('admin_docentes')
@@ -1104,6 +1106,8 @@ def user_update(request, pk):
             if form.cleaned_data['password']:
                 u.password = make_password(form.cleaned_data['password'])
             u.save()
+            if 'enrolled_courses' in form.cleaned_data:
+                u.enrolled_courses.set(form.cleaned_data['enrolled_courses'])
             messages.success(request, 'Cuenta modificada de manera exitosa.')
             
             if u.role == 'teacher': return redirect('admin_docentes')

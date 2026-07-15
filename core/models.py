@@ -39,7 +39,7 @@ class Course(models.Model):
     evaluation_system_description = models.TextField(blank=True, verbose_name="Sistema de Evaluación: Redacción")
     
     # PERMISOS
-    allow_teacher_edit_syllabus = models.BooleanField(default=False, verbose_name="Permitir al docente editar Sílabo y Evaluación")
+    allow_teacher_edit_syllabus = models.BooleanField(default=True, verbose_name="Permitir al docente editar Sílabo y Evaluación")
     
     # RELACIONES COMPLEMENTARIAS REQUERIDAS POR EL CANVAS
     teacher = models.ForeignKey(
