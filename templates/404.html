@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    {% if platform_settings and platform_settings.logo %}
+    {% if platform_settings and platform_settings.logo and platform_settings.logo.name %}
         <link rel="icon" href="{{ platform_settings.logo.url }}">
     {% else %}
         <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
@@ -18,7 +18,7 @@
 
     <div class="max-w-md w-full space-y-8 text-center">
         <div class="flex justify-center">
-            {% if platform_settings and platform_settings.logo %}
+            {% if platform_settings and platform_settings.logo and platform_settings.logo.name %}
                 <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.company_name }} Logo" class="h-20 object-contain">
             {% else %}
                 <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-20 object-contain">

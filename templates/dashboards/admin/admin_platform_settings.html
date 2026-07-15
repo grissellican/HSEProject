@@ -73,7 +73,7 @@
                                 <label class="block text-sm font-medium text-gray-700">{{ form.logo.label }}</label>
                                 <div class="mt-1 flex items-center gap-4">
                                     <div class="h-16 w-16 overflow-hidden rounded-md border border-gray-200 bg-gray-50 flex items-center justify-center">
-                                        {% if form.instance.logo %}
+                                        {% if form.instance.logo and form.instance.logo.name %}
                                             <img src="{{ form.instance.logo.url }}" alt="Logo actual" class="h-full w-full object-contain">
                                         {% else %}
                                             <i class="fa-regular fa-image text-gray-400 text-2xl"></i>

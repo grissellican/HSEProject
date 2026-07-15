@@ -144,7 +144,7 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     <!-- Logo -->
     <div class="flex items-center h-14 flex-shrink-0 px-3 border-b border-gray-100 overflow-hidden">
         <a href="{% url 'teacher_dashboard' %}" class="flex items-center space-x-2 min-w-0">
-            {% if platform_settings and platform_settings.logo %}
+            {% if platform_settings and platform_settings.logo and platform_settings.logo.name %}
                 <img src="{{ platform_settings.logo.url }}" alt="{{ platform_settings.company_name }}" class="h-8 w-auto object-contain flex-shrink-0">
             {% else %}
                 <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-8 w-auto object-contain flex-shrink-0">
