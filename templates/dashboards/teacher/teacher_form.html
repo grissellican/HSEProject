@@ -128,7 +128,7 @@
                     {% if s_file.is_pdf %}
                     <iframe src="{{ s_file.file.url }}" class="w-full h-full border-0"></iframe>
                     {% elif s_file.is_office_document %}
-                    <iframe src="https://docs.google.com/viewer?url=https://{{ request.get_host }}{{ s_file.file.url|urlencode }}&embedded=true" class="w-full h-full border-0"></iframe>
+                    <iframe src="https://docs.google.com/gview?url=https://{{ request.get_host }}{{ s_file.file.url }}&embedded=true" class="w-full h-full border-0"></iframe>
                     {% endif %}
                 </div>
                 {% endif %}
