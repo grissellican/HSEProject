@@ -1859,8 +1859,13 @@ def student_exam_start(request, assignment_id):
             existing.save()
             
             # Delete old attempt and responses
-            if hasattr(existing, 'exam_attempt'):
-                existing.exam_attempt.delete()
+            if 'attempt' in locals() and attempt:
+                attempt.delete()
+            elif hasattr(existing, 'exam_attempt'):
+                try:
+                    existing.exam_attempt.delete()
+                except Exception:
+                    pass
             existing.responses.all().delete()
             submission = existing
         else:
