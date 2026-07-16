@@ -159,6 +159,7 @@
 
                     {% else %}
                     <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fa-solid fa-flag-checkered text-3xl text-green-600 mb-3"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Has completado todas las preguntas del examen.</p>
                         {% if can_retake %}
                         <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
