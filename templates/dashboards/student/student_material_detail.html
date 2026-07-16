@@ -83,7 +83,7 @@
                         {% if material.material_type == 'pdf' %}
                         <iframe src="{{ material.file.url }}" class="w-full h-full border-0" title="Vista previa PDF"></iframe>
                         {% elif material.is_office_document %}
-                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ material.file.url|urlencode }}" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
+                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://{{ request.get_host }}{{ material.file.url }}" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
                         {% endif %}
                     </div>
                 </div>

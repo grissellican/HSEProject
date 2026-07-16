@@ -242,6 +242,20 @@ class SubmissionFile(models.Model):
     def __str__(self):
         return f"Archivo de {self.submission.student.first_name} para {self.submission.assignment.title}"
 
+    @property
+    def is_office_document(self):
+        import os
+        if self.file and self.file.name:
+            ext = os.path.splitext(self.file.name)[1].lower()
+            return ext in ['.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx']
+        return False
+
+    @property
+    def is_pdf(self):
+        if self.file and self.file.name:
+            return self.file.name.lower().endswith('.pdf')
+        return False
+
 
 class LiveSession(models.Model):
     PLATFORM_CHOICES = (
