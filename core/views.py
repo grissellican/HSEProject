@@ -1791,9 +1791,13 @@ def student_exam_detail(request, assignment_id):
         is_past_due = True
         
     can_retake = False
+    remaining_attempts = None
     if attempt and attempt.is_completed and not is_past_due:
-        if assignment.max_attempts == 0 or submission.attempts < assignment.max_attempts:
+        if assignment.max_attempts == 0:
             can_retake = True
+        elif submission.attempts < assignment.max_attempts:
+            can_retake = True
+            remaining_attempts = assignment.max_attempts - submission.attempts
     
     questions = assignment.questions.all()
     
@@ -1803,6 +1807,7 @@ def student_exam_detail(request, assignment_id):
         'attempt': attempt,
         'is_past_due': is_past_due,
         'can_retake': can_retake,
+        'remaining_attempts': remaining_attempts,
         'total_questions': questions.count(),
         'course': assignment.module.course,
         'module': assignment.module,
