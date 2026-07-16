@@ -63,7 +63,7 @@
                                         {% if submission.is_graded %}
                                             <p class="text-sm font-bold text-green-600 mt-1"><i class="fa-solid fa-check-circle mr-1"></i> Calificado</p>
                                         {% else %}
-                                            <p class="text-sm font-bold text-[#38657f] mt-1"><i class="fa-solid fa-check mr-1"></i> Completado</p>
+                                            <p class="text-sm font-bold text-amber-500 mt-1"><i class="fa-solid fa-clock mr-1"></i> Pendiente por calificar</p>
                                         {% endif %}
                                     {% elif attempt %}
                                         <p class="text-sm font-bold text-amber-600 mt-1"><i class="fa-solid fa-spinner fa-spin mr-1"></i> En curso</p>
@@ -159,8 +159,13 @@
 
                     {% else %}
                     <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
+                        {% if submission.is_graded %}
                         <i class="fa-solid fa-flag-checkered text-3xl text-green-600 mb-3"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Has completado todas las preguntas del examen.</p>
+                        {% else %}
+                        <i class="fa-solid fa-clock text-3xl text-amber-500 mb-3"></i>
+                        <p class="text-amber-600 font-medium text-sm mb-6 max-w-sm mx-auto">Tu examen está pendiente de calificación manual.</p>
+                        {% endif %}
                         {% if can_retake %}
                         <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
                         {% endif %}
