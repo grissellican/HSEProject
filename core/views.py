@@ -6,8 +6,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.db.models import Avg, Count, Q
-from .models import Course, Module, Material, Assignment, Submission, LiveSession, Question, Choice, QuestionResponse, ExamAttempt, ModuleAnnouncement, ModuleLink, ModuleForum, ForumReply, SubmissionFile, QuestionResponseFile
-from .forms import UserForm, CourseForm, ModuleForm, MaterialForm, AssignmentForm, GradeForm, LiveSessionForm, TeacherProfileForm, StudentSubmissionForm
+from .models import Course, Module, Material, Assignment, Submission, LiveSession, Question, Choice, QuestionResponse, ExamAttempt, ModuleAnnouncement, ModuleLink, ModuleForum, ForumReply, SubmissionFile, QuestionResponseFile, Cohort
+from .forms import UserForm, CourseForm, ModuleForm, MaterialForm, AssignmentForm, GradeForm, LiveSessionForm, TeacherProfileForm, StudentSubmissionForm, CohortForm, CohortCloseForm
 
 User = get_user_model()
 
@@ -1330,7 +1330,20 @@ def _student_sidebar_context(request):
 
 
 def _get_student_course(request, course_id):
-    """Obtiene un curso verificando que el estudiante esté matriculado."""
+    """Obtiene un curso verificando que el estudiante esté matriculado o tenga acceso histórico por cohorte."""
+    # Primero intentar acceso activo
+    course = Course.objects.filter(id=course_id, students=request.user, is_active=True).first()
+    if course:
+        return course
+    # Si no es estudiante activo, verificar acceso por cohorte (solo lectura)
+    cohort = Cohort.objects.filter(
+        course_id=course_id,
+        students=request.user,
+        status='completed'
+    ).first()
+    if cohort and not cohort.is_expired:
+        return cohort.course
+    # Si no tiene acceso, 404
     return get_object_or_404(Course, id=course_id, students=request.user, is_active=True)
 
 
@@ -1338,8 +1351,25 @@ def _get_student_course(request, course_id):
 @_student_required
 def student_dashboard(request):
     my_courses = Course.objects.filter(students=request.user, is_active=True)
+    
+    # Cursos finalizados (de cohortes completadas, no expiradas)
+    completed_cohorts = Cohort.objects.filter(
+        students=request.user,
+        status='completed'
+    ).select_related('course')
+    
+    completed_courses = []
+    for cohort in completed_cohorts:
+        if not cohort.is_expired:
+            completed_courses.append({
+                'course': cohort.course,
+                'cohort': cohort,
+                'days_remaining': cohort.days_until_expiration,
+            })
+    
     context = {
         'courses': my_courses,
+        'completed_courses': completed_courses,
         'sidebar_active': 'dashboard',
     }
     context.update(_student_sidebar_context(request))
@@ -2541,3 +2571,166 @@ def admin_attendance_student_detail(request, student_id):
     }
     context.update(_sidebar_context(request))
     return render(request, 'dashboards/admin/admin_attendance_student_detail.html', context)
+
+
+# ============================================================
+# ===  GESTIÓN DE COHORTES (Ciclo de vida de cursos)  ===
+# ============================================================
+
+@login_required
+def admin_course_cohorts(request, course_id):
+    """Lista todas las cohortes de un curso."""
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    course = get_object_or_404(Course, id=course_id)
+    cohorts = course.cohorts.all()
+    
+    active_cohort = cohorts.filter(status='active').first()
+    completed_cohorts = cohorts.filter(status='completed')
+    
+    context = {
+        'course': course,
+        'active_cohort': active_cohort,
+        'completed_cohorts': completed_cohorts,
+        'sidebar_active': 'cursos',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_course_cohorts.html', context)
+
+
+@login_required
+def admin_cohort_create(request, course_id):
+    """Crear una nueva cohorte para un curso."""
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Verificar que no hay cohorte activa
+    if course.cohorts.filter(status='active').exists():
+        messages.error(request, 'Ya existe una cohorte activa para este curso. Ciérrala antes de crear una nueva.')
+        return redirect('admin_course_cohorts', course_id=course.id)
+    
+    if request.method == 'POST':
+        form = CohortForm(request.POST, course=course)
+        if form.is_valid():
+            cohort = form.save(commit=False)
+            cohort.course = course
+            cohort.save()
+            form.save_m2m()  # Guardar estudiantes
+            
+            # También agregar los estudiantes de la cohorte al curso si no están
+            for student in cohort.students.all():
+                course.students.add(student)
+            
+            messages.success(request, f'Cohorte "{cohort.name}" creada exitosamente con {cohort.students.count()} estudiantes.')
+            return redirect('admin_course_cohorts', course_id=course.id)
+    else:
+        from .models import PlatformSetting
+        settings = PlatformSetting.get_settings()
+        form = CohortForm(course=course, initial={'retention_months': settings.default_retention_months})
+    
+    return render(request, 'dashboards/teacher/teacher_form.html', {
+        'form': form,
+        'title': f'Nueva Cohorte — {course.title}',
+        'back_url': 'admin_course_cohorts',
+        'back_id': course.id,
+    })
+
+
+@login_required
+def admin_cohort_close(request, cohort_id):
+    """Cerrar/finalizar una cohorte."""
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    cohort = get_object_or_404(Cohort, id=cohort_id, status='active')
+    course = cohort.course
+    
+    if request.method == 'POST':
+        form = CohortCloseForm(request.POST)
+        if form.is_valid():
+            # 1. Marcar cohorte como completada
+            cohort.status = 'completed'
+            cohort.completed_at = form.cleaned_data['completed_at']
+            cohort.retention_months = int(form.cleaned_data['retention_months'])
+            cohort.save()
+            
+            # 2. Vincular entregas existentes a esta cohorte
+            cohort_students = cohort.students.all()
+            Submission.objects.filter(
+                assignment__module__course=course,
+                student__in=cohort_students,
+                cohort__isnull=True
+            ).update(cohort=cohort)
+            
+            # 3. Limpiar clases en vivo si se solicitó
+            if form.cleaned_data.get('clean_live_sessions'):
+                deleted_sessions = course.live_sessions.all().delete()[0]
+            else:
+                deleted_sessions = 0
+            
+            # 4. Limpiar foros si se solicitó
+            if form.cleaned_data.get('clean_forums'):
+                deleted_forums = 0
+                for module in course.modules.all():
+                    count = module.forums.all().delete()[0]
+                    deleted_forums += count
+            else:
+                deleted_forums = 0
+            
+            # 5. Remover estudiantes de la cohorte del curso activo
+            for student in cohort_students:
+                course.students.remove(student)
+            
+            msg = f'Cohorte "{cohort.name}" finalizada exitosamente.'
+            if deleted_sessions:
+                msg += f' Se eliminaron {deleted_sessions} clases en vivo.'
+            if deleted_forums:
+                msg += f' Se eliminaron {deleted_forums} foros.'
+            messages.success(request, msg)
+            return redirect('admin_course_cohorts', course_id=course.id)
+    else:
+        form = CohortCloseForm(initial={
+            'completed_at': timezone.now().date(),
+            'retention_months': cohort.retention_months,
+        })
+    
+    return render(request, 'dashboards/teacher/teacher_form.html', {
+        'form': form,
+        'title': f'Cerrar Cohorte: {cohort.name}',
+        'back_url': 'admin_course_cohorts',
+        'back_id': course.id,
+        'submission': None,  # Para que use max-w-xl
+    })
+
+
+@login_required
+def admin_cohort_detail(request, cohort_id):
+    """Ver los detalles de una cohorte (archivada o activa)."""
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    cohort = get_object_or_404(Cohort, id=cohort_id)
+    course = cohort.course
+    
+    # Obtener las entregas de esta cohorte
+    students_data = []
+    for student in cohort.students.all().order_by('first_name', 'lastname'):
+        submissions = Submission.objects.filter(
+            student=student,
+            assignment__module__course=course,
+            cohort=cohort
+        ).select_related('assignment')
+        
+        graded = submissions.filter(score__isnull=False)
+        avg_score = graded.aggregate(avg=Avg('score'))['avg']
+        
+        students_data.append({
+            'student': student,
+            'submissions_count': submissions.count(),
+            'graded_count': graded.count(),
+            'avg_score': round(avg_score, 2) if avg_score else None,
+        })
+    
+    context = {
+        'cohort': cohort,
+        'course': course,
+        'students_data': students_data,
+        'sidebar_active': 'cursos',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_cohort_detail.html', context)

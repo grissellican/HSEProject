@@ -1,6 +1,6 @@
 from django import forms
 from django_ckeditor_5.widgets import CKEditor5Widget
-from .models import User, Course, Module, Material, Assignment, Submission, LiveSession
+from .models import User, Course, Module, Material, Assignment, Submission, LiveSession, Cohort
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(
@@ -90,6 +90,54 @@ class CourseForm(forms.ModelForm):
             'capacities': CKEditor5Widget(config_name='default'),
             'allow_teacher_edit_syllabus': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'}),
         }
+
+
+class CohortForm(forms.ModelForm):
+    """Formulario para crear una nueva cohorte dentro de un curso."""
+    students = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(role='student', is_active=True),
+        required=False,
+        label="Estudiantes de esta Cohorte",
+        widget=forms.CheckboxSelectMultiple()
+    )
+
+    class Meta:
+        model = Cohort
+        fields = ['name', 'retention_months', 'students']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm', 'placeholder': 'Ej: Promoción Enero 2026'}),
+            'retention_months': forms.Select(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
+        }
+
+    def __init__(self, *args, course=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if course:
+            # Solo mostrar estudiantes que ya están matriculados en el curso
+            self.fields['students'].queryset = course.students.filter(is_active=True)
+
+
+class CohortCloseForm(forms.Form):
+    """Formulario para cerrar/finalizar una cohorte."""
+    completed_at = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
+        label="Fecha de Término del Curso"
+    )
+    retention_months = forms.ChoiceField(
+        choices=Cohort.RETENTION_CHOICES,
+        initial=12,
+        widget=forms.Select(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
+        label="Tiempo de Retención"
+    )
+    clean_live_sessions = forms.BooleanField(
+        required=False, initial=True,
+        label="Eliminar clases en vivo programadas",
+        widget=forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'})
+    )
+    clean_forums = forms.BooleanField(
+        required=False, initial=True,
+        label="Eliminar foros y sus respuestas",
+        widget=forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'})
+    )
 
 
 # ========== FORMULARIOS DEL DOCENTE ==========

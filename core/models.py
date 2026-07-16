@@ -234,6 +234,7 @@ class Assignment(models.Model):
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions', verbose_name="Tarea/Evaluación")
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions', verbose_name="Estudiante")
+    cohort = models.ForeignKey('Cohort', on_delete=models.SET_NULL, null=True, blank=True, related_name='submissions', verbose_name="Cohorte")
     file = models.FileField(upload_to='submissions/%Y/%m/', blank=True, null=True, verbose_name="Archivo Entregado")
     text_content = models.TextField(blank=True, verbose_name="Respuesta de Texto")
     submitted_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Entrega")
@@ -367,6 +368,65 @@ class LiveSession(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.scheduled_date})"
+
+
+# --- SISTEMA DE COHORTES (Ciclo de vida de cursos) ---
+
+class Cohort(models.Model):
+    RETENTION_CHOICES = (
+        (6, '6 meses'),
+        (12, '1 año'),
+        (24, '2 años'),
+        (36, '3 años'),
+    )
+    STATUS_CHOICES = (
+        ('active', 'En Curso'),
+        ('completed', 'Finalizado'),
+    )
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='cohorts', verbose_name="Curso")
+    name = models.CharField(max_length=100, verbose_name="Nombre de la Cohorte", help_text="Ej: Promoción Enero 2026, Grupo B - 2026-II")
+    students = models.ManyToManyField(User, related_name='cohort_memberships', blank=True, verbose_name="Estudiantes")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name="Estado")
+    started_at = models.DateField(auto_now_add=True, verbose_name="Fecha de Inicio")
+    completed_at = models.DateField(null=True, blank=True, verbose_name="Fecha de Término")
+    retention_months = models.PositiveIntegerField(
+        choices=RETENTION_CHOICES, default=12,
+        verbose_name="Tiempo de Retención",
+        help_text="Periodo durante el cual los estudiantes egresados pueden consultar su información."
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Cohorte"
+        verbose_name_plural = "Cohortes"
+
+    @property
+    def expiration_date(self):
+        """Fecha en que se eliminará el acceso de estos estudiantes."""
+        if self.completed_at:
+            import datetime
+            return self.completed_at + datetime.timedelta(days=self.retention_months * 30)
+        return None
+
+    @property
+    def is_expired(self):
+        """¿Ya pasó el tiempo de retención?"""
+        from django.utils import timezone
+        if self.expiration_date:
+            return timezone.now().date() > self.expiration_date
+        return False
+
+    @property
+    def days_until_expiration(self):
+        """Días restantes antes de expirar."""
+        from django.utils import timezone
+        if self.expiration_date and not self.is_expired:
+            return (self.expiration_date - timezone.now().date()).days
+        return 0
+
+    def __str__(self):
+        return f"{self.name} — {self.course.title}"
 
 
 # --- MODELOS PARA EXÁMENES ONLINE ---
@@ -522,6 +582,11 @@ class PlatformSetting(models.Model):
     company_name = models.CharField(max_length=100, default="QHSE Academy", verbose_name="Nombre de la Empresa")
     logo = models.ImageField(upload_to='platform/', blank=True, null=True, verbose_name="Logo de la Empresa")
     primary_color = models.CharField(max_length=20, default="#1B5E37", verbose_name="Color Principal (HEX)", help_text="Opcional. Ej: #1B5E37")
+    default_retention_months = models.PositiveIntegerField(
+        default=12,
+        verbose_name="Retención por defecto (meses)",
+        help_text="Tiempo que un estudiante egresado puede ver su información. Se usa como valor inicial al crear cohortes."
+    )
     
     class Meta:
         verbose_name = "Configuración de Plataforma"

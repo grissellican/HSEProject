@@ -139,6 +139,59 @@ if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
 
 ---
 
+## 🔄 Ciclo de Vida de los Cursos (Sistema de Cohortes)
+
+La plataforma implementa un **sistema de cohortes** (grupos/promociones) para gestionar el ciclo de vida completo de los cursos, permitiendo reutilizar la misma estructura de curso para diferentes grupos de estudiantes a lo largo del tiempo.
+
+### Conceptos Clave
+
+| Concepto | Descripción |
+|----------|-------------|
+| **Curso** | La plantilla/estructura permanente (módulos, materiales, tareas, evaluaciones). No se duplica ni se elimina entre grupos. |
+| **Cohorte** | Un grupo específico de estudiantes que cursa un `Curso` en un periodo determinado. Ej: *"Promoción Enero 2026"*, *"Grupo B - 2026-II"*. |
+| **Retención** | El periodo (6 meses, 1 año, 2 años o 3 años) durante el cual un estudiante egresado puede seguir consultando su información histórica en modo de solo lectura. |
+
+### Flujo de Trabajo
+
+1. **El Admin crea un Curso** con su estructura completa (módulos, materiales, tareas).
+2. **El Admin abre una Cohorte** dentro de ese curso y asigna un grupo de estudiantes.
+3. **El Profesor dicta el curso** normalmente: sube materiales, programa clases en vivo, califica entregas.
+4. **El Admin cierra la Cohorte** cuando el grupo finaliza:
+   - Se marca la fecha de término.
+   - Las entregas y calificaciones quedan vinculadas a esa cohorte.
+   - Se eliminan las **clases en vivo programadas** (ya pasaron) y los **foros con sus respuestas** (pertenecen a ese grupo).
+   - Los módulos, materiales, tareas y evaluaciones **NO se eliminan** (son la estructura reutilizable del curso).
+5. **Los estudiantes egresados** pueden seguir viendo sus calificaciones y entregas en **modo de solo lectura** durante el periodo de retención configurado.
+6. **El Admin abre una nueva Cohorte** con nuevos estudiantes. El profesor ve el curso limpio y puede planificar nuevas clases en vivo.
+7. **Al vencer la retención**, el sistema elimina automáticamente el acceso del estudiante a la información del curso.
+
+### Configuración de Retención
+
+El administrador puede configurar el tiempo de retención de forma **global** desde la sección de *Configuración de Plataforma*, y también puede personalizarlo **por cohorte** al momento de crearla o cerrarla.
+
+Las opciones disponibles son:
+- **6 meses**
+- **1 año** *(valor por defecto)*
+- **2 años**
+- **3 años**
+
+### Limpieza Automática
+
+Para ejecutar la limpieza de cohortes expiradas (eliminar el acceso de estudiantes cuya retención ya venció), se puede usar el management command:
+
+```bash
+python manage.py cleanup_expired_cohorts
+```
+
+Se recomienda configurar este comando como un **cron job** que se ejecute diariamente:
+
+```bash
+# Ejecutar todos los días a las 3:00 AM
+0 3 * * * cd /ruta/al/proyecto && /ruta/al/venv/bin/python manage.py cleanup_expired_cohorts
+```
+
+---
+
 ## 🚀 Despliegue en Producción (VPS / Linux)
 
 Para llevar la plataforma a un entorno de producción (ej. un VPS en DigitalOcean, AWS, Linode con Ubuntu), el estándar recomendado es usar **Gunicorn** como servidor de aplicaciones y **Nginx** como proxy inverso.

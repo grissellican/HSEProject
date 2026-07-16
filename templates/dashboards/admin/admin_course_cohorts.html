@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohortes — {{ course.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% if platform_settings and platform_settings.logo %}
+        <link rel="icon" href="{{ platform_settings.logo.url }}">
+    {% else %}
+        <link rel="icon" type="image/jpeg" href="{% static 'images/Logo.png' %}">
+    {% endif %}
+</head>
+<body class="h-full flex overflow-hidden font-sans text-gray-900">
+    {% include 'dashboards/admin/_admin_sidebar.html' with section='cursos' %}
+
+    <div class="md:pl-64 flex flex-col flex-1 w-0 overflow-hidden">
+        <!-- BARRA SUPERIOR -->
+        <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
+            <div class="flex-1 px-6 flex justify-between">
+                <div class="flex-1 flex items-center">
+                    <a href="{% url 'admin_cursos' %}" class="text-gray-500 hover:text-[#2b3494] focus:outline-none mr-3 transition-colors" title="Volver a cursos"><i class="fa-solid fa-arrow-left text-lg"></i></a>
+                    <h1 class="text-lg font-bold text-gray-800">Cohortes — {{ course.title }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 relative overflow-y-auto">
+            <div class="py-8 px-6 max-w-5xl mx-auto">
+
+                {% if messages %}
+                <div class="mb-6">
+                    {% for msg in messages %}
+                    <div class="p-4 rounded-xl border text-sm font-medium 
+                        {% if msg.tags == 'success' %}bg-green-50 border-green-200 text-green-800
+                        {% elif msg.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+                        {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+                        {{ msg }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Cohorte Activa -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-users-rectangle text-[#2b3494]"></i> Cohorte Activa
+                        </h2>
+                        {% if not active_cohort %}
+                        <a href="{% url 'admin_cohort_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#2b3494] text-white text-sm font-semibold rounded-xl hover:bg-[#1f276d] transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i> Nueva Cohorte
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if active_cohort %}
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">{{ active_cohort.name }}</h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="fa-solid fa-calendar-day mr-1"></i> Iniciada: {{ active_cohort.started_at|date:"d/m/Y" }}
+                                    <span class="mx-2">·</span>
+                                    <i class="fa-solid fa-user-group mr-1"></i> {{ active_cohort.students.count }} estudiantes
+                                    <span class="mx-2">·</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800"><i class="fa-solid fa-circle text-[8px] mr-1"></i> En Curso</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <a href="{% url 'admin_cohort_detail' cohort_id=active_cohort.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fa-solid fa-eye mr-1.5"></i> Ver
+                                </a>
+                                <a href="{% url 'admin_cohort_close' cohort_id=active_cohort.id %}" class="inline-flex items-center px-3 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 transition-colors">
+                                    <i class="fa-solid fa-flag-checkered mr-1.5"></i> Cerrar Cohorte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center">
+                        <i class="fa-solid fa-users-slash text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 text-sm">No hay una cohorte activa para este curso.</p>
+                        <p class="text-gray-400 text-xs mt-1">Crea una nueva cohorte para asignar estudiantes y comenzar un nuevo periodo.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Cohortes Finalizadas -->
+                <div>
+                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-archive text-gray-400"></i> Cohortes Finalizadas
+                    </h2>
+
+                    {% if completed_cohorts %}
+                    <div class="space-y-3">
+                        {% for cohort in completed_cohorts %}
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800">{{ cohort.name }}</h3>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="fa-solid fa-calendar mr-1"></i> {{ cohort.started_at|date:"d/m/Y" }} — {{ cohort.completed_at|date:"d/m/Y" }}
+                                    <span class="mx-2">·</span>
+                                    <i class="fa-solid fa-user-group mr-1"></i> {{ cohort.students.count }} estudiantes
+                                    <span class="mx-2">·</span>
+                                    {% if cohort.is_expired %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800"><i class="fa-solid fa-circle-xmark text-[8px] mr-1"></i> Expirado</span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800"><i class="fa-solid fa-clock text-[8px] mr-1"></i> {{ cohort.days_until_expiration }} días restantes</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <a href="{% url 'admin_cohort_detail' cohort_id=cohort.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fa-solid fa-eye mr-1.5"></i> Ver Detalle
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center">
+                        <p class="text-gray-400 text-sm">Aún no hay cohortes finalizadas para este curso.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

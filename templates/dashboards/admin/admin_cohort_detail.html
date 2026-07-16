@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohorte: {{ cohort.name }} — {{ course.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% if platform_settings and platform_settings.logo %}
+        <link rel="icon" href="{{ platform_settings.logo.url }}">
+    {% else %}
+        <link rel="icon" type="image/jpeg" href="{% static 'images/Logo.png' %}">
+    {% endif %}
+</head>
+<body class="h-full flex overflow-hidden font-sans text-gray-900">
+    {% include 'dashboards/admin/_admin_sidebar.html' with section='cursos' %}
+
+    <div class="md:pl-64 flex flex-col flex-1 w-0 overflow-hidden">
+        <!-- BARRA SUPERIOR -->
+        <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
+            <div class="flex-1 px-6 flex justify-between">
+                <div class="flex-1 flex items-center">
+                    <a href="{% url 'admin_course_cohorts' course_id=course.id %}" class="text-gray-500 hover:text-[#2b3494] focus:outline-none mr-3 transition-colors" title="Volver a cohortes"><i class="fa-solid fa-arrow-left text-lg"></i></a>
+                    <h1 class="text-lg font-bold text-gray-800">{{ cohort.name }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 relative overflow-y-auto">
+            <div class="py-8 px-6 max-w-5xl mx-auto">
+
+                <!-- Información de la Cohorte -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Curso</p>
+                            <p class="text-sm font-semibold text-gray-800 mt-1">{{ course.title }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Estado</p>
+                            <p class="mt-1">
+                                {% if cohort.status == 'active' %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800"><i class="fa-solid fa-circle text-[8px] mr-1.5"></i> En Curso</span>
+                                {% elif cohort.is_expired %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800"><i class="fa-solid fa-circle-xmark text-[8px] mr-1.5"></i> Expirado</span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800"><i class="fa-solid fa-clock text-[8px] mr-1.5"></i> Finalizado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Periodo</p>
+                            <p class="text-sm text-gray-700 mt-1">
+                                {{ cohort.started_at|date:"d/m/Y" }}
+                                {% if cohort.completed_at %} — {{ cohort.completed_at|date:"d/m/Y" }}{% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Retención</p>
+                            <p class="text-sm text-gray-700 mt-1">
+                                {{ cohort.get_retention_months_display }}
+                                {% if cohort.expiration_date %}<br><span class="text-xs text-gray-400">Expira: {{ cohort.expiration_date|date:"d/m/Y" }}</span>{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Estudiantes -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-[#2b3494]"></i> Estudiantes ({{ students_data|length }})
+                        </h2>
+                    </div>
+
+                    {% if students_data %}
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Estudiante</th>
+                                <th class="px-6 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Entregas</th>
+                                <th class="px-6 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Calificadas</th>
+                                <th class="px-6 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            {% for data in students_data %}
+                            <tr class="hover:bg-gray-50/50">
+                                <td class="px-6 py-3">
+                                    <p class="text-sm font-semibold text-gray-800">{{ data.student.first_name }} {{ data.student.lastname }}</p>
+                                    <p class="text-xs text-gray-400">{{ data.student.email }}</p>
+                                </td>
+                                <td class="px-6 py-3 text-center text-sm text-gray-700">{{ data.submissions_count }}</td>
+                                <td class="px-6 py-3 text-center text-sm text-gray-700">{{ data.graded_count }}</td>
+                                <td class="px-6 py-3 text-center">
+                                    {% if data.avg_score != None %}
+                                    <span class="text-sm font-bold text-gray-800">{{ data.avg_score }}</span>
+                                    {% else %}
+                                    <span class="text-xs text-gray-400">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="p-8 text-center">
+                        <p class="text-gray-400 text-sm">No hay estudiantes registrados en esta cohorte.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

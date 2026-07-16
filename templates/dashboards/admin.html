@@ -142,6 +142,9 @@
                             <a href="{% url 'admin_edit_evaluation' c.id %}" class="text-[#f59e0b] hover:text-[#d97706] font-semibold cursor-pointer" title="Editar Evaluación">
                                 <i class="fa-solid fa-chart-pie"></i> Evaluación
                             </a>
+                            <a href="{% url 'admin_course_cohorts' course_id=c.id %}" class="text-[#8b5cf6] hover:text-[#7c3aed] font-semibold cursor-pointer" title="Gestionar Cohortes">
+                                <i class="fa-solid fa-users-rectangle"></i> Cohortes
+                            </a>
                             <a href="{% url 'course_update' c.id %}" class="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">
                                 <i class="fa-solid fa-pen-to-square"></i> Editar
                             </a>

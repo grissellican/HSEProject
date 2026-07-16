@@ -43,6 +43,12 @@ urlpatterns = [
     path('admin/curso/<int:course_id>/evaluacion/editar/', views.admin_edit_evaluation, name='admin_edit_evaluation'),
     path('admin/evaluacion-imagen/<int:image_id>/eliminar/', views.admin_evaluation_image_delete, name='admin_evaluation_image_delete'),
 
+    # Cohortes (Ciclo de vida de cursos)
+    path('admin/curso/<int:course_id>/cohortes/', views.admin_course_cohorts, name='admin_course_cohorts'),
+    path('admin/cohorte/crear/<int:course_id>/', views.admin_cohort_create, name='admin_cohort_create'),
+    path('admin/cohorte/<int:cohort_id>/cerrar/', views.admin_cohort_close, name='admin_cohort_close'),
+    path('admin/cohorte/<int:cohort_id>/', views.admin_cohort_detail, name='admin_cohort_detail'),
+
     # ========== RUTAS DEL DOCENTE ==========
     
     # Perfil Docente
