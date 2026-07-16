@@ -1864,7 +1864,7 @@ def student_exam_start(request, assignment_id):
                 if 'attempt' in locals() and attempt:
                     attempt.delete()
                 
-                existing.responses.all().delete()
+                existing.question_responses.all().delete()
                 submission = existing
             else:
                 # Create a new submission
