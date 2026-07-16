@@ -162,6 +162,9 @@
                         <i class="fa-solid fa-flag-checkered text-3xl text-green-600 mb-3"></i>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Examen Finalizado</h3>
                         <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Has completado todas las preguntas del examen.</p>
+                        {% if can_retake %}
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
+                        {% endif %}
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="inline-flex items-center px-5 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">
                             Volver al curso
                         </a>

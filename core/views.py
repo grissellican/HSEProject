@@ -1789,6 +1789,11 @@ def student_exam_detail(request, assignment_id):
     is_past_due = False
     if assignment.due_date and timezone.now() > assignment.due_date:
         is_past_due = True
+        
+    can_retake = False
+    if attempt and attempt.is_completed and not is_past_due:
+        if assignment.max_attempts == 0 or submission.attempts < assignment.max_attempts:
+            can_retake = True
     
     questions = assignment.questions.all()
     
@@ -1797,6 +1802,7 @@ def student_exam_detail(request, assignment_id):
         'submission': submission,
         'attempt': attempt,
         'is_past_due': is_past_due,
+        'can_retake': can_retake,
         'total_questions': questions.count(),
         'course': assignment.module.course,
         'module': assignment.module,
@@ -1817,7 +1823,7 @@ def student_exam_start(request, assignment_id):
         module__course__students=request.user
     )
     
-    # No permitir si ya tiene un intento
+    # No permitir si ya tiene un intento incompleto, o si agotó sus intentos
     existing = Submission.objects.filter(assignment=assignment, student=request.user).first()
     if existing:
         attempt = ExamAttempt.objects.filter(submission=existing).first()
@@ -1826,8 +1832,12 @@ def student_exam_start(request, assignment_id):
                 return redirect('student_exam_all', assignment_id=assignment_id)
             # Redirigir a la pregunta actual
             return redirect('student_exam_question', assignment_id=assignment_id, q=attempt.current_question_index)
-        messages.info(request, 'Ya has completado este examen.')
-        return redirect('student_exam_detail', assignment_id=assignment_id)
+        
+        # If they have an existing attempt, but it's completed
+        if attempt and attempt.is_completed:
+            if assignment.max_attempts > 0 and existing.attempts >= assignment.max_attempts:
+                messages.info(request, 'Ya has agotado tus intentos para este examen.')
+                return redirect('student_exam_detail', assignment_id=assignment_id)
     
     if request.method == 'POST':
         # Check due date
@@ -1835,11 +1845,25 @@ def student_exam_start(request, assignment_id):
             messages.error(request, 'La fecha límite ha pasado.')
             return redirect('student_exam_detail', assignment_id=assignment_id)
         
-        # Create submission + attempt
-        submission = Submission.objects.create(
-            assignment=assignment,
-            student=request.user
-        )
+        if existing:
+            # Reusing the existing submission for a new attempt
+            existing.attempts += 1
+            existing.score = None
+            existing.feedback = ''
+            existing.graded_at = None
+            existing.save()
+            
+            # Delete old attempt and responses
+            if hasattr(existing, 'exam_attempt'):
+                existing.exam_attempt.delete()
+            existing.responses.all().delete()
+            submission = existing
+        else:
+            # Create a new submission
+            submission = Submission.objects.create(
+                assignment=assignment,
+                student=request.user
+            )
         
         import random
         # Mezclar preguntas
