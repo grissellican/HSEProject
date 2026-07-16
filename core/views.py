@@ -1383,13 +1383,12 @@ def _get_student_course(request, course_id):
     course = Course.objects.filter(id=course_id, students=request.user, is_active=True).first()
     if course:
         return course
-    # Si no es estudiante activo, verificar acceso por cohorte (solo lectura)
     cohort = Cohort.objects.filter(
         course_id=course_id,
         students=request.user,
         status='completed'
     ).first()
-    if cohort and not cohort.is_expired:
+    if cohort and not cohort.is_expired(request.user):
         return cohort.course
     # Si no tiene acceso, 404
     return get_object_or_404(Course, id=course_id, students=request.user, is_active=True)
@@ -1400,19 +1399,22 @@ def _get_student_course(request, course_id):
 def student_dashboard(request):
     my_courses = Course.objects.filter(students=request.user, is_active=True)
     
-    # Cursos finalizados (de cohortes completadas, no expiradas)
     completed_cohorts = Cohort.objects.filter(
         students=request.user,
         status='completed'
     ).select_related('course')
     
+    # ¿Tiene el estudiante algún curso activo?
+    has_active_courses = Cohort.objects.filter(students=request.user, status='active').exists()
+    
     completed_courses = []
     for cohort in completed_cohorts:
-        if not cohort.is_expired:
+        if not cohort.is_expired(request.user):
             completed_courses.append({
                 'course': cohort.course,
                 'cohort': cohort,
-                'days_remaining': cohort.days_until_expiration,
+                'days_remaining': cohort.get_days_until_expiration(request.user),
+                'is_paused': has_active_courses
             })
     
     context = {

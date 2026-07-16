@@ -407,6 +407,7 @@ class Cohort(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='cohorts', verbose_name="Curso")
     name = models.CharField(max_length=100, verbose_name="Nombre de la Cohorte", help_text="Ej: Promoción Enero 2026, Grupo B - 2026-II")
     students = models.ManyToManyField(User, related_name='cohort_memberships', blank=True, verbose_name="Estudiantes")
+    expired_students = models.ManyToManyField(User, related_name='expired_cohort_memberships', blank=True, verbose_name="Estudiantes Expirados")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name="Estado")
     started_at = models.DateField(auto_now_add=True, verbose_name="Fecha de Inicio")
     completed_at = models.DateField(null=True, blank=True, verbose_name="Fecha de Término")
@@ -422,29 +423,46 @@ class Cohort(models.Model):
         verbose_name = "Cohorte"
         verbose_name_plural = "Cohortes"
 
-    @property
-    def expiration_date(self):
-        """Fecha en que se eliminará el acceso de estos estudiantes."""
-        if self.completed_at:
-            import datetime
-            return self.completed_at + datetime.timedelta(days=self.retention_months * 30)
+    def get_expiration_date(self, user):
+        """Fecha en que se eliminará el acceso para este estudiante."""
+        from django.db.models import Max
+        import datetime
+        
+        # 1. Verificar si el usuario tiene cohortes activas (pausa)
+        has_active = Cohort.objects.filter(students=user, status='active').exists()
+        if has_active:
+            return None
+            
+        # 2. Si no tiene activas, buscar la fecha de finalización más reciente de todas sus cohortes
+        latest_completed = Cohort.objects.filter(
+            students=user, status='completed'
+        ).aggregate(Max('completed_at'))['completed_at__max']
+        
+        if not latest_completed:
+            latest_completed = self.completed_at
+            
+        if latest_completed:
+            return latest_completed + datetime.timedelta(days=self.retention_months * 30)
+            
         return None
 
-    @property
-    def is_expired(self):
-        """¿Ya pasó el tiempo de retención?"""
+    def is_expired(self, user):
+        """¿Ya pasó el tiempo de retención para este usuario?"""
         from django.utils import timezone
-        if self.expiration_date:
-            return timezone.now().date() > self.expiration_date
+        exp_date = self.get_expiration_date(user)
+        if exp_date:
+            return timezone.now().date() > exp_date
         return False
 
-    @property
-    def days_until_expiration(self):
-        """Días restantes antes de expirar."""
+    def get_days_until_expiration(self, user):
+        """Días restantes antes de expirar para este usuario."""
         from django.utils import timezone
-        if self.expiration_date and not self.is_expired:
-            return (self.expiration_date - timezone.now().date()).days
-        return 0
+        exp_date = self.get_expiration_date(user)
+        if exp_date:
+            days = (exp_date - timezone.now().date()).days
+            return max(0, days)
+        # Si está en pausa, consideramos que tiene el tiempo completo
+        return self.retention_months * 30
 
     def __str__(self):
         return f"{self.name} — {self.course.title}"
