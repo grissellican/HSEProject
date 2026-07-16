@@ -1845,52 +1845,59 @@ def student_exam_start(request, assignment_id):
                 return redirect('student_exam_detail', assignment_id=assignment_id)
     
     if request.method == 'POST':
-        # Check due date
-        if assignment.due_date and timezone.now() > assignment.due_date:
-            messages.error(request, 'La fecha límite ha pasado.')
-            return redirect('student_exam_detail', assignment_id=assignment_id)
-        
-        if existing:
-            # Reusing the existing submission for a new attempt
-            existing.attempts += 1
-            existing.score = None
-            existing.feedback = ''
-            existing.graded_at = None
-            existing.save()
+        import traceback
+        try:
+            # Check due date
+            if assignment.due_date and timezone.now() > assignment.due_date:
+                messages.error(request, 'La fecha límite ha pasado.')
+                return redirect('student_exam_detail', assignment_id=assignment_id)
             
-            # Delete old attempt and responses
-            if 'attempt' in locals() and attempt:
-                attempt.delete()
-            existing.responses.all().delete()
-            submission = existing
-        else:
-            # Create a new submission
-            submission = Submission.objects.create(
-                assignment=assignment,
-                student=request.user
+            if existing:
+                # Reusing the existing submission for a new attempt
+                existing.attempts += 1
+                existing.score = None
+                existing.feedback = ''
+                existing.graded_at = None
+                existing.save()
+                
+                # Delete old attempt and responses
+                if 'attempt' in locals() and attempt:
+                    attempt.delete()
+                
+                existing.responses.all().delete()
+                submission = existing
+            else:
+                # Create a new submission
+                submission = Submission.objects.create(
+                    assignment=assignment,
+                    student=request.user
+                )
+            
+            import random
+            # Mezclar preguntas
+            q_ids = list(assignment.questions.values_list('id', flat=True))
+            random.shuffle(q_ids)
+            
+            # Mezclar alternativas de preguntas de opción múltiple
+            c_orders = {}
+            for question in assignment.questions.filter(question_type='multiple_choice'):
+                c_ids = list(question.choices.values_list('id', flat=True))
+                random.shuffle(c_ids)
+                c_orders[str(question.id)] = c_ids
+                
+            ExamAttempt.objects.create(
+                submission=submission,
+                current_question_index=0,
+                question_order=q_ids,
+                choice_orders=c_orders
             )
-        
-        import random
-        # Mezclar preguntas
-        q_ids = list(assignment.questions.values_list('id', flat=True))
-        random.shuffle(q_ids)
-        
-        # Mezclar alternativas de preguntas de opción múltiple
-        c_orders = {}
-        for question in assignment.questions.filter(question_type='multiple_choice'):
-            c_ids = list(question.choices.values_list('id', flat=True))
-            random.shuffle(c_ids)
-            c_orders[str(question.id)] = c_ids
-            
-        ExamAttempt.objects.create(
-            submission=submission,
-            current_question_index=0,
-            question_order=q_ids,
-            choice_orders=c_orders
-        )
-        if assignment.show_all_questions:
-            return redirect('student_exam_all', assignment_id=assignment_id)
-        return redirect('student_exam_question', assignment_id=assignment_id, q=0)
+            if assignment.show_all_questions:
+                return redirect('student_exam_all', assignment_id=assignment_id)
+            return redirect('student_exam_question', assignment_id=assignment_id, q=0)
+        except Exception as e:
+            print("ERROR IN EXAM START:", flush=True)
+            traceback.print_exc()
+            raise
     
     return redirect('student_exam_detail', assignment_id=assignment_id)
 
