@@ -108,7 +108,7 @@
                             <div class="space-y-3">
                                 {% for choice in choices %}
                                 <label class="block relative cursor-pointer group">
-                                    <input type="radio" name="choice" value="{{ choice.id }}" class="custom-radio peer sr-only" {% if existing_response and existing_response.selected_choice_id == choice.id %}checked{% endif %} required>
+                                    <input type="radio" name="choice" value="{{ choice.id }}" class="custom-radio peer sr-only" {% if existing_response and existing_response.selected_choice_id == choice.id %}checked{% endif %}>
                                     <div class="flex items-center gap-4 p-4 border border-gray-200 rounded-md transition-all duration-200 hover:border-[#38657f] hover:bg-gray-50">
                                         <div class="radio-inner w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition-colors">
                                             <div class="w-2.5 h-2.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
@@ -138,7 +138,7 @@
                                     <p class="text-sm font-bold text-gray-800" id="exam-selected-name"></p>
                                     <p class="text-xs text-gray-400 mt-2">Haz clic nuevamente para cambiar</p>
                                 </div>
-                                <input type="file" name="file_answer" id="exam-file-input" class="hidden" multiple required>
+                                <input type="file" name="file_answer" id="exam-file-input" class="hidden" multiple>
                             </div>
                             <div id="exam-selected-files-list" class="mt-4 space-y-2 empty:hidden"></div>
                             {% endif %}
