@@ -431,6 +431,20 @@ def teacher_assignment_create(request, module_id):
             assignment = form.save(commit=False)
             assignment.module = module
             assignment.save()
+            
+            # Guardar config para cohorte activa
+            from .models import CohortAssignmentConfig
+            active_cohort = module.course.cohorts.filter(status='active').first()
+            if active_cohort:
+                CohortAssignmentConfig.objects.update_or_create(
+                    cohort=active_cohort,
+                    assignment=assignment,
+                    defaults={
+                        'due_date': assignment.due_date,
+                        'is_visible': assignment.is_visible
+                    }
+                )
+                
             messages.success(request, f'{assignment.get_assignment_type_display()} "{assignment.title}" creada exitosamente.')
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
@@ -452,7 +466,21 @@ def teacher_assignment_update(request, assignment_id):
     if request.method == 'POST':
         form = AssignmentForm(request.POST, request.FILES, instance=assignment)
         if form.is_valid():
-            form.save()
+            assignment = form.save()
+            
+            # Actualizar config para cohorte activa
+            from .models import CohortAssignmentConfig
+            active_cohort = assignment.module.course.cohorts.filter(status='active').first()
+            if active_cohort:
+                CohortAssignmentConfig.objects.update_or_create(
+                    cohort=active_cohort,
+                    assignment=assignment,
+                    defaults={
+                        'due_date': assignment.due_date,
+                        'is_visible': assignment.is_visible
+                    }
+                )
+                
             messages.success(request, f'{assignment.get_assignment_type_display()} "{assignment.title}" actualizada.')
             return redirect('teacher_course_detail', course_id=assignment.module.course.id)
     else:
@@ -496,6 +524,10 @@ def teacher_announcement_create(request, module_id):
         if form.is_valid():
             ann = form.save(commit=False)
             ann.module = module
+            # Asignar a cohorte activa automáticamente
+            active_cohort = module.course.cohorts.filter(status='active').first()
+            if active_cohort:
+                ann.cohort = active_cohort
             ann.save()
             messages.success(request, f'Aviso "{ann.title}" creado exitosamente.')
             return redirect('teacher_course_detail', course_id=module.course.id)
@@ -591,6 +623,10 @@ def teacher_forum_create(request, module_id):
         if form.is_valid():
             forum = form.save(commit=False)
             forum.module = module
+            # Asignar a cohorte activa automáticamente
+            active_cohort = module.course.cohorts.filter(status='active').first()
+            if active_cohort:
+                forum.cohort = active_cohort
             forum.save()
             messages.success(request, f'Foro "{forum.title}" creado.')
             return redirect('teacher_course_detail', course_id=module.course.id)
@@ -822,6 +858,10 @@ def teacher_live_session_create(request, course_id):
         if form.is_valid():
             session = form.save(commit=False)
             session.course = course
+            # Asignar a cohorte activa automáticamente
+            active_cohort = course.cohorts.filter(status='active').first()
+            if active_cohort:
+                session.cohort = active_cohort
             session.save()
             messages.success(request, f'Sesión en vivo "{session.title}" programada exitosamente.')
             return redirect('teacher_course_detail', course_id=course.id)
@@ -1319,13 +1359,21 @@ def _student_required(view_func):
 
 def _student_sidebar_context(request):
     """Contexto compartido para el sidebar del estudiante."""
-    pending_count = Assignment.objects.filter(
+    # Filtrado a nivel Python para usar las configs de cohorte
+    pending_count = 0
+    assignments = Assignment.objects.filter(
         module__course__students=request.user,
-        is_visible=True,
-        due_date__gte=timezone.now()
+        module__is_visible=True,
+        is_visible=True
     ).exclude(
         submissions__student=request.user
-    ).count()
+    )
+    for asg in assignments:
+        if not asg.get_is_visible_for_user(request.user): continue
+        due_date = asg.get_due_date_for_user(request.user)
+        if due_date is None or due_date >= timezone.now():
+            pending_count += 1
+            
     return {'pending_count': pending_count}
 
 
@@ -1403,12 +1451,12 @@ def student_grades(request):
 # --- ACTIVIDADES PENDIENTES ---
 @_student_required
 def student_pending(request):
+    active_cohorts = Cohort.objects.filter(students=request.user, status='active').values_list('id', flat=True)
+    
     pending_assignments = Assignment.objects.filter(
         module__course__students=request.user,
         module__is_visible=True,
         is_visible=True,
-    ).filter(
-        Q(due_date__gte=timezone.now()) | Q(due_date__isnull=True)
     ).exclude(
         submissions__student=request.user
     ).select_related('module__course')
@@ -1418,6 +1466,8 @@ def student_pending(request):
         module__is_visible=True,
         is_visible=True,
     ).filter(
+        Q(cohort__in=active_cohorts) | Q(cohort__isnull=True)
+    ).filter(
         Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True)
     ).exclude(
         replies__author=request.user
@@ -1425,7 +1475,11 @@ def student_pending(request):
     
     pending_items = []
     for asg in pending_assignments:
-        pending_items.append({'type': 'assignment', 'obj': asg, 'date': asg.due_date})
+        if not asg.get_is_visible_for_user(request.user): continue
+        due_date = asg.get_due_date_for_user(request.user)
+        if due_date is None or due_date >= timezone.now():
+            pending_items.append({'type': 'assignment', 'obj': asg, 'date': due_date})
+            
     for forum in pending_forums:
         pending_items.append({'type': 'forum', 'obj': forum, 'date': forum.end_date})
         
@@ -1494,7 +1548,16 @@ def student_course_teacher(request, course_id):
 @_student_required
 def student_course_live(request, course_id):
     course = _get_student_course(request, course_id)
-    sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
+    student_cohort = Cohort.objects.filter(course=course, students=request.user).first()
+    
+    sessions = course.live_sessions.all()
+    if student_cohort:
+        sessions = sessions.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+    else:
+        sessions = sessions.filter(cohort__isnull=True)
+        
+    sessions = sessions.order_by('-scheduled_date', '-start_time')
+    
     context = {
         'course': course,
         'sessions': sessions,
@@ -1507,10 +1570,23 @@ def student_course_live(request, course_id):
 # --- MÓDULOS DEL CURSO ---
 @_student_required
 def student_course_modules(request, course_id):
+    from django.db.models import Prefetch
     course = _get_student_course(request, course_id)
+    student_cohort = Cohort.objects.filter(course=course, students=request.user).first()
+    
+    if student_cohort:
+        announcements_qs = ModuleAnnouncement.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+        forums_qs = ModuleForum.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+    else:
+        announcements_qs = ModuleAnnouncement.objects.filter(cohort__isnull=True)
+        forums_qs = ModuleForum.objects.filter(cohort__isnull=True)
+        
     modules = course.modules.filter(is_visible=True).prefetch_related(
-        'materials', 'assignments', 'announcements', 'links', 'forums'
+        'materials', 'assignments', 'links',
+        Prefetch('announcements', queryset=announcements_qs),
+        Prefetch('forums', queryset=forums_qs)
     )
+    
     context = {
         'course': course,
         'modules': modules,
@@ -1669,7 +1745,8 @@ def student_assignment_detail(request, assignment_id):
     # Check if past due date
     can_submit = True
     is_past_due = False
-    if assignment.due_date and timezone.now() > assignment.due_date:
+    due_date = assignment.get_due_date_for_user(request.user)
+    if due_date and timezone.now() > due_date:
         is_past_due = True
         can_submit = False
     if submission:
@@ -1683,6 +1760,7 @@ def student_assignment_detail(request, assignment_id):
         'submission': submission,
         'can_submit': can_submit,
         'is_past_due': is_past_due,
+        'due_date': due_date,
         'form': form,
         'course': assignment.module.course,
         'module': assignment.module,
@@ -1711,7 +1789,8 @@ def student_submit_assignment(request, assignment_id):
         return redirect('student_assignment_detail', assignment_id=assignment_id)
     
     # No permitir si pasó la fecha
-    if assignment.due_date and timezone.now() > assignment.due_date:
+    due_date = assignment.get_due_date_for_user(request.user)
+    if due_date and timezone.now() > due_date:
         messages.error(request, 'La fecha límite de entrega ha pasado.')
         return redirect('student_assignment_detail', assignment_id=assignment_id)
     
@@ -1768,7 +1847,8 @@ def student_evaluation_detail(request, assignment_id):
     
     can_submit = True
     is_past_due = False
-    if assignment.due_date and timezone.now() > assignment.due_date:
+    due_date = assignment.get_due_date_for_user(request.user)
+    if due_date and timezone.now() > due_date:
         is_past_due = True
         can_submit = False
     if submission:
@@ -1783,6 +1863,7 @@ def student_evaluation_detail(request, assignment_id):
         'has_accepted': has_accepted,
         'can_submit': can_submit,
         'is_past_due': is_past_due,
+        'due_date': due_date,
         'form': form,
         'course': assignment.module.course,
         'module': assignment.module,
@@ -1817,7 +1898,8 @@ def student_exam_detail(request, assignment_id):
         attempt = ExamAttempt.objects.filter(submission=submission).first()
         
     is_past_due = False
-    if assignment.due_date and timezone.now() > assignment.due_date:
+    due_date = assignment.get_due_date_for_user(request.user)
+    if due_date and timezone.now() > due_date:
         is_past_due = True
         
     can_retake = False
@@ -1836,6 +1918,7 @@ def student_exam_detail(request, assignment_id):
         'submission': submission,
         'attempt': attempt,
         'is_past_due': is_past_due,
+        'due_date': due_date,
         'can_retake': can_retake,
         'remaining_attempts': remaining_attempts,
         'total_questions': questions.count(),
@@ -1878,7 +1961,8 @@ def student_exam_start(request, assignment_id):
         import traceback
         try:
             # Check due date
-            if assignment.due_date and timezone.now() > assignment.due_date:
+            due_date = assignment.get_due_date_for_user(request.user)
+            if due_date and timezone.now() > due_date:
                 messages.error(request, 'La fecha límite ha pasado.')
                 return redirect('student_exam_detail', assignment_id=assignment_id)
             
@@ -2659,30 +2743,11 @@ def admin_cohort_close(request, cohort_id):
                 cohort__isnull=True
             ).update(cohort=cohort)
             
-            # 3. Limpiar clases en vivo si se solicitó
-            if form.cleaned_data.get('clean_live_sessions'):
-                deleted_sessions = course.live_sessions.all().delete()[0]
-            else:
-                deleted_sessions = 0
-            
-            # 4. Limpiar foros si se solicitó
-            if form.cleaned_data.get('clean_forums'):
-                deleted_forums = 0
-                for module in course.modules.all():
-                    count = module.forums.all().delete()[0]
-                    deleted_forums += count
-            else:
-                deleted_forums = 0
-            
-            # 5. Remover estudiantes de la cohorte del curso activo
+            # 3. Remover estudiantes de la cohorte del curso activo
             for student in cohort_students:
                 course.students.remove(student)
             
             msg = f'Cohorte "{cohort.name}" finalizada exitosamente.'
-            if deleted_sessions:
-                msg += f' Se eliminaron {deleted_sessions} clases en vivo.'
-            if deleted_forums:
-                msg += f' Se eliminaron {deleted_forums} foros.'
             messages.success(request, msg)
             return redirect('admin_course_cohorts', course_id=course.id)
     else:

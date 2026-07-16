@@ -204,6 +204,24 @@ class Assignment(models.Model):
     def __str__(self):
         return f"{self.get_assignment_type_display()}: {self.title}"
 
+    def get_due_date_for_user(self, user):
+        from .models import Cohort
+        cohort = Cohort.objects.filter(course=self.module.course, students=user).first()
+        if cohort:
+            config = self.cohort_configs.filter(cohort=cohort).first()
+            if config:
+                return config.due_date
+        return self.due_date
+        
+    def get_is_visible_for_user(self, user):
+        from .models import Cohort
+        cohort = Cohort.objects.filter(course=self.module.course, students=user).first()
+        if cohort:
+            config = self.cohort_configs.filter(cohort=cohort).first()
+            if config:
+                return config.is_visible
+        return self.is_visible
+
     @property
     def filename(self):
         if self.attached_file:
@@ -300,6 +318,7 @@ class LiveSession(models.Model):
         ('otro', 'Otro'),
     )
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='live_sessions', verbose_name="Curso")
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='live_sessions', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, esta sesión solo será visible para esta cohorte.")
     title = models.CharField(max_length=200, verbose_name="Título de la Sesión")
     description = models.TextField(blank=True, verbose_name="Descripción")
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='meet', verbose_name="Plataforma")
@@ -380,8 +399,10 @@ class Cohort(models.Model):
         (36, '3 años'),
     )
     STATUS_CHOICES = (
-        ('active', 'En Curso'),
-        ('completed', 'Finalizado'),
+        ('scheduled', 'Programada'),
+        ('active', 'Activa'),
+        ('completed', 'Finalizada'),
+        ('archived', 'Archivada'),
     )
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='cohorts', verbose_name="Curso")
     name = models.CharField(max_length=100, verbose_name="Nombre de la Cohorte", help_text="Ej: Promoción Enero 2026, Grupo B - 2026-II")
@@ -427,6 +448,22 @@ class Cohort(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.course.title}"
+
+
+class CohortAssignmentConfig(models.Model):
+    """Configuración específica de una tarea/evaluación para una cohorte en particular."""
+    cohort = models.ForeignKey(Cohort, on_delete=models.CASCADE, related_name='assignment_configs')
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='cohort_configs')
+    due_date = models.DateTimeField(null=True, blank=True, verbose_name="Fecha Límite (Cohorte)")
+    is_visible = models.BooleanField(default=True, verbose_name="Visible para la cohorte")
+    
+    class Meta:
+        unique_together = ('cohort', 'assignment')
+        verbose_name = "Configuración de Tarea por Cohorte"
+        verbose_name_plural = "Configuraciones de Tareas por Cohorte"
+
+    def __str__(self):
+        return f"Configuración de {self.assignment.title} para {self.cohort.name}"
 
 
 # --- MODELOS PARA EXÁMENES ONLINE ---
@@ -504,6 +541,7 @@ class ExamAttempt(models.Model):
 
 class ModuleAnnouncement(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='announcements', verbose_name="Módulo")
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='announcements', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, este aviso solo será visible para esta cohorte.")
     title = models.CharField(max_length=200, verbose_name="Título del Aviso")
     content = models.TextField(verbose_name="Contenido")
     publish_date = models.DateTimeField(verbose_name="Fecha de Publicación")
@@ -533,6 +571,7 @@ class ModuleLink(models.Model):
 
 class ModuleForum(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='forums', verbose_name="Módulo")
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='forums', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, este foro solo será visible para esta cohorte.")
     title = models.CharField(max_length=200, verbose_name="Título del Foro")
     content = models.TextField(verbose_name="Contenido del Foro")
     FORUM_TYPES = (

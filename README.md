@@ -183,12 +183,20 @@ Para ejecutar la limpieza de cohortes expiradas (eliminar el acceso de estudiant
 python manage.py cleanup_expired_cohorts
 ```
 
-Se recomienda configurar este comando como un **cron job** que se ejecute diariamente:
+Se recomienda configurar este comando como un **cron job** que se ejecute diariamente en tu VPS (ej. DigitalOcean, AWS):
 
-```bash
-# Ejecutar todos los días a las 3:00 AM
-0 3 * * * cd /ruta/al/proyecto && /ruta/al/venv/bin/python manage.py cleanup_expired_cohorts
-```
+1. Accede a tu servidor por SSH.
+2. Abre la configuración de tareas programadas del usuario que ejecuta tu aplicación (ej. `ubuntu` o `root`):
+   ```bash
+   crontab -e
+   ```
+3. Añade la siguiente línea al final del archivo para que se ejecute todos los días a las 3:00 AM. Asegúrate de reemplazar las rutas por las rutas absolutas correctas de tu VPS:
+
+   ```bash
+   # Ejecutar todos los días a las 3:00 AM
+   0 3 * * * cd /ruta/absoluta/al/HSEProject-main && /ruta/absoluta/al/venv/bin/python manage.py cleanup_expired_cohorts >> /ruta/absoluta/al/HSEProject-main/cron_cleanup.log 2>&1
+   ```
+4. Guarda y cierra el archivo. El cron job comenzará a ejecutarse automáticamente, y cualquier salida o error quedará guardado en el archivo `cron_cleanup.log`.
 
 ---
 

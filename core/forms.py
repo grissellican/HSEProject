@@ -128,17 +128,6 @@ class CohortCloseForm(forms.Form):
         widget=forms.Select(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
         label="Tiempo de Retención"
     )
-    clean_live_sessions = forms.BooleanField(
-        required=False, initial=True,
-        label="Eliminar clases en vivo programadas",
-        widget=forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'})
-    )
-    clean_forums = forms.BooleanField(
-        required=False, initial=True,
-        label="Eliminar foros y sus respuestas",
-        widget=forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'})
-    )
-
 
 # ========== FORMULARIOS DEL DOCENTE ==========
 

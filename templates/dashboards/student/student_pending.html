@@ -51,9 +51,9 @@
                             <p class="text-xs text-gray-400 mt-0.5">{{ asg.get_assignment_type_display }} · {{ asg.module.course.title }} · {{ asg.module.title }}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
-                            {% if asg.due_date %}
-                            <p class="text-xs font-bold text-gray-700">{{ asg.due_date|date:"d/m/Y" }}</p>
-                            <p class="text-[10px] text-gray-400">{{ asg.due_date|time:"H:i" }}</p>
+                            {% if item.date %}
+                            <p class="text-xs font-bold text-gray-700">{{ item.date|date:"d/m/Y" }}</p>
+                            <p class="text-[10px] text-gray-400">{{ item.date|time:"H:i" }}</p>
                             {% else %}
                             <p class="text-xs text-gray-400 font-semibold">Sin límite</p>
                             {% endif %}
@@ -75,9 +75,9 @@
                             <p class="text-xs text-gray-400 mt-0.5">Foro de Discusión · {{ forum.module.course.title }} · {{ forum.module.title }}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
-                            {% if forum.end_date %}
-                            <p class="text-xs font-bold text-gray-700">{{ forum.end_date|date:"d/m/Y" }}</p>
-                            <p class="text-[10px] text-gray-400">{{ forum.end_date|time:"H:i" }}</p>
+                            {% if item.date %}
+                            <p class="text-xs font-bold text-gray-700">{{ item.date|date:"d/m/Y" }}</p>
+                            <p class="text-[10px] text-gray-400">{{ item.date|time:"H:i" }}</p>
                             {% else %}
                             <p class="text-xs text-gray-400 font-semibold">Sin límite</p>
                             {% endif %}
