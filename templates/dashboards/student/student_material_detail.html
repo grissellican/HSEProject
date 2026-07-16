@@ -83,7 +83,9 @@
                         {% if material.material_type == 'pdf' %}
                         <iframe src="{{ material.file.url }}" class="w-full h-full border-0" title="Vista previa PDF"></iframe>
                         {% elif material.is_office_document %}
-                        <iframe src="https://docs.google.com/gview?url={% if 'http' in material.file.url %}{{ material.file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ material.file.url }}{% endif %}&embedded=true" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
+                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={% if 'http' in material.file.url %}{{ material.file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ material.file.url }}{% endif %}" class="w-full h-full border-0" title="Vista previa Documento"></iframe>
+                        {% elif material.is_csv %}
+                        <iframe src="https://docs.google.com/gview?url={% if 'http' in material.file.url %}{{ material.file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ material.file.url }}{% endif %}&embedded=true" class="w-full h-full border-0" title="Vista previa CSV"></iframe>
                         {% endif %}
                     </div>
                 </div>

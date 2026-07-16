@@ -165,6 +165,14 @@ class Material(models.Model):
             return ext in ['.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx']
         return False
 
+    @property
+    def is_csv(self):
+        import os
+        if self.file and self.file.name:
+            ext = os.path.splitext(self.file.name)[1].lower()
+            return ext == '.csv'
+        return False
+
     def __str__(self):
         return self.title
 
@@ -216,6 +224,12 @@ class Assignment(models.Model):
             return any(self.attached_file.name.lower().endswith(ext) for ext in exts)
         return False
 
+    @property
+    def is_csv(self):
+        if self.attached_file:
+            return self.attached_file.name.lower().endswith('.csv')
+        return False
+
 
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions', verbose_name="Tarea/Evaluación")
@@ -261,6 +275,14 @@ class SubmissionFile(models.Model):
         if self.file and self.file.name:
             ext = os.path.splitext(self.file.name)[1].lower()
             return ext in ['.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx']
+        return False
+
+    @property
+    def is_csv(self):
+        import os
+        if self.file and self.file.name:
+            ext = os.path.splitext(self.file.name)[1].lower()
+            return ext == '.csv'
         return False
 
     @property

@@ -123,11 +123,13 @@
                         </a>
                     </div>
                 </div>
-                {% if s_file.is_pdf or s_file.is_office_document %}
+                {% if s_file.is_pdf or s_file.is_office_document or s_file.is_csv %}
                 <div id="viewer-{{ s_file.id }}" class="hidden w-full transition-all duration-300 mt-2 border border-amber-200 rounded-md overflow-hidden bg-gray-50" style="height: 60vh;">
                     {% if s_file.is_pdf %}
                     <iframe src="{{ s_file.file.url }}" class="w-full h-full border-0"></iframe>
                     {% elif s_file.is_office_document %}
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={% if 'http' in s_file.file.url %}{{ s_file.file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ s_file.file.url }}{% endif %}" class="w-full h-full border-0"></iframe>
+                    {% elif s_file.is_csv %}
                     <iframe src="https://docs.google.com/gview?url={% if 'http' in s_file.file.url %}{{ s_file.file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ s_file.file.url }}{% endif %}&embedded=true" class="w-full h-full border-0"></iframe>
                     {% endif %}
                 </div>

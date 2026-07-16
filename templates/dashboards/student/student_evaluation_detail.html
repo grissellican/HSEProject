@@ -99,6 +99,8 @@
                                     {% if assignment.is_pdf %}
                                     <iframe src="{{ assignment.attached_file.url }}" class="w-full h-[600px] bg-gray-50" frameborder="0"></iframe>
                                     {% elif assignment.is_office_document %}
+                                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={% if 'http' in assignment.attached_file.url %}{{ assignment.attached_file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ assignment.attached_file.url }}{% endif %}" class="w-full h-[600px] bg-gray-50" frameborder="0"></iframe>
+                                    {% elif assignment.is_csv %}
                                     <iframe src="https://docs.google.com/gview?url={% if 'http' in assignment.attached_file.url %}{{ assignment.attached_file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ assignment.attached_file.url }}{% endif %}&embedded=true" class="w-full h-[600px] bg-gray-50" frameborder="0"></iframe>
                                     {% else %}
                                     <div class="p-8 text-center text-gray-500 flex flex-col items-center justify-center h-[300px] bg-gray-50">
