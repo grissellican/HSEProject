@@ -81,10 +81,39 @@
                                 {% if assignment.attached_file %}
                                 <div class="{% if assignment.description or assignment.delivery_specifications %}pt-4 border-t border-gray-200{% endif %}">
                                     <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">Documento de guía</h3>
-                                    <a href="{{ assignment.attached_file.url }}" download class="inline-flex items-center text-[#38657f] hover:text-[#2c5065] text-sm font-semibold transition-colors">
-                                        <i class="fa-solid fa-download mr-1.5"></i> Descargar Documento ({{ assignment.filename }})
-                                    </a>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <button onclick="toggleDocument()" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">
+                                            <i class="fa-solid fa-eye mr-2"></i> Ver Documento
+                                        </button>
+                                        <a href="{{ assignment.attached_file.url }}" download class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors">
+                                            <i class="fa-solid fa-download mr-2"></i> Descargar ({{ assignment.filename }})
+                                        </a>
+                                    </div>
                                 </div>
+                                
+                                <div id="document-viewer" class="hidden mt-4 border border-gray-200 rounded overflow-hidden">
+                                    <div class="bg-gray-100 px-3 py-2 flex justify-between items-center border-b border-gray-200">
+                                        <span class="text-xs font-bold text-gray-600"><i class="fa-solid fa-file mr-1.5"></i> {{ assignment.filename }}</span>
+                                        <button onclick="toggleDocument()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark text-lg"></i></button>
+                                    </div>
+                                    {% if assignment.is_pdf %}
+                                    <iframe src="{{ assignment.attached_file.url }}" class="w-full h-[600px] bg-gray-50" frameborder="0"></iframe>
+                                    {% elif assignment.is_office_document %}
+                                    <iframe src="https://docs.google.com/gview?url={% if 'http' in assignment.attached_file.url %}{{ assignment.attached_file.url|urlencode }}{% else %}https://{{ request.get_host }}{{ assignment.attached_file.url }}{% endif %}&embedded=true" class="w-full h-[600px] bg-gray-50" frameborder="0"></iframe>
+                                    {% else %}
+                                    <div class="p-8 text-center text-gray-500 flex flex-col items-center justify-center h-[300px] bg-gray-50">
+                                        <i class="fa-solid fa-file-excel text-4xl text-gray-400 mb-3"></i>
+                                        <p>No hay vista previa disponible para este tipo de archivo.</p>
+                                        <a href="{{ assignment.attached_file.url }}" download class="mt-4 inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors"><i class="fa-solid fa-download mr-2"></i> Descargar</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <script>
+                                    function toggleDocument() {
+                                        const viewer = document.getElementById('document-viewer');
+                                        viewer.classList.toggle('hidden');
+                                    }
+                                </script>
                                 {% endif %}
                             </div>
                             {% endif %}

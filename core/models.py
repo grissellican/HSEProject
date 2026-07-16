@@ -203,6 +203,19 @@ class Assignment(models.Model):
             return os.path.basename(self.attached_file.name)
         return ""
 
+    @property
+    def is_pdf(self):
+        if self.attached_file:
+            return self.attached_file.name.lower().endswith('.pdf')
+        return False
+
+    @property
+    def is_office_document(self):
+        if self.attached_file:
+            exts = ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']
+            return any(self.attached_file.name.lower().endswith(ext) for ext in exts)
+        return False
+
 
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions', verbose_name="Tarea/Evaluación")
