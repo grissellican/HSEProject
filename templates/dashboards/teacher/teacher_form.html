@@ -65,7 +65,7 @@
 </head>
 <body class="bg-[#f5f7fa] min-h-full py-12 px-4 sm:px-6 flex items-start justify-center" style="font-family:'Inter',sans-serif;">
 
-    <div class="max-w-xl w-full bg-white border border-gray-200 shadow-sm overflow-hidden mt-4">
+    <div class="{% if submission %}max-w-4xl{% else %}max-w-xl{% endif %} w-full bg-white border border-gray-200 shadow-sm overflow-hidden mt-4">
 
         <!-- Header -->
         <div class="px-6 py-4 flex items-center justify-between" style="background: #38657f;">
