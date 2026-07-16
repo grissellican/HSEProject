@@ -96,23 +96,7 @@
                         </div>
                     </div>
 
-                    <!-- Action Area -->
-                    {% if is_past_due and not submission %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
-                        <i class="fa-solid fa-clock-rotate-left text-3xl text-red-500 mb-3"></i>
-                        <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">La fecha límite para este examen ha pasado y no realizaste ninguna entrega.</p>
-                        <a href="{% url 'student_course_home' course_id=course.id %}" class="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">Volver al curso</a>
-                    </div>
-                    {% elif not attempt %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
-                        <i class="fa-solid fa-clipboard-question text-4xl text-[#38657f] mb-4"></i>
-                        <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Una vez que comiences, el tiempo empezará a correr y no podrás pausarlo.</p>
-                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
-                            Empezar Examen
-                        </button>
-                    </div>
-
-                    <!-- Modal Confirmation -->
+                    <!-- Modal Confirmation (Placed outside conditionals) -->
                     <div id="start-exam-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
                         <div class="bg-white rounded-md shadow-lg max-w-md w-full overflow-hidden">
                             <div class="p-6 text-center">
@@ -143,6 +127,22 @@
                                 </form>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Action Area -->
+                    {% if is_past_due and not submission %}
+                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
+                        <i class="fa-solid fa-clock-rotate-left text-3xl text-red-500 mb-3"></i>
+                        <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">La fecha límite para este examen ha pasado y no realizaste ninguna entrega.</p>
+                        <a href="{% url 'student_course_home' course_id=course.id %}" class="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">Volver al curso</a>
+                    </div>
+                    {% elif not attempt %}
+                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fa-solid fa-clipboard-question text-4xl text-[#38657f] mb-4"></i>
+                        <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Una vez que comiences, el tiempo empezará a correr y no podrás pausarlo.</p>
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
+                            Empezar Examen
+                        </button>
                     </div>
 
                     {% elif not attempt.is_completed %}
