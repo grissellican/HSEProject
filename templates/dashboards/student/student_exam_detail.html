@@ -130,7 +130,7 @@
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>El examen consta de <strong>{{ total_questions }} preguntas</strong> presentadas una por una.</p>
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i><strong>
                                         {% if assignment.max_attempts == 0 %}Tienes intentos ilimitados.{% elif assignment.max_attempts == 1 %}Solo tienes un intento.{% else %}Tienes {{ assignment.max_attempts }} intentos.{% endif %}
-                                    </strong> No podrás retroceder ni pausar el tiempo.</p>
+                                    </strong> {% if assignment.allow_backtracking %}Podrás retroceder a preguntas anteriores, pero no podrás pausar el tiempo.{% else %}No podrás retroceder ni pausar el tiempo.{% endif %}</p>
                                     {% endif %}
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>Verifica tu <strong>conexión a internet</strong>.</p>
                                 </div>
