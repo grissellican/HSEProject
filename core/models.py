@@ -196,6 +196,13 @@ class Assignment(models.Model):
     def __str__(self):
         return f"{self.get_assignment_type_display()}: {self.title}"
 
+    @property
+    def filename(self):
+        if self.attached_file:
+            import os
+            return os.path.basename(self.attached_file.name)
+        return ""
+
 
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions', verbose_name="Tarea/Evaluación")
