@@ -196,7 +196,7 @@ def teacher_dashboard(request):
 @_teacher_required
 def teacher_course_detail(request, course_id):
     course = _get_teacher_course(request, course_id)
-    modules = course.modules.prefetch_related('materials', 'assignments')
+    modules = course.modules.filter(cohort__isnull=True).prefetch_related('materials', 'assignments')
     live_sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
     students = course.students.all()
     
@@ -254,10 +254,19 @@ def course_syllabus(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     # Verificar acceso (si es profe o estudiante del curso, o admin)
     
+    if request.user.role == 'student':
+        cohort = Cohort.objects.filter(course=course, students=request.user).first()
+        if cohort and cohort.status in ['completed', 'archived']:
+            modules = course.modules.filter(is_visible=True, cohort=cohort)
+        else:
+            modules = course.modules.filter(is_visible=True, cohort__isnull=True)
+    else:
+        modules = course.modules.filter(cohort__isnull=True)
+        
     # Preparar contexto
     context = {
         'course': course,
-        'modules': course.modules.filter(is_visible=True) if request.user.role == 'student' else course.modules.all()
+        'modules': modules
     }
     
     if request.user.role == 'student':
@@ -310,7 +319,7 @@ def teacher_module_create(request, course_id):
             return redirect('teacher_course_detail', course_id=course.id)
     else:
         # Auto-set order to next sequential number
-        next_order = (course.modules.count()) + 1
+        next_order = (course.modules.filter(cohort__isnull=True).count()) + 1
         form = ModuleForm(initial={'order': next_order})
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
@@ -1596,13 +1605,20 @@ def student_course_modules(request, course_id):
     student_cohort = Cohort.objects.filter(course=course, students=request.user).first()
     
     if student_cohort:
-        announcements_qs = ModuleAnnouncement.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
-        forums_qs = ModuleForum.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+        if student_cohort.status in ['completed', 'archived']:
+            announcements_qs = ModuleAnnouncement.objects.filter(cohort=student_cohort)
+            forums_qs = ModuleForum.objects.filter(cohort=student_cohort)
+            modules_qs = course.modules.filter(cohort=student_cohort)
+        else:
+            announcements_qs = ModuleAnnouncement.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+            forums_qs = ModuleForum.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+            modules_qs = course.modules.filter(cohort__isnull=True)
     else:
         announcements_qs = ModuleAnnouncement.objects.filter(cohort__isnull=True)
         forums_qs = ModuleForum.objects.filter(cohort__isnull=True)
+        modules_qs = course.modules.filter(cohort__isnull=True)
         
-    modules = course.modules.filter(is_visible=True).prefetch_related(
+    modules = modules_qs.filter(is_visible=True).prefetch_related(
         'materials', 'assignments', 'links',
         Prefetch('announcements', queryset=announcements_qs),
         Prefetch('forums', queryset=forums_qs)
@@ -1869,12 +1885,19 @@ def student_evaluation_detail(request, assignment_id):
     can_submit = True
     is_past_due = False
     due_date = assignment.get_due_date_for_user(request.user)
-    if due_date and timezone.now() > due_date:
-        is_past_due = True
+    
+    student_cohort = Cohort.objects.filter(course=assignment.module.course, students=request.user).first()
+    is_frozen_cohort = student_cohort and student_cohort.status in ['completed', 'archived']
+    
+    if is_frozen_cohort:
         can_submit = False
-    if submission:
-        if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
+    else:
+        if due_date and timezone.now() > due_date:
+            is_past_due = True
             can_submit = False
+        if submission:
+            if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
+                can_submit = False
     
     form = StudentSubmissionForm()
     
@@ -1889,6 +1912,7 @@ def student_evaluation_detail(request, assignment_id):
         'course': assignment.module.course,
         'module': assignment.module,
         'sidebar_active': 'dashboard',
+        'is_frozen_cohort': is_frozen_cohort,
     }
     context.update(_student_sidebar_context(request))
     return render(request, 'dashboards/student/student_evaluation_detail.html', context)
@@ -1925,12 +1949,17 @@ def student_exam_detail(request, assignment_id):
         
     can_retake = False
     remaining_attempts = None
-    if attempt and attempt.is_completed and not is_past_due:
-        if assignment.max_attempts == 0:
-            can_retake = True
-        elif submission.attempts < assignment.max_attempts:
-            can_retake = True
-            remaining_attempts = assignment.max_attempts - submission.attempts
+    
+    student_cohort = Cohort.objects.filter(course=assignment.module.course, students=request.user).first()
+    is_frozen_cohort = student_cohort and student_cohort.status in ['completed', 'archived']
+    
+    if not is_frozen_cohort:
+        if attempt and attempt.is_completed and not is_past_due:
+            if assignment.max_attempts == 0:
+                can_retake = True
+            elif submission.attempts < assignment.max_attempts:
+                can_retake = True
+                remaining_attempts = assignment.max_attempts - submission.attempts
     
     questions = assignment.questions.all()
     
@@ -1946,6 +1975,7 @@ def student_exam_detail(request, assignment_id):
         'course': assignment.module.course,
         'module': assignment.module,
         'sidebar_active': 'dashboard',
+        'is_frozen_cohort': is_frozen_cohort,
     }
     context.update(_student_sidebar_context(request))
     return render(request, 'dashboards/student/student_exam_detail.html', context)
@@ -2767,6 +2797,10 @@ def admin_cohort_close(request, cohort_id):
             # 3. Remover estudiantes de la cohorte del curso activo
             for student in cohort_students:
                 course.students.remove(student)
+                
+            # 4. Congelar el contenido del curso para esta cohorte
+            from core.utils import freeze_cohort_content
+            freeze_cohort_content(cohort)
             
             msg = f'Cohorte "{cohort.name}" finalizada exitosamente.'
             messages.success(request, msg)

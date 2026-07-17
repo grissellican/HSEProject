@@ -39,6 +39,10 @@ class Command(BaseCommand):
             for student in cohort_students:
                 course.students.remove(student)
                 
+            # 4. Congelar contenido del curso para esta cohorte
+            from core.utils import freeze_cohort_content
+            freeze_cohort_content(cohort)
+                
             self.stdout.write(f'  - Cohorte marcada como completada y {cohort_students.count()} estudiantes removidos del curso activo.')
             cohorts_processed += 1
 

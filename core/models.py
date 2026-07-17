@@ -84,6 +84,7 @@ class EvaluationImage(models.Model):
 
 class SyllabusUnit(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="syllabus_units", verbose_name="Curso")
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, null=True, blank=True, related_name="frozen_syllabus", verbose_name="Cohorte (Congelado)")
     title = models.CharField(max_length=255, verbose_name="Título de la Unidad")
     order = models.PositiveIntegerField(default=0, verbose_name="Orden")
 
@@ -108,6 +109,7 @@ class Enrollment(models.Model):
 
 class Module(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules', verbose_name="Curso")
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, null=True, blank=True, related_name="frozen_modules", verbose_name="Cohorte (Congelado)")
     title = models.CharField(max_length=200, verbose_name="Título del Módulo")
     description = models.TextField(blank=True, verbose_name="Descripción")
     order = models.PositiveIntegerField(default=0, verbose_name="Orden")
