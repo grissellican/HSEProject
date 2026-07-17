@@ -103,9 +103,10 @@ class CohortForm(forms.ModelForm):
 
     class Meta:
         model = Cohort
-        fields = ['name', 'retention_months', 'students']
+        fields = ['name', 'scheduled_end_date', 'retention_months', 'students']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm', 'placeholder': 'Ej: Promoción Enero 2026'}),
+            'scheduled_end_date': forms.DateInput(attrs={'type': 'date', 'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
             'retention_months': forms.Select(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
         }
 

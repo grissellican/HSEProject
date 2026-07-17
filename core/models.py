@@ -410,6 +410,7 @@ class Cohort(models.Model):
     expired_students = models.ManyToManyField(User, related_name='expired_cohort_memberships', blank=True, verbose_name="Estudiantes Expirados")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name="Estado")
     started_at = models.DateField(auto_now_add=True, verbose_name="Fecha de Inicio")
+    scheduled_end_date = models.DateField(null=True, blank=True, verbose_name="Fecha Programada de Fin", help_text="Si se establece, la cohorte se cerrará automáticamente en esta fecha.")
     completed_at = models.DateField(null=True, blank=True, verbose_name="Fecha de Término")
     retention_months = models.PositiveIntegerField(
         choices=RETENTION_CHOICES, default=12,

@@ -43,8 +43,8 @@
                             <p class="mt-1">
                                 {% if cohort.status == 'active' %}
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800"><i class="fa-solid fa-circle text-[8px] mr-1.5"></i> En Curso</span>
-                                {% elif cohort.is_expired %}
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800"><i class="fa-solid fa-circle-xmark text-[8px] mr-1.5"></i> Expirado</span>
+                                {% elif cohort.status == 'archived' %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800"><i class="fa-solid fa-circle-xmark text-[8px] mr-1.5"></i> Expirado (Archivado)</span>
                                 {% else %}
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800"><i class="fa-solid fa-clock text-[8px] mr-1.5"></i> Finalizado</span>
                                 {% endif %}
@@ -54,14 +54,14 @@
                             <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Periodo</p>
                             <p class="text-sm text-gray-700 mt-1">
                                 {{ cohort.started_at|date:"d/m/Y" }}
-                                {% if cohort.completed_at %} — {{ cohort.completed_at|date:"d/m/Y" }}{% endif %}
+                                {% if cohort.completed_at %} — {{ cohort.completed_at|date:"d/m/Y" }}
+                                {% elif cohort.scheduled_end_date %} <br><span class="text-xs text-amber-600"><i class="fa-solid fa-clock"></i> Cierre: {{ cohort.scheduled_end_date|date:"d/m/Y" }}</span>{% endif %}
                             </p>
                         </div>
                         <div>
                             <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Retención</p>
                             <p class="text-sm text-gray-700 mt-1">
                                 {{ cohort.get_retention_months_display }}
-                                {% if cohort.expiration_date %}<br><span class="text-xs text-gray-400">Expira: {{ cohort.expiration_date|date:"d/m/Y" }}</span>{% endif %}
                             </p>
                         </div>
                     </div>

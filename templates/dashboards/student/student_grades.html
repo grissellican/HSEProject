@@ -36,53 +36,115 @@
                     <div class="h-px flex-1 bg-gray-200 ml-4"></div>
                 </div>
 
-                {% for group in grades_by_course %}
-                <div class="mb-10">
-                    <h3 class="text-sm font-black text-[#38657f] uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-book text-[#B8973A]"></i> {{ group.course.title }}
-                    </h3>
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
-                                    <th class="px-5 py-3">Actividad</th>
-                                    <th class="px-5 py-3">Tipo</th>
-                                    <th class="px-5 py-3 text-center">Calificación</th>
-                                    <th class="px-5 py-3 text-center">Porcentaje</th>
-                                    <th class="px-5 py-3">Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                {% for sub in group.submissions %}
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-5 py-3.5 text-sm font-semibold text-gray-700">{{ sub.assignment.title }}</td>
-                                    <td class="px-5 py-3.5 text-xs text-gray-500">{{ sub.assignment.get_assignment_type_display }}</td>
-                                    <td class="px-5 py-3.5 text-center">
-                                        <span class="text-sm font-black {% if sub.percentage >= 70 %}text-green-600{% elif sub.percentage >= 50 %}text-amber-600{% else %}text-red-600{% endif %}">
-                                            {{ sub.score }}/{{ sub.assignment.max_score }}
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-3.5 text-center">
-                                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-full
-                                            {% if sub.percentage >= 70 %}bg-green-50 text-green-700{% elif sub.percentage >= 50 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %}">
-                                            {{ sub.percentage }}%
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.graded_at|date:"d/m/Y" }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <!-- Calificaciones de Cursos Activos -->
+                {% if active_grades %}
+                <div class="mb-8">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Cursos Activos</h2>
+                    {% for group in active_grades %}
+                    <div class="mb-8">
+                        <h3 class="text-sm font-black text-[#38657f] uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-book text-[#B8973A]"></i> {{ group.course.title }}
+                        </h3>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
+                                        <th class="px-5 py-3">Actividad</th>
+                                        <th class="px-5 py-3">Tipo</th>
+                                        <th class="px-5 py-3 text-center">Calificación</th>
+                                        <th class="px-5 py-3 text-center">Porcentaje</th>
+                                        <th class="px-5 py-3">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    {% for sub in group.submissions %}
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-5 py-3.5 text-sm font-semibold text-gray-700">{{ sub.assignment.title }}</td>
+                                        <td class="px-5 py-3.5 text-xs text-gray-500">{{ sub.assignment.get_assignment_type_display }}</td>
+                                        <td class="px-5 py-3.5 text-center">
+                                            <span class="text-sm font-black {% if sub.percentage >= 70 %}text-green-600{% elif sub.percentage >= 50 %}text-amber-600{% else %}text-red-600{% endif %}">
+                                                {{ sub.score }}/{{ sub.assignment.max_score }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center">
+                                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-full
+                                                {% if sub.percentage >= 70 %}bg-green-50 text-green-700{% elif sub.percentage >= 50 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %}">
+                                                {{ sub.percentage }}%
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.graded_at|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% empty %}
+                {% endif %}
+
+                <!-- Calificaciones de Cursos Culminados -->
+                {% if completed_grades %}
+                <div class="mb-8 mt-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest">Cursos Culminados</h2>
+                            <p class="text-xs text-gray-400 mt-1">Estas calificaciones desaparecerán junto con el acceso al curso.</p>
+                        </div>
+                        <div class="h-px flex-1 bg-gray-200 ml-4"></div>
+                    </div>
+
+                    {% for group in completed_grades %}
+                    <div class="mb-8 opacity-80 hover:opacity-100 transition-opacity">
+                        <h3 class="text-sm font-black text-gray-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered text-amber-500"></i> {{ group.course.title }}
+                        </h3>
+                        <div class="bg-gray-50 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-100">
+                                        <th class="px-5 py-3">Actividad</th>
+                                        <th class="px-5 py-3">Tipo</th>
+                                        <th class="px-5 py-3 text-center">Calificación</th>
+                                        <th class="px-5 py-3 text-center">Porcentaje</th>
+                                        <th class="px-5 py-3">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    {% for sub in group.submissions %}
+                                    <tr class="hover:bg-gray-100 transition-colors">
+                                        <td class="px-5 py-3.5 text-sm font-semibold text-gray-700">{{ sub.assignment.title }}</td>
+                                        <td class="px-5 py-3.5 text-xs text-gray-500">{{ sub.assignment.get_assignment_type_display }}</td>
+                                        <td class="px-5 py-3.5 text-center">
+                                            <span class="text-sm font-black {% if sub.percentage >= 70 %}text-green-600{% elif sub.percentage >= 50 %}text-amber-600{% else %}text-red-600{% endif %}">
+                                                {{ sub.score }}/{{ sub.assignment.max_score }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center">
+                                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-full
+                                                {% if sub.percentage >= 70 %}bg-green-50 text-green-700{% elif sub.percentage >= 50 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %}">
+                                                {{ sub.percentage }}%
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.graded_at|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if not active_grades and not completed_grades %}
                 <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-xl">
                     <div class="w-14 h-14 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <i class="fa-solid fa-chart-column text-2xl text-[#38657f]"></i>
                     </div>
                     <p class="text-base font-semibold text-gray-500">Aún no tienes calificaciones registradas.</p>
                 </div>
-                {% endfor %}
+                {% endif %}
 
             </div>
         </main>

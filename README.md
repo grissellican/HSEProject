@@ -175,29 +175,40 @@ Las opciones disponibles son:
 - **2 años**
 - **3 años**
 
-### Limpieza Automática
+### Tareas Automáticas (Cron Jobs)
 
-Para ejecutar la limpieza de cohortes expiradas (eliminar el acceso de estudiantes cuya retención ya venció), se puede usar el management command:
+La plataforma cuenta con scripts que deben ejecutarse diaria y automáticamente para su correcto funcionamiento.
 
+#### 1. Cierre Automático de Cohortes Programadas
+Cuando el administrador le configura una "Fecha Programada de Fin" a una cohorte activa, este script verifica diariamente cuáles deben cerrarse y hace el traspaso automáticamente.
+```bash
+python manage.py auto_close_cohorts
+```
+
+#### 2. Limpieza de Cohortes Expiradas
+Cuando el tiempo de retención "pausable" de un estudiante egresado llega a su fin, este script le quita el acceso y lo mueve al registro histórico.
 ```bash
 python manage.py cleanup_expired_cohorts
 ```
 
-Se recomienda configurar este comando como un **cron job** que se ejecute diariamente en tu VPS (ej. DigitalOcean, AWS):
+#### Configuración en el Servidor VPS (DigitalOcean, AWS, etc.)
+Se recomienda configurar ambos comandos en el **cron** para que se ejecuten a la medianoche o madrugada:
 
 1. Accede a tu servidor por SSH.
 2. Abre la configuración de tareas programadas del usuario que ejecuta tu aplicación (ej. `ubuntu` o `root`):
    ```bash
    crontab -e
    ```
-3. Añade la siguiente línea al final del archivo para que se ejecute todos los días a las 3:00 AM. Asegúrate de reemplazar las rutas por las rutas absolutas correctas de tu VPS:
+3. Añade las siguientes líneas al final del archivo. Asegúrate de reemplazar las rutas por las rutas absolutas correctas de tu VPS:
 
    ```bash
-   # Ejecutar todos los días a las 3:00 AM
+   # Cierre Automático de Cursos (Todos los días a las 2:00 AM)
+   0 2 * * * cd /ruta/absoluta/al/HSEProject-main && /ruta/absoluta/al/venv/bin/python manage.py auto_close_cohorts >> /ruta/absoluta/al/HSEProject-main/cron_autoclose.log 2>&1
+
+   # Limpieza de Cursos Expirados (Todos los días a las 3:00 AM)
    0 3 * * * cd /ruta/absoluta/al/HSEProject-main && /ruta/absoluta/al/venv/bin/python manage.py cleanup_expired_cohorts >> /ruta/absoluta/al/HSEProject-main/cron_cleanup.log 2>&1
    ```
-4. Guarda y cierra el archivo. El cron job comenzará a ejecutarse automáticamente, y cualquier salida o error quedará guardado en el archivo `cron_cleanup.log`.
-
+4. Guarda y cierra el archivo. Los cron jobs comenzarán a ejecutarse automáticamente en el horario establecido.
 ---
 
 ## 🚀 Despliegue en Producción (VPS / Linux)

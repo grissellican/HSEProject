@@ -1429,21 +1429,40 @@ def student_dashboard(request):
 # --- CALIFICACIONES ---
 @_student_required
 def student_grades(request):
+    active_cohorts = Cohort.objects.filter(students=request.user, status='active').values_list('course_id', flat=True)
+    active_courses_ids = set(active_cohorts)
+    
+    completed_cohorts = Cohort.objects.filter(students=request.user, status='completed')
+    completed_courses_ids = set()
+    for c in completed_cohorts:
+        if not c.is_expired(request.user):
+            completed_courses_ids.add(c.course_id)
+            
+    valid_courses_ids = active_courses_ids.union(completed_courses_ids)
+    
     submissions = Submission.objects.filter(
         student=request.user,
-        score__isnull=False
+        score__isnull=False,
+        assignment__module__course_id__in=valid_courses_ids
     ).select_related('assignment__module__course').order_by('assignment__module__course__title', '-graded_at')
     
-    # Agrupar por curso
-    grades_by_course = {}
+    active_grades = {}
+    completed_grades = {}
+    
     for sub in submissions:
         course = sub.assignment.module.course
-        if course.id not in grades_by_course:
-            grades_by_course[course.id] = {'course': course, 'submissions': []}
-        grades_by_course[course.id]['submissions'].append(sub)
+        if course.id in active_courses_ids:
+            if course.id not in active_grades:
+                active_grades[course.id] = {'course': course, 'submissions': []}
+            active_grades[course.id]['submissions'].append(sub)
+        elif course.id in completed_courses_ids:
+            if course.id not in completed_grades:
+                completed_grades[course.id] = {'course': course, 'submissions': []}
+            completed_grades[course.id]['submissions'].append(sub)
     
     context = {
-        'grades_by_course': grades_by_course.values(),
+        'active_grades': active_grades.values(),
+        'completed_grades': completed_grades.values(),
         'sidebar_active': 'grades',
     }
     context.update(_student_sidebar_context(request))
