@@ -2506,20 +2506,26 @@ def _admin_required(view_func):
 def admin_edit_syllabus(request, course_id):
     course = get_object_or_404(Course, id=course_id)
         
-    from .forms import SyllabusTeacherForm
+    from .forms import SyllabusTeacherForm, SyllabusUnitFormSet
     
     if request.method == 'POST':
         form = SyllabusTeacherForm(request.POST, instance=course)
-        if form.is_valid():
+        unit_formset = SyllabusUnitFormSet(request.POST, instance=course)
+        if form.is_valid() and unit_formset.is_valid():
             form.save()
+            unit_formset.save()
             messages.success(request, 'Sílabo actualizado correctamente.')
             return redirect('admin_cursos')
+        else:
+            messages.error(request, 'Por favor, corrige los errores en el formulario.')
     else:
         form = SyllabusTeacherForm(instance=course)
+        unit_formset = SyllabusUnitFormSet(instance=course)
         
     context = {
         'course': course,
         'form': form,
+        'unit_formset': unit_formset,
         'sidebar_active': 'cursos',
     }
     return render(request, 'dashboards/admin/admin_edit_syllabus.html', context)
