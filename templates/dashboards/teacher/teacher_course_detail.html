@@ -108,7 +108,7 @@
                         <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
                     </a>
                     
-                    {% if course.allow_teacher_edit_syllabus %}
+                    {% if course.allow_teacher_edit_syllabus and request.user.role == 'teacher' %}
                     <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm ml-auto">
                         <i class="fa-solid fa-file-signature text-[#10b981]"></i> Editar Sílabo
                     </a>
@@ -129,10 +129,12 @@
                         <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#38657f] transition-colors flex items-center" id="toggle-all-btn">
                             <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
                         </button>
+                        {% if request.user.role == 'teacher' %}
                         <div class="h-px w-8 bg-gray-200"></div>
                         <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#1B5E37] text-white text-sm font-bold hover:bg-[#134529] transition-colors shadow-sm cursor-pointer">
                             <i class="fa-solid fa-plus mr-1.5"></i> Nuevo Módulo
                         </a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -156,6 +158,7 @@
                         </div>
 
                         <!-- Acciones del módulo -->
+                        {% if request.user.role == 'teacher' %}
                         <div class="flex items-center gap-2 flex-shrink-0 ml-4" onclick="event.stopPropagation()">
                             <!-- Menú Añadir -->
                             <div class="dot-menu-wrapper mr-2">
@@ -198,6 +201,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
 
                     <!-- Cuerpo colapsable del módulo -->
@@ -232,21 +236,25 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_material_toggle_visibility' material_id=mat.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if mat.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if mat.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                             <a href="{{ mat.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] w-6 h-6 flex items-center justify-center" title="Descargar">
                                                 <i class="fa-solid fa-download"></i>
                                             </a>
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_material_delete' material_id=mat.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -293,12 +301,14 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2 flex-shrink-0 text-sm">
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_assignment_toggle_visibility' assignment_id=assign.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if assign.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if assign.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                             {% if assign.assignment_type == 'examen_online' %}
                                             <a href="{% url 'teacher_exam_questions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-teal-50 text-teal-700 font-semibold hover:bg-teal-100 transition-colors cursor-pointer text-[11px]">
                                                 <i class="fa-solid fa-list-check mr-1"></i> Preguntas
@@ -307,6 +317,7 @@
                                             <a href="{% url 'teacher_assignment_submissions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-[#38657f]/8 text-[#38657f] font-semibold hover:bg-[#38657f]/15 transition-colors cursor-pointer text-[11px]">
                                                 <i class="fa-solid fa-inbox mr-1"></i> Entregas ({{ assign.submissions.count }})
                                             </a>
+                                            {% if request.user.role == 'teacher' %}
                                             <!-- Mini menú 3 puntos para tarea -->
                                             <div class="dot-menu-wrapper">
                                                 <button class="dot-menu-btn w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors cursor-pointer border-0 bg-transparent"
@@ -326,6 +337,7 @@
                                                     </form>
                                                 </div>
                                             </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -355,6 +367,7 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_announcement_toggle_visibility' pk=ann.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if ann.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -370,6 +383,7 @@
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -399,6 +413,7 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_link_toggle_visibility' pk=link.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if link.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -414,6 +429,7 @@
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -448,6 +464,7 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
+                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_forum_toggle_visibility' pk=forum.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if forum.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -463,6 +480,7 @@
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -492,12 +510,14 @@
                     <h2 class="text-base font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-video text-[#7c3aed]"></i>Clases en Vivo
                     </h2>
+                    {% if request.user.role == 'teacher' %}
                     <div class="flex items-center gap-3">
                         <div class="h-px w-12 bg-gray-200"></div>
                         <a href="{% url 'teacher_live_session_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#7c3aed] text-white text-sm font-bold hover:bg-[#6d28d9] transition-colors shadow-sm cursor-pointer">
                             <i class="fa-solid fa-plus mr-1.5"></i> Programar Sesión
                         </a>
                     </div>
+                    {% endif %}
                 </div>
 
                 {% if live_sessions %}
@@ -537,11 +557,15 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
+                                        {% if request.user.role == 'teacher' %}
                                         <a href="{% url 'teacher_live_session_update' session_id=s.id %}" class="text-[#38657f] hover:text-[#2b5068] text-sm cursor-pointer mr-3 inline-block" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
                                         <form action="{% url 'teacher_live_session_delete' session_id=s.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta sesión?');">
                                             {% csrf_token %}
                                             <button type="submit" class="text-red-400 hover:text-red-600 text-sm cursor-pointer bg-transparent border-0" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                         </form>
+                                        {% else %}
+                                        -
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

@@ -134,7 +134,10 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-end">
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                            <a href="{% url 'teacher_course_detail' c.id %}" class="inline-flex items-center px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer" title="Modo Supervisión">
+                                <i class="fa-solid fa-eye mr-1.5"></i> Modo Supervisión
+                            </a>
                             <a href="{% url 'admin_course_detail' c.id %}" class="inline-flex items-center px-4 py-1.5 bg-[#2b3494] text-white text-xs font-bold rounded-lg hover:bg-[#1f2670] transition-colors shadow-sm cursor-pointer">
                                 Ver Detalle <i class="fa-solid fa-arrow-right ml-1.5"></i>
                             </a>
@@ -176,6 +179,29 @@
                             {% endif %}
                         </div>
                     </div>
+                    
+                    {% if section == 'docentes' or section == 'estudiantes' %}
+                    <div class="px-6 py-3 border-b border-gray-100 bg-gray-50/30">
+                        <form method="GET" class="flex flex-wrap items-center gap-3">
+                            <div class="relative flex-1 min-w-[200px]">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar por nombre o correo..." class="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] outline-none">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-500 font-semibold">Desde:</span>
+                                <input type="date" name="date_from" value="{{ date_from }}" class="py-1.5 px-3 text-sm border border-gray-200 rounded-lg focus:border-[#2b3494] outline-none">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-500 font-semibold">Hasta:</span>
+                                <input type="date" name="date_to" value="{{ date_to }}" class="py-1.5 px-3 text-sm border border-gray-200 rounded-lg focus:border-[#2b3494] outline-none">
+                            </div>
+                            <button type="submit" class="px-4 py-1.5 bg-[#2b3494] text-white text-sm font-semibold rounded-lg hover:bg-[#1f2670] transition-colors shadow-sm">Filtrar</button>
+                            {% if search_query or date_from or date_to %}
+                            <a href="?" class="px-4 py-1.5 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-200 transition-colors">Limpiar</a>
+                            {% endif %}
+                        </form>
+                    </div>
+                    {% endif %}
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -185,6 +211,7 @@
                                     <th class="px-6 py-3.5">Identificación (Correo)</th>
                                     <th class="px-6 py-3.5">Rol Asignado</th>
                                     <th class="px-6 py-3.5">Teléfono Celular</th>
+                                    <th class="px-6 py-3.5">Fecha de Registro</th>
                                     <th class="px-6 py-3.5 text-right">Acciones (CRUD)</th>
                                 </tr>
                             </thead>
@@ -203,6 +230,7 @@
                                             {% endif %}
                                         </td>
                                         <td class="px-6 py-4 text-xs font-mono">{{ u.phone|default:"-" }}</td>
+                                        <td class="px-6 py-4 text-xs text-gray-500">{{ u.date_joined|date:"d/m/Y" }}</td>
                                         <td class="px-6 py-4 text-right space-x-3 text-xs">
                                             <a href="{% url 'user_update' u.id %}" class="text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
                                                 <i class="fa-solid fa-pen-to-square"></i> Editar
@@ -217,7 +245,7 @@
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="5" class="px-6 py-10 text-center text-gray-400 text-xs">No se encontraron registros en esta sección.</td>
+                                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 text-xs">No se encontraron registros en esta sección.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

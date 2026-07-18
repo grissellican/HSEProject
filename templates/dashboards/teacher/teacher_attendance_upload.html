@@ -108,7 +108,7 @@
                         <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
                     </a>
                     
-                    {% if course.allow_teacher_edit_syllabus %}
+                    {% if course.allow_teacher_edit_syllabus and request.user.role == 'teacher' %}
                     <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm ml-auto">
                         <i class="fa-solid fa-file-signature text-[#10b981]"></i> Editar Sílabo
                     </a>
@@ -134,6 +134,7 @@
                 </div>
 
                 <!-- Formulario de Subida -->
+                {% if request.user.role == 'teacher' %}
                 <div class="bg-white border border-gray-200 shadow-sm rounded-md p-6 mb-8">
                     <form method="POST" enctype="multipart/form-data" class="space-y-4">
                         {% csrf_token %}
@@ -162,6 +163,7 @@
                         </div>
                     </form>
                 </div>
+                {% endif %}
 
                 <!-- Historial de Asistencias -->
                 <h3 class="text-md font-bold text-gray-700 mb-4 flex items-center gap-2">

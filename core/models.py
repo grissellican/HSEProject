@@ -701,3 +701,13 @@ class AttendanceRecord(models.Model):
 
     def __str__(self):
         return f"{self.student.get_full_name()} - {self.get_status_display()} ({self.register.date})"
+
+
+class SupervisionAudit(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='supervision_logs')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='supervision_logs')
+    cohort = models.ForeignKey(Cohort, on_delete=models.SET_NULL, null=True, blank=True, related_name='supervision_logs')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Supervision by {self.admin.get_full_name()} on {self.course.title} at {self.timestamp}"

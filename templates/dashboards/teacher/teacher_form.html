@@ -183,9 +183,11 @@
                 {% else %}
                     <button type="button" onclick="window.history.back();" class="px-4 py-2 border border-gray-300 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition-colors cursor-pointer">Cancelar</button>
                 {% endif %}
+                {% if request.user.role == 'teacher' %}
                 <button type="submit" class="px-5 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer">
                     <i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar
                 </button>
+                {% endif %}
             </div>
         </form>
     </div>

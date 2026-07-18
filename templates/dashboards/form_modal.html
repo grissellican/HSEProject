@@ -164,13 +164,21 @@
                 img.className = 'w-full h-48 object-cover rounded-xl border border-gray-200 shadow-sm';
                 previewContainer.appendChild(img);
                 
-                input.parentNode.insertBefore(previewContainer, input);
-                
                 // Mostrar imagen actual si existe en el HTML generado por Django (tag <a> antes del input)
-                const container = input.closest('div');
+                const container = input.closest('div.mb-4') || input.closest('div');
+                
+                // Insertar al inicio del container para que se vea mejor (después del label)
+                const label = container.querySelector('label');
+                if (label) {
+                    label.after(previewContainer);
+                } else {
+                    container.insertBefore(previewContainer, container.firstChild);
+                }
+
                 if (container) {
                     const currentLink = container.querySelector('a');
-                    if (currentLink && currentLink.href.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i)) {
+                    // Relajar el regex para soportar URLs relativas o con parámetros
+                    if (currentLink && currentLink.href.match(/\.(jpeg|jpg|gif|png|webp|svg)/i)) {
                         img.src = currentLink.href;
                         previewContainer.classList.remove('hidden');
                     }

@@ -101,11 +101,19 @@
                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
                                     <div class="sm:col-span-1">
                                         <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Puntaje Asignado</label>
+                                        {% if request.user.role == 'teacher' %}
                                         <input type="number" name="score_{{ resp.id }}" value="{{ resp.score|default_if_none:'' }}" min="0" max="{{ resp.question.points }}" step="0.01" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Máx. {{ resp.question.points }}">
+                                        {% else %}
+                                        <p class="text-base font-semibold">{{ resp.score|default_if_none:'Sin calificar' }}</p>
+                                        {% endif %}
                                     </div>
                                     <div class="sm:col-span-3">
                                         <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Retroalimentación (Opcional)</label>
+                                        {% if request.user.role == 'teacher' %}
                                         <input type="text" name="feedback_{{ resp.id }}" value="{{ resp.feedback }}" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Ej. Excelente análisis...">
+                                        {% else %}
+                                        <p class="text-base font-semibold">{{ resp.feedback|default_if_none:'-' }}</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% endif %}
@@ -116,10 +124,12 @@
                 </div>
 
                 <div class="mt-8 pt-5 border-t border-gray-200 flex justify-end space-x-3">
-                    <a href="{% url 'teacher_assignment_submissions' assignment_id=assignment.id %}" class="px-5 py-2.5 border border-gray-300 text-gray-600 text-base font-semibold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">Cancelar</a>
+                    <a href="{% url 'teacher_assignment_submissions' assignment_id=assignment.id %}" class="px-5 py-2.5 border border-gray-300 text-gray-600 text-base font-semibold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">Volver</a>
+                    {% if request.user.role == 'teacher' %}
                     <button type="submit" class="px-5 py-2.5 bg-[#2b3494] text-white text-base font-semibold rounded-xl hover:bg-[#1e256b] transition-colors shadow-sm cursor-pointer">
                         <i class="fa-solid fa-save mr-1.5"></i> Guardar Calificaciones
                     </button>
+                    {% endif %}
                 </div>
             </form>
         </div>

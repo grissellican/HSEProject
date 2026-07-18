@@ -127,13 +127,13 @@ def student_dashboard(request):
 # ============================================================
 
 def _teacher_required(view_func):
-    """Decorador que verifica que el usuario sea docente."""
+    """Decorador que verifica que el usuario sea docente o administrador."""
     from functools import wraps
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
-        if request.user.role != 'teacher':
+        if request.user.role not in ['teacher', 'admin']:
             return redirect_dashboard_by_role(request.user)
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -141,6 +141,9 @@ def _teacher_required(view_func):
 
 def _sidebar_context(request):
     """Retorna el contexto necesario para el sidebar compartido del docente."""
+    if request.user.role == 'admin':
+        return {'pending_sidebar': [], 'pending_sidebar_count': 0}
+        
     pending_qs = Submission.objects.filter(
         assignment__module__course__teacher=request.user,
         score__isnull=True
@@ -155,7 +158,13 @@ def _sidebar_context(request):
 
 
 def _get_teacher_course(request, course_id):
-    """Obtiene un curso verificando que pertenezca al docente actual."""
+    """Obtiene un curso verificando que pertenezca al docente actual o si es admin en modo supervisión."""
+    if request.user.role == 'admin':
+        course = get_object_or_404(Course, id=course_id)
+        from .models import SupervisionAudit
+        # Registrar auditoría
+        SupervisionAudit.objects.create(admin=request.user, course=course)
+        return course
     return get_object_or_404(Course, id=course_id, teacher=request.user)
 
 
@@ -784,10 +793,13 @@ def teacher_assignment_submissions(request, assignment_id):
 
 @_teacher_required
 def teacher_grade_submission(request, submission_id):
-    submission = get_object_or_404(
-        Submission, id=submission_id,
-        assignment__module__course__teacher=request.user
-    )
+    if request.user.role == 'admin':
+        submission = get_object_or_404(Submission, id=submission_id)
+    else:
+        submission = get_object_or_404(
+            Submission, id=submission_id,
+            assignment__module__course__teacher=request.user
+        )
     
     # Si es un examen, usamos la vista de calificación específica de exámenes
     if submission.assignment.assignment_type == 'examen_online':
@@ -1118,22 +1130,58 @@ def admin_section_users(request):
 @login_required
 def admin_section_teachers(request):
     if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    
+    query = request.GET.get('q', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    users = User.objects.filter(role='teacher')
+    
+    if query:
+        from django.db.models import Q
+        users = users.filter(Q(first_name__icontains=query) | Q(lastname__icontains=query) | Q(email__icontains=query))
+    if date_from:
+        users = users.filter(date_joined__gte=date_from)
+    if date_to:
+        users = users.filter(date_joined__lte=date_to + ' 23:59:59')
+        
     context = get_dashboard_metrics('docentes')
     context.update({
         'section': 'docentes',
         'table_title': 'Gestión de Personal Docente',
-        'users_list': User.objects.filter(role='teacher').order_by('-id'),
+        'users_list': users.order_by('-id'),
+        'search_query': query,
+        'date_from': date_from,
+        'date_to': date_to,
     })
     return render(request, 'dashboards/admin.html', context)
 
 @login_required
 def admin_section_students(request):
     if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    
+    query = request.GET.get('q', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    users = User.objects.filter(role='student')
+    
+    if query:
+        from django.db.models import Q
+        users = users.filter(Q(first_name__icontains=query) | Q(lastname__icontains=query) | Q(email__icontains=query))
+    if date_from:
+        users = users.filter(date_joined__gte=date_from)
+    if date_to:
+        users = users.filter(date_joined__lte=date_to + ' 23:59:59')
+        
     context = get_dashboard_metrics('estudiantes')
     context.update({
         'section': 'estudiantes',
         'table_title': 'Control de Alumnos Matriculados',
-        'users_list': User.objects.filter(role='student').order_by('-id'),
+        'users_list': users.order_by('-id'),
+        'search_query': query,
+        'date_from': date_from,
+        'date_to': date_to,
     })
     return render(request, 'dashboards/admin.html', context)
 
@@ -2728,12 +2776,12 @@ def admin_attendance_course_detail(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     
     cohort_id = request.GET.get('cohort_id')
-    active_cohorts = Cohort.objects.filter(course=course, status='active')
+    all_cohorts = Cohort.objects.filter(course=course).order_by('-id')
     
     if cohort_id:
-        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
+        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course)
     else:
-        current_cohort = active_cohorts.first()
+        current_cohort = all_cohorts.filter(status='active').first() or all_cohorts.first()
         
     if current_cohort:
         registers = course.attendance_registers.filter(cohort=current_cohort)
@@ -2771,7 +2819,7 @@ def admin_attendance_course_detail(request, course_id):
         'course': course,
         'registers': registers,
         'students_data': students_data,
-        'active_cohorts': active_cohorts,
+        'all_cohorts': all_cohorts,
         'current_cohort': current_cohort,
         'total_classes': total_classes,
         'sidebar_active': 'asistencias',
