@@ -1259,10 +1259,25 @@ def course_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'Cambios en el aula "{course.title}" aplicados con éxito.')
-            return redirect('admin_cursos')
+            return redirect('admin_course_detail', course_id=course.id)
     else:
         form = CourseForm(instance=course)
     return render(request, 'dashboards/form_modal.html', {'form': form, 'title': f'Editar Aula: {course.title}', 'is_file_form': True})
+
+@login_required
+def course_students_update(request, pk):
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
+    course = get_object_or_404(Course, pk=pk)
+    from .forms import CourseStudentsForm
+    if request.method == 'POST':
+        form = CourseStudentsForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Estudiantes actualizados para el aula "{course.title}".')
+            return redirect('admin_course_detail', course_id=course.id)
+    else:
+        form = CourseStudentsForm(instance=course)
+    return render(request, 'dashboards/form_modal.html', {'form': form, 'title': f'Matricular Alumnos: {course.title}'})
 
 @login_required
 def course_delete(request, pk):

@@ -68,16 +68,9 @@ class CourseForm(forms.ModelForm):
         empty_label="-- Seleccionar Docente Asignado --"
     )
     
-    students = forms.ModelMultipleChoiceField(
-        queryset=User.objects.filter(role='student', is_active=True),
-        required=False,
-        label="Alumnos Matriculados",
-        widget=forms.CheckboxSelectMultiple()
-    )
-
     class Meta:
         model = Course
-        fields = ['title', 'category', 'welcome_description', 'cover_image', 'image_url', 'start_date', 'teacher', 'students', 'is_active', 'capacities', 'allow_teacher_edit_syllabus']
+        fields = ['title', 'category', 'welcome_description', 'cover_image', 'image_url', 'start_date', 'teacher', 'is_active', 'capacities', 'allow_teacher_edit_syllabus']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm', 'placeholder': 'Ej. Curso de Primeros Auxilios'}),
             'category': forms.TextInput(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm', 'placeholder': 'Ej. Seguridad Industrial'}),
@@ -91,6 +84,18 @@ class CourseForm(forms.ModelForm):
             'allow_teacher_edit_syllabus': forms.CheckboxInput(attrs={'class': 'rounded border-gray-300 text-[#2b3494] focus:ring-[#2b3494] h-5 w-5'}),
         }
 
+
+class CourseStudentsForm(forms.ModelForm):
+    students = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(role='student', is_active=True),
+        required=False,
+        label="Alumnos Matriculados",
+        widget=forms.CheckboxSelectMultiple()
+    )
+
+    class Meta:
+        model = Course
+        fields = ['students']
 
 class CohortForm(forms.ModelForm):
     """Formulario para crear un nuevo grupo dentro de un curso."""

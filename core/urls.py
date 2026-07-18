@@ -36,6 +36,7 @@ urlpatterns = [
     # Acciones CRUD - Cursos
     path('admin/cursos/nuevo/', views.course_create, name='course_create'),
     path('admin/cursos/editar/<int:pk>/', views.course_update, name='course_update'),
+    path('admin/cursos/estudiantes/<int:pk>/', views.course_students_update, name='course_students_update'),
     path('admin/cursos/eliminar/<int:pk>/', views.course_delete, name='course_delete'),
     
     # Detalle de Curso para Admin
