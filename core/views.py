@@ -157,6 +157,14 @@ def _sidebar_context(request):
     }
 
 
+
+def _get_teacher_object(request, model, teacher_lookup, **kwargs):
+    """Obtiene un objeto verificando que pertenezca al docente actual o si es admin en modo supervisión."""
+    if request.user.role != 'admin':
+        kwargs[teacher_lookup] = request.user
+    return get_object_or_404(model, **kwargs)
+
+
 def _get_teacher_course(request, course_id):
     """Obtiene un curso verificando que pertenezca al docente actual o si es admin en modo supervisión."""
     if request.user.role == 'admin':
@@ -342,7 +350,7 @@ def teacher_module_create(request, course_id):
 
 @_teacher_required
 def teacher_module_update(request, module_id):
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = ModuleForm(request.POST, instance=module)
         if form.is_valid():
@@ -363,7 +371,7 @@ def teacher_module_update(request, module_id):
 
 @_teacher_required
 def teacher_module_delete(request, module_id):
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     course_id = module.course.id
     module.delete()
     messages.success(request, 'Módulo eliminado correctamente.')
@@ -371,7 +379,7 @@ def teacher_module_delete(request, module_id):
 
 @_teacher_required
 def teacher_module_toggle_visibility(request, module_id):
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     module.is_visible = not module.is_visible
     module.save()
     status = "visible" if module.is_visible else "oculto"
@@ -382,7 +390,7 @@ def teacher_module_toggle_visibility(request, module_id):
 # --- CRUD DE MATERIALES ---
 @_teacher_required
 def teacher_material_create(request, module_id):
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = MaterialForm(request.POST, request.FILES)
         if form.is_valid():
@@ -406,10 +414,7 @@ def teacher_material_create(request, module_id):
 
 @_teacher_required
 def teacher_material_detail(request, material_id):
-    material = get_object_or_404(
-        Material,
-        id=material_id,
-        module__course__teacher=request.user
+    material = _get_teacher_object(request, Material, 'module__course__teacher', id=material_id
     )
     context = {
         'material': material,
@@ -423,7 +428,7 @@ def teacher_material_detail(request, material_id):
 
 @_teacher_required
 def teacher_material_delete(request, material_id):
-    material = get_object_or_404(Material, id=material_id, module__course__teacher=request.user)
+    material = _get_teacher_object(request, Material, 'module__course__teacher', id=material_id)
     course_id = material.module.course.id
     material.delete()
     messages.success(request, 'Material eliminado correctamente.')
@@ -431,7 +436,7 @@ def teacher_material_delete(request, material_id):
 
 @_teacher_required
 def teacher_material_toggle_visibility(request, material_id):
-    material = get_object_or_404(Material, id=material_id, module__course__teacher=request.user)
+    material = _get_teacher_object(request, Material, 'module__course__teacher', id=material_id)
     material.is_visible = not material.is_visible
     material.save()
     status = "visible" if material.is_visible else "oculto"
@@ -442,7 +447,7 @@ def teacher_material_toggle_visibility(request, material_id):
 # --- CRUD DE TAREAS Y EVALUACIONES ---
 @_teacher_required
 def teacher_assignment_create(request, module_id):
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = AssignmentForm(request.POST, request.FILES)
         if form.is_valid():
@@ -480,7 +485,7 @@ def teacher_assignment_create(request, module_id):
 
 @_teacher_required
 def teacher_assignment_update(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user)
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     if request.method == 'POST':
         form = AssignmentForm(request.POST, request.FILES, instance=assignment)
         if form.is_valid():
@@ -516,7 +521,7 @@ def teacher_assignment_update(request, assignment_id):
 
 @_teacher_required
 def teacher_assignment_delete(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user)
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     course_id = assignment.module.course.id
     assignment.delete()
     messages.success(request, 'Tarea/Evaluación eliminada correctamente.')
@@ -524,7 +529,7 @@ def teacher_assignment_delete(request, assignment_id):
 
 @_teacher_required
 def teacher_assignment_toggle_visibility(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user)
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     assignment.is_visible = not assignment.is_visible
     assignment.save()
     status = "visible" if assignment.is_visible else "oculta"
@@ -536,7 +541,7 @@ def teacher_assignment_toggle_visibility(request, assignment_id):
 @_teacher_required
 def teacher_announcement_create(request, module_id):
     from .forms import AnnouncementForm
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = AnnouncementForm(request.POST)
         if form.is_valid():
@@ -561,7 +566,7 @@ def teacher_announcement_create(request, module_id):
 def teacher_announcement_update(request, pk):
     from .models import ModuleAnnouncement
     from .forms import AnnouncementForm
-    ann = get_object_or_404(ModuleAnnouncement, id=pk, module__course__teacher=request.user)
+    ann = _get_teacher_object(request, ModuleAnnouncement, 'module__course__teacher', id=pk)
     if request.method == 'POST':
         form = AnnouncementForm(request.POST, instance=ann)
         if form.is_valid():
@@ -578,7 +583,7 @@ def teacher_announcement_update(request, pk):
 @_teacher_required
 def teacher_announcement_delete(request, pk):
     from .models import ModuleAnnouncement
-    ann = get_object_or_404(ModuleAnnouncement, id=pk, module__course__teacher=request.user)
+    ann = _get_teacher_object(request, ModuleAnnouncement, 'module__course__teacher', id=pk)
     course_id = ann.module.course.id
     ann.delete()
     messages.success(request, 'Aviso eliminado.')
@@ -588,7 +593,7 @@ def teacher_announcement_delete(request, pk):
 @_teacher_required
 def teacher_link_create(request, module_id):
     from .forms import LinkForm
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = LinkForm(request.POST)
         if form.is_valid():
@@ -608,7 +613,7 @@ def teacher_link_create(request, module_id):
 def teacher_link_update(request, pk):
     from .models import ModuleLink
     from .forms import LinkForm
-    link = get_object_or_404(ModuleLink, id=pk, module__course__teacher=request.user)
+    link = _get_teacher_object(request, ModuleLink, 'module__course__teacher', id=pk)
     if request.method == 'POST':
         form = LinkForm(request.POST, instance=link)
         if form.is_valid():
@@ -625,7 +630,7 @@ def teacher_link_update(request, pk):
 @_teacher_required
 def teacher_link_delete(request, pk):
     from .models import ModuleLink
-    link = get_object_or_404(ModuleLink, id=pk, module__course__teacher=request.user)
+    link = _get_teacher_object(request, ModuleLink, 'module__course__teacher', id=pk)
     course_id = link.module.course.id
     link.delete()
     messages.success(request, 'Enlace eliminado.')
@@ -635,7 +640,7 @@ def teacher_link_delete(request, pk):
 @_teacher_required
 def teacher_forum_create(request, module_id):
     from .forms import ForumForm
-    module = get_object_or_404(Module, id=module_id, course__teacher=request.user)
+    module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
         form = ForumForm(request.POST)
         if form.is_valid():
@@ -660,7 +665,7 @@ def teacher_forum_create(request, module_id):
 def teacher_forum_update(request, pk):
     from .models import ModuleForum
     from .forms import ForumForm
-    forum = get_object_or_404(ModuleForum, id=pk, module__course__teacher=request.user)
+    forum = _get_teacher_object(request, ModuleForum, 'module__course__teacher', id=pk)
     if request.method == 'POST':
         form = ForumForm(request.POST, instance=forum)
         if form.is_valid():
@@ -677,7 +682,7 @@ def teacher_forum_update(request, pk):
 @_teacher_required
 def teacher_forum_delete(request, pk):
     from .models import ModuleForum
-    forum = get_object_or_404(ModuleForum, id=pk, module__course__teacher=request.user)
+    forum = _get_teacher_object(request, ModuleForum, 'module__course__teacher', id=pk)
     course_id = forum.module.course.id
     forum.delete()
     messages.success(request, 'Foro eliminado.')
@@ -687,7 +692,7 @@ def teacher_forum_delete(request, pk):
 @_teacher_required
 def teacher_announcement_toggle_visibility(request, pk):
     from .models import ModuleAnnouncement
-    ann = get_object_or_404(ModuleAnnouncement, id=pk, module__course__teacher=request.user)
+    ann = _get_teacher_object(request, ModuleAnnouncement, 'module__course__teacher', id=pk)
     ann.is_visible = not ann.is_visible
     ann.save()
     return redirect('teacher_course_detail', course_id=ann.module.course.id)
@@ -695,7 +700,7 @@ def teacher_announcement_toggle_visibility(request, pk):
 @_teacher_required
 def teacher_link_toggle_visibility(request, pk):
     from .models import ModuleLink
-    link = get_object_or_404(ModuleLink, id=pk, module__course__teacher=request.user)
+    link = _get_teacher_object(request, ModuleLink, 'module__course__teacher', id=pk)
     link.is_visible = not link.is_visible
     link.save()
     return redirect('teacher_course_detail', course_id=link.module.course.id)
@@ -703,7 +708,7 @@ def teacher_link_toggle_visibility(request, pk):
 @_teacher_required
 def teacher_forum_toggle_visibility(request, pk):
     from .models import ModuleForum
-    forum = get_object_or_404(ModuleForum, id=pk, module__course__teacher=request.user)
+    forum = _get_teacher_object(request, ModuleForum, 'module__course__teacher', id=pk)
     forum.is_visible = not forum.is_visible
     forum.save()
     forum.save()
@@ -713,7 +718,7 @@ def teacher_forum_toggle_visibility(request, pk):
 def teacher_forum_detail(request, pk):
     from .forms import ForumReplyForm
     from .models import ModuleForum
-    forum = get_object_or_404(ModuleForum, id=pk, module__course__teacher=request.user)
+    forum = _get_teacher_object(request, ModuleForum, 'module__course__teacher', id=pk)
     
     if request.method == 'POST':
         if not forum.is_active:
@@ -753,7 +758,7 @@ def teacher_forum_detail(request, pk):
 @_teacher_required
 def teacher_forum_reply_delete(request, reply_id):
     from .models import ForumReply
-    reply = get_object_or_404(ForumReply, id=reply_id, forum__module__course__teacher=request.user)
+    reply = _get_teacher_object(request, ForumReply, 'forum__module__course__teacher', id=reply_id)
     if request.method == 'POST':
         forum_id = reply.forum.id
         reply.delete()
@@ -764,7 +769,7 @@ def teacher_forum_reply_delete(request, reply_id):
 # --- ENTREGAS Y CALIFICACIONES ---
 @_teacher_required
 def teacher_assignment_submissions(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user)
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     submissions = assignment.submissions.select_related('student').all()
     
     # Calcular estadísticas de calificación
@@ -793,13 +798,7 @@ def teacher_assignment_submissions(request, assignment_id):
 
 @_teacher_required
 def teacher_grade_submission(request, submission_id):
-    if request.user.role == 'admin':
-        submission = get_object_or_404(Submission, id=submission_id)
-    else:
-        submission = get_object_or_404(
-            Submission, id=submission_id,
-            assignment__module__course__teacher=request.user
-        )
+    submission = _get_teacher_object(request, Submission, 'assignment__module__course__teacher', id=submission_id)
     
     # Si es un examen, usamos la vista de calificación específica de exámenes
     if submission.assignment.assignment_type == 'examen_online':
@@ -900,7 +899,7 @@ def teacher_live_session_create(request, course_id):
 
 @_teacher_required
 def teacher_live_session_delete(request, session_id):
-    session = get_object_or_404(LiveSession, id=session_id, course__teacher=request.user)
+    session = _get_teacher_object(request, LiveSession, 'course__teacher', id=session_id)
     course_id = session.course.id
     session.delete()
     messages.success(request, 'Sesión en vivo cancelada/eliminada.')
@@ -908,7 +907,7 @@ def teacher_live_session_delete(request, session_id):
 
 @_teacher_required
 def teacher_live_session_update(request, session_id):
-    session = get_object_or_404(LiveSession, id=session_id, course__teacher=request.user)
+    session = _get_teacher_object(request, LiveSession, 'course__teacher', id=session_id)
     if request.method == 'POST':
         form = LiveSessionForm(request.POST, instance=session)
         if form.is_valid():
@@ -1346,7 +1345,7 @@ from .forms import QuestionForm, ChoiceForm
 
 @_teacher_required
 def teacher_exam_questions(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user, assignment_type='examen_online')
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id, assignment_type='examen_online')
     questions = assignment.questions.prefetch_related('choices').all()
     
     total_points = sum(q.points for q in questions)
@@ -1364,7 +1363,7 @@ def teacher_exam_questions(request, assignment_id):
 
 @_teacher_required
 def teacher_question_create(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id, module__course__teacher=request.user, assignment_type='examen_online')
+    assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id, assignment_type='examen_online')
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
@@ -1388,7 +1387,7 @@ def teacher_question_create(request, assignment_id):
 
 @_teacher_required
 def teacher_question_update(request, question_id):
-    question = get_object_or_404(Question, id=question_id, assignment__module__course__teacher=request.user)
+    question = _get_teacher_object(request, Question, 'assignment__module__course__teacher', id=question_id)
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question)
         if form.is_valid():
@@ -1409,7 +1408,7 @@ def teacher_question_update(request, question_id):
 
 @_teacher_required
 def teacher_question_delete(request, question_id):
-    question = get_object_or_404(Question, id=question_id, assignment__module__course__teacher=request.user)
+    question = _get_teacher_object(request, Question, 'assignment__module__course__teacher', id=question_id)
     assignment_id = question.assignment.id
     question.delete()
     messages.success(request, 'Pregunta eliminada.')
@@ -1418,7 +1417,7 @@ def teacher_question_delete(request, question_id):
 
 @_teacher_required
 def teacher_choice_create(request, question_id):
-    question = get_object_or_404(Question, id=question_id, assignment__module__course__teacher=request.user, question_type='multiple_choice')
+    question = _get_teacher_object(request, Question, 'assignment__module__course__teacher', id=question_id, question_type='multiple_choice')
     if request.method == 'POST':
         form = ChoiceForm(request.POST)
         if form.is_valid():
@@ -1444,7 +1443,7 @@ def teacher_choice_create(request, question_id):
 
 @_teacher_required
 def teacher_choice_delete(request, choice_id):
-    choice = get_object_or_404(Choice, id=choice_id, question__assignment__module__course__teacher=request.user)
+    choice = _get_teacher_object(request, Choice, 'question__assignment__module__course__teacher', id=choice_id)
     assignment_id = choice.question.assignment.id
     choice.delete()
     messages.success(request, 'Opción eliminada.')
@@ -2543,7 +2542,7 @@ def teacher_edit_evaluation(request, course_id):
 @_teacher_required
 def teacher_evaluation_image_delete(request, image_id):
     from .models import EvaluationImage
-    img = get_object_or_404(EvaluationImage, id=image_id, course__teacher=request.user)
+    img = _get_teacher_object(request, EvaluationImage, 'course__teacher', id=image_id)
     course_id = img.course.id
     if not img.course.allow_teacher_edit_syllabus:
         messages.error(request, 'No tienes permisos.')
