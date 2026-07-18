@@ -167,8 +167,8 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
-                                        <a href="{% url 'teacher_grade_submission' submission_id=sub.id %}" class="inline-flex items-center px-3 py-1.5 {% if sub.is_graded or request.user.role == 'admin' %}bg-[#38657f]/10 text-[#38657f]{% else %}bg-[#38657f] text-white{% endif %} text-[11px] font-bold hover:opacity-80 transition-all cursor-pointer">
-                                            <i class="fa-solid {% if request.user.role == 'admin' %}fa-eye{% else %}fa-pen{% endif %} mr-1"></i> {% if request.user.role == 'admin' %}Ver Entrega{% elif sub.is_graded %}Editar Nota{% else %}Calificar{% endif %}
+                                        <a href="{% url 'teacher_grade_submission' submission_id=sub.id %}" class="inline-flex items-center px-3 py-1.5 {% if sub.is_graded %}bg-[#38657f]/10 text-[#38657f]{% else %}bg-[#38657f] text-white{% endif %} text-[11px] font-bold hover:opacity-80 transition-all cursor-pointer">
+                                            <i class="fa-solid fa-pen mr-1"></i> {% if sub.is_graded %}Editar Nota{% else %}Calificar{% endif %}
                                         </a>
                                     </td>
                                 </tr>

@@ -158,11 +158,8 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     
     <!-- User Profile -->
     {% with display_user=course.teacher|default:request.user %}
-    <a href="{% url 'teacher_profile' %}{% if request.user.role == 'admin' and course %}?user_id={{ display_user.id }}{% endif %}" class="flex-shrink-0 border-b border-gray-100 p-4 block hover:bg-gray-50 transition-colors cursor-pointer relative">
-        {% if request.user.role == 'admin' and course %}
-        <span class="absolute top-1 right-2 text-[9px] font-black text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded">Supervisando</span>
-        {% endif %}
-        <div class="flex items-center space-x-3 {% if request.user.role == 'admin' and course %}mt-1{% endif %}">
+    <a href="{% url 'teacher_profile' %}" class="flex-shrink-0 border-b border-gray-100 p-4 block hover:bg-gray-50 transition-colors cursor-pointer relative">
+        <div class="flex items-center space-x-3">
             {% if display_user.profile_picture %}
                 <img src="{{ display_user.profile_picture.url }}" alt="Perfil" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200">
             {% else %}
@@ -235,12 +232,6 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     </div>
 </aside>
 
-<!-- Floating Admin Return Button -->
-{% if request.user.role == 'admin' %}
-<a href="{% url 'admin_dashboard' %}" class="fixed bottom-6 right-6 bg-indigo-600 text-white px-5 py-3 rounded-full shadow-xl hover:bg-indigo-700 hover:scale-105 transition-all font-bold z-50 flex items-center gap-2 border-2 border-indigo-200">
-    <i class="fa-solid fa-arrow-right-from-bracket"></i> Volver al panel de administración
-</a>
-{% endif %}
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

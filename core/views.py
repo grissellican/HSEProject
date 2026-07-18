@@ -127,13 +127,13 @@ def student_dashboard(request):
 # ============================================================
 
 def _teacher_required(view_func):
-    """Decorador que verifica que el usuario sea docente o administrador."""
+    """Decorador que verifica que el usuario sea docente."""
     from functools import wraps
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('login')
-        if request.user.role not in ['teacher', 'admin']:
+        if request.user.role != 'teacher':
             return redirect_dashboard_by_role(request.user)
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -141,9 +141,6 @@ def _teacher_required(view_func):
 
 def _sidebar_context(request):
     """Retorna el contexto necesario para el sidebar compartido del docente."""
-    if request.user.role == 'admin':
-        return {'pending_sidebar': [], 'pending_sidebar_count': 0}
-        
     pending_qs = Submission.objects.filter(
         assignment__module__course__teacher=request.user,
         score__isnull=True
@@ -159,17 +156,13 @@ def _sidebar_context(request):
 
 
 def _get_teacher_object(request, model, teacher_lookup, **kwargs):
-    """Obtiene un objeto verificando que pertenezca al docente actual o si es admin en modo supervisión."""
-    if request.user.role != 'admin':
-        kwargs[teacher_lookup] = request.user
+    """Obtiene un objeto validando que pertenece al profesor."""
+    kwargs[teacher_lookup] = request.user
     return get_object_or_404(model, **kwargs)
 
 
 def _get_teacher_course(request, course_id):
-    """Obtiene un curso verificando que pertenezca al docente actual o si es admin en modo supervisión."""
-    if request.user.role == 'admin':
-        course = get_object_or_404(Course, id=course_id)
-        return course
+    """Obtiene un curso validando que pertenece al profesor."""
     return get_object_or_404(Course, id=course_id, teacher=request.user)
 
 
@@ -209,38 +202,29 @@ def teacher_dashboard(request):
 # --- DETALLE DE UN CURSO ---
 @_teacher_required
 def teacher_course_detail(request, course_id):
-    import traceback, logging
-    logger = logging.getLogger(__name__)
-    try:
-        course = _get_teacher_course(request, course_id)
-        modules = course.modules.filter(cohort__isnull=True).prefetch_related('materials', 'assignments')
-        live_sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
-        students = course.students.all()
-        
-        # Contar tareas y evaluaciones pendientes de revisión en este curso
-        pending_in_course = Submission.objects.filter(
-            assignment__module__course=course,
-            score__isnull=True
-        ).count()
-        
-        context = {
-            'section': 'curso_detalle',
-            'sidebar_active': 'curso',
-            'course': course,
-            'modules': modules,
-            'live_sessions': live_sessions,
-            'students': students,
-            'pending_in_course': pending_in_course,
-            'all_courses': Course.objects.filter(teacher=course.teacher, is_active=True),
-        }
-        context.update(_sidebar_context(request))
-        return render(request, 'dashboards/teacher/teacher_course_detail.html', context)
-    except Exception as e:
-        logger.error(f"teacher_course_detail error: {e}\n{traceback.format_exc()}")
-        from django.http import HttpResponse
-        if request.user.role == 'admin':
-            return HttpResponse(f"<pre>Error: {e}\n\n{traceback.format_exc()}</pre>", status=500)
-        raise
+    course = _get_teacher_course(request, course_id)
+    modules = course.modules.filter(cohort__isnull=True).prefetch_related('materials', 'assignments')
+    live_sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
+    students = course.students.all()
+    
+    # Contar tareas y evaluaciones pendientes de revisión en este curso
+    pending_in_course = Submission.objects.filter(
+        assignment__module__course=course,
+        score__isnull=True
+    ).count()
+    
+    context = {
+        'section': 'curso_detalle',
+        'sidebar_active': 'curso',
+        'course': course,
+        'modules': modules,
+        'live_sessions': live_sessions,
+        'students': students,
+        'pending_in_course': pending_in_course,
+        'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/teacher/teacher_course_detail.html', context)
 
 
 @_teacher_required
@@ -1060,15 +1044,9 @@ def teacher_student_grades_detail(request, course_id, student_id):
 # --- PERFIL DEL DOCENTE ---
 @_teacher_required
 def teacher_profile(request):
-    user_id = request.GET.get('user_id')
-    if request.user.role == 'admin' and user_id:
-        user = get_object_or_404(User, id=user_id, role='teacher')
-        is_admin_supervising = True
-    else:
-        user = request.user
-        is_admin_supervising = False
+    user = request.user
         
-    if request.method == 'POST' and not is_admin_supervising:
+    if request.method == 'POST':
         form = TeacherProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
@@ -1076,16 +1054,12 @@ def teacher_profile(request):
             return redirect('teacher_profile')
     else:
         form = TeacherProfileForm(instance=user)
-        if is_admin_supervising:
-            for field in form.fields.values():
-                field.disabled = True
         
     context = {
         'section': 'perfil',
         'form': form,
         'profile_user': user,
-        'is_admin_supervising': is_admin_supervising,
-        'all_courses': Course.objects.filter(teacher=user, is_active=True),
+        'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
     }
     return render(request, 'dashboards/teacher/teacher_profile.html', context)
 

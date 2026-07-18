@@ -27,8 +27,8 @@
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">{% if is_admin_supervising %}Perfil de {{ profile_user.first_name }}{% else %}Perfil del Docente{% endif %}</h1>
-                    <p class="text-[10px] text-gray-400">{% if is_admin_supervising %}Modo de Solo Lectura{% else %}Edita tu presentación y foto{% endif %}</p>
+                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Perfil del Docente</h1>
+                    <p class="text-[10px] text-gray-400">Edita tu presentación y foto</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -87,7 +87,7 @@
 
                 <div class="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                        <h2 class="text-lg font-bold text-gray-800">{% if is_admin_supervising %}Perfil Profesional{% else %}Editar Perfil Profesional{% endif %}</h2>
+                        <h2 class="text-lg font-bold text-gray-800">Editar Perfil Profesional</h2>
                         <p class="text-xs text-gray-500">Actualiza tu foto, presentación y privacidad.</p>
                     </div>
                     
@@ -131,11 +131,9 @@
                                 {% endif %}
                                 
                                 <div class="mt-6 flex justify-end">
-                                    {% if not is_admin_supervising %}
-                                    <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 bg-[#38657f] text-white font-bold text-sm rounded-md hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer">
+                                    <button type="submit" class="inline-flex justify-center py-3 px-6 border border-transparent shadow-md text-sm font-bold rounded-xl text-white bg-[#38657f] hover:bg-[#2b5068] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#38657f] transition-all transform active:scale-95">
                                         <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
                                     </button>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
