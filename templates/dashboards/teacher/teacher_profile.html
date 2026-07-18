@@ -34,8 +34,7 @@
             <div class="flex items-center space-x-2">
                 <form action="{% url 'logout' %}" method="POST" class="inline">
                     {% csrf_token %}
-                    {% if not is_admin_supervising %}
-                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
+                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
                         <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
                     </button>
                 </form>

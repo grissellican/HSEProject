@@ -209,29 +209,38 @@ def teacher_dashboard(request):
 # --- DETALLE DE UN CURSO ---
 @_teacher_required
 def teacher_course_detail(request, course_id):
-    course = _get_teacher_course(request, course_id)
-    modules = course.modules.filter(cohort__isnull=True).prefetch_related('materials', 'assignments')
-    live_sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
-    students = course.students.all()
-    
-    # Contar tareas y evaluaciones pendientes de revisión en este curso
-    pending_in_course = Submission.objects.filter(
-        assignment__module__course=course,
-        score__isnull=True
-    ).count()
-    
-    context = {
-        'section': 'curso_detalle',
-        'sidebar_active': 'curso',
-        'course': course,
-        'modules': modules,
-        'live_sessions': live_sessions,
-        'students': students,
-        'pending_in_course': pending_in_course,
-        'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
-    }
-    context.update(_sidebar_context(request))
-    return render(request, 'dashboards/teacher/teacher_course_detail.html', context)
+    import traceback, logging
+    logger = logging.getLogger(__name__)
+    try:
+        course = _get_teacher_course(request, course_id)
+        modules = course.modules.filter(cohort__isnull=True).prefetch_related('materials', 'assignments')
+        live_sessions = course.live_sessions.all().order_by('-scheduled_date', '-start_time')
+        students = course.students.all()
+        
+        # Contar tareas y evaluaciones pendientes de revisión en este curso
+        pending_in_course = Submission.objects.filter(
+            assignment__module__course=course,
+            score__isnull=True
+        ).count()
+        
+        context = {
+            'section': 'curso_detalle',
+            'sidebar_active': 'curso',
+            'course': course,
+            'modules': modules,
+            'live_sessions': live_sessions,
+            'students': students,
+            'pending_in_course': pending_in_course,
+            'all_courses': Course.objects.filter(teacher=course.teacher, is_active=True),
+        }
+        context.update(_sidebar_context(request))
+        return render(request, 'dashboards/teacher/teacher_course_detail.html', context)
+    except Exception as e:
+        logger.error(f"teacher_course_detail error: {e}\n{traceback.format_exc()}")
+        from django.http import HttpResponse
+        if request.user.role == 'admin':
+            return HttpResponse(f"<pre>Error: {e}\n\n{traceback.format_exc()}</pre>", status=500)
+        raise
 
 
 @_teacher_required
