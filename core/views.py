@@ -919,7 +919,18 @@ def teacher_live_session_update(request, session_id):
 @_teacher_required
 def teacher_students_list(request, course_id):
     course = _get_teacher_course(request, course_id)
-    students = course.students.all()
+    cohort_id = request.GET.get('cohort_id')
+    active_cohorts = Cohort.objects.filter(course=course, status='active')
+    
+    if cohort_id:
+        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
+    else:
+        current_cohort = active_cohorts.first()
+        
+    if current_cohort:
+        students = current_cohort.students.all()
+    else:
+        students = course.students.all()
     
     # Para cada estudiante, calcular su promedio de calificaciones en este curso
     student_grades = []
@@ -927,10 +938,17 @@ def teacher_students_list(request, course_id):
     total_assignments = all_assignments.count()
     
     for student in students:
-        submissions = Submission.objects.filter(
-            student=student,
-            assignment__module__course=course
-        )
+        if current_cohort:
+            submissions = Submission.objects.filter(
+                student=student,
+                assignment__module__course=course,
+                cohort=current_cohort
+            )
+        else:
+            submissions = Submission.objects.filter(
+                student=student,
+                assignment__module__course=course
+            )
         graded_submissions = submissions.filter(score__isnull=False)
         
         # Calcular promedio ponderado sobre el puntaje máximo
@@ -958,6 +976,8 @@ def teacher_students_list(request, course_id):
         'student_grades': student_grades,
         'total_assignments': total_assignments,
         'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
+        'active_cohorts': active_cohorts,
+        'current_cohort': current_cohort,
     }
     return render(request, 'dashboards/teacher/teacher_students.html', context)
 
@@ -1849,6 +1869,11 @@ def student_submit_assignment(request, assignment_id):
                 submission_instance.assignment = assignment
                 submission_instance.student = request.user
                 submission_instance.attempts = 1
+                
+                # Assign to active cohort if exists
+                active_cohort = Cohort.objects.filter(course=assignment.module.course, students=request.user, status='active').first()
+                if active_cohort:
+                    submission_instance.cohort = active_cohort
             else:
                 submission_instance.attempts = sub.attempts + 1
                 submission_instance.score = None
@@ -2053,6 +2078,11 @@ def student_exam_start(request, assignment_id):
                     assignment=assignment,
                     student=request.user
                 )
+                
+                active_cohort = Cohort.objects.filter(course=assignment.module.course, students=request.user, status='active').first()
+                if active_cohort:
+                    submission.cohort = active_cohort
+                    submission.save()
             
             import random
             # Mezclar preguntas
@@ -2570,11 +2600,12 @@ def teacher_attendance_upload(request, course_id):
     course = get_object_or_404(Course, id=course_id, teacher=request.user)
     
     if request.method == 'POST':
-        form = AttendanceUploadForm(request.POST, request.FILES)
+        form = AttendanceUploadForm(request.POST, request.FILES, course=course)
         if form.is_valid():
             file = form.cleaned_data['file']
             date = form.cleaned_data['date']
             description = form.cleaned_data['description']
+            cohort = form.cleaned_data['cohort']
             
             try:
                 wb = openpyxl.load_workbook(file)
@@ -2586,11 +2617,13 @@ def teacher_attendance_upload(request, course_id):
                 
                 register = AttendanceRegister.objects.create(
                     course=course,
+                    cohort=cohort,
                     date=date,
                     description=description,
                     uploaded_by=request.user
                 )
                 
+                cohort_students = cohort.students.all()
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     if not row or not row[0]:
                         continue
@@ -2603,7 +2636,7 @@ def teacher_attendance_upload(request, course_id):
                         status_map = {'P': 'present', 'A': 'absent', 'T': 'late'}
                         status = status_map.get(status_str, 'present')
                         
-                        student = course.students.filter(id=student_id).first()
+                        student = cohort_students.filter(id=student_id).first()
                         if student:
                             AttendanceRecord.objects.create(
                                 register=register,
@@ -2621,7 +2654,7 @@ def teacher_attendance_upload(request, course_id):
                 messages.error(request, f'Error al procesar el archivo Excel: {str(e)}')
                 return redirect('teacher_attendance_upload', course_id=course.id)
     else:
-        form = AttendanceUploadForm()
+        form = AttendanceUploadForm(course=course)
         
     registers = course.attendance_registers.all().prefetch_related('records')
         
@@ -2651,15 +2684,32 @@ def admin_attendance_reports(request):
 
 @_admin_required
 def admin_attendance_course_detail(request, course_id):
-    from .models import Course, AttendanceRecord
+    from .models import Course, AttendanceRecord, Cohort
     course = get_object_or_404(Course, id=course_id)
-    registers = course.attendance_registers.all()
+    
+    cohort_id = request.GET.get('cohort_id')
+    active_cohorts = Cohort.objects.filter(course=course, status='active')
+    
+    if cohort_id:
+        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
+    else:
+        current_cohort = active_cohorts.first()
+        
+    if current_cohort:
+        registers = course.attendance_registers.filter(cohort=current_cohort)
+        students = current_cohort.students.all()
+    else:
+        registers = course.attendance_registers.all()
+        students = course.students.all()
     
     students_data = []
     total_classes = registers.count()
     
-    for student in course.students.all():
-        records = AttendanceRecord.objects.filter(student=student, register__course=course)
+    for student in students:
+        if current_cohort:
+            records = AttendanceRecord.objects.filter(student=student, register__course=course, register__cohort=current_cohort)
+        else:
+            records = AttendanceRecord.objects.filter(student=student, register__course=course)
         presents = records.filter(status='present').count()
         absents = records.filter(status='absent').count()
         lates = records.filter(status='late').count()
@@ -2681,6 +2731,8 @@ def admin_attendance_course_detail(request, course_id):
         'course': course,
         'registers': registers,
         'students_data': students_data,
+        'active_cohorts': active_cohorts,
+        'current_cohort': current_cohort,
         'total_classes': total_classes,
         'sidebar_active': 'asistencias',
     }

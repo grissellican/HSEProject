@@ -416,6 +416,15 @@ class PlatformSettingForm(forms.ModelForm):
         }
 
 class AttendanceUploadForm(forms.Form):
+    cohort = forms.ModelChoiceField(
+        queryset=None,
+        label='Cohorte',
+        required=True,
+        empty_label="Selecciona una cohorte",
+        widget=forms.Select(attrs={
+            'class': 'w-full rounded-lg border-gray-300 focus:border-[#38657f] focus:ring-[#38657f]'
+        })
+    )
     date = forms.DateField(
         label='Fecha de la Clase',
         widget=forms.DateInput(attrs={
@@ -438,3 +447,10 @@ class AttendanceUploadForm(forms.Form):
             'accept': '.xlsx'
         })
     )
+
+    def __init__(self, *args, **kwargs):
+        course = kwargs.pop('course', None)
+        super().__init__(*args, **kwargs)
+        if course:
+            from .models import Cohort
+            self.fields['cohort'].queryset = Cohort.objects.filter(course=course, status='active')

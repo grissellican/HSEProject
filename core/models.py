@@ -673,6 +673,7 @@ class PlatformSetting(models.Model):
 
 class AttendanceRegister(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='attendance_registers')
+    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='attendance_registers', null=True, blank=True, verbose_name="Cohorte")
     date = models.DateField(verbose_name="Fecha de Clase")
     description = models.CharField(max_length=200, blank=True, verbose_name="Tema o Descripción")
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

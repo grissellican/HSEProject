@@ -27,7 +27,23 @@
                         <i class="fa-solid fa-arrow-left"></i>
                     </a>
                     <h1 class="text-lg font-bold text-gray-800">Reporte de Asistencia: {{ course.title }}</h1>
+                    {% if current_cohort %}
+                    <span class="ml-2 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">{{ current_cohort.name }}</span>
+                    {% endif %}
                 </div>
+                
+                {% if active_cohorts %}
+                <div class="flex items-center">
+                    <form method="GET" class="flex items-center space-x-2">
+                        <label for="cohort_id" class="text-sm font-semibold text-gray-600">Cohorte:</label>
+                        <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-1.5 px-3" onchange="this.form.submit()">
+                            {% for c in active_cohorts %}
+                            <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+                {% endif %}
             </div>
         </div>
 

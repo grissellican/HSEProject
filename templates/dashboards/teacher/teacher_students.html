@@ -46,13 +46,27 @@
 
                 <!-- Info del curso -->
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 mb-6">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h3 class="text-lg font-bold text-gray-800">{{ course.title }}</h3>
-                            <p class="text-sm text-gray-400 mt-0.5">{{ student_grades|length }} estudiantes matriculados · {{ total_assignments }} tareas/evaluaciones en total</p>
+                            <p class="text-sm text-gray-400 mt-0.5">{{ student_grades|length }} estudiantes matriculados {% if current_cohort %}en la Cohorte: {{ current_cohort.name }}{% endif %} · {{ total_assignments }} tareas/evaluaciones en total</p>
                         </div>
-                        <div class="p-3 rounded-xl bg-green-50 text-green-600">
-                            <i class="fa-solid fa-users text-xl"></i>
+                        
+                        <div class="flex items-center gap-4">
+                            {% if active_cohorts %}
+                            <form method="GET" class="flex items-center space-x-2">
+                                <label for="cohort_id" class="text-sm font-semibold text-gray-600">Cohorte:</label>
+                                <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-2 px-3" onchange="this.form.submit()">
+                                    {% for c in active_cohorts %}
+                                    <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            {% endif %}
+                            
+                            <div class="p-3 rounded-xl bg-green-50 text-green-600 hidden md:block">
+                                <i class="fa-solid fa-users text-xl"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
