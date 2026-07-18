@@ -1148,8 +1148,9 @@ def admin_section_courses(request):
     })
     return render(request, 'dashboards/admin.html', context)
     
-@_admin_required
+@login_required
 def admin_course_detail(request, course_id):
+    if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
     from .models import Course, Cohort
     course = get_object_or_404(Course, id=course_id)
     
