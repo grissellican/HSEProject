@@ -169,9 +169,6 @@ def _get_teacher_course(request, course_id):
     """Obtiene un curso verificando que pertenezca al docente actual o si es admin en modo supervisión."""
     if request.user.role == 'admin':
         course = get_object_or_404(Course, id=course_id)
-        from .models import SupervisionAudit
-        # Registrar auditoría
-        SupervisionAudit.objects.create(admin=request.user, course=course)
         return course
     return get_object_or_404(Course, id=course_id, teacher=request.user)
 
