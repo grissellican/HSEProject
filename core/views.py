@@ -1371,7 +1371,9 @@ def _student_sidebar_context(request):
     # Filtrado a nivel Python para usar las configs de cohorte
     pending_count = 0
     assignments = Assignment.objects.filter(
-        module__course__students=request.user,
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        ),
         module__is_visible=True,
         is_visible=True
     ).exclude(
@@ -1484,7 +1486,9 @@ def student_pending(request):
     active_cohorts = Cohort.objects.filter(students=request.user, status='active').values_list('id', flat=True)
     
     pending_assignments = Assignment.objects.filter(
-        module__course__students=request.user,
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        ),
         module__is_visible=True,
         is_visible=True,
     ).exclude(
@@ -1492,7 +1496,9 @@ def student_pending(request):
     ).select_related('module__course')
     
     pending_forums = ModuleForum.objects.filter(
-        module__course__students=request.user,
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        ),
         module__is_visible=True,
         is_visible=True,
     ).filter(
@@ -1641,7 +1647,9 @@ def student_material_detail(request, material_id):
         id=material_id,
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     context = {
         'material': material,
@@ -1661,7 +1669,9 @@ def student_announcement_detail(request, announcement_id):
         id=announcement_id,
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     context = {
         'announcement': announcement,
@@ -1682,7 +1692,9 @@ def student_forum_detail(request, forum_id):
         id=forum_id,
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     
     if request.method == 'POST':
@@ -1775,7 +1787,9 @@ def student_assignment_detail(request, assignment_id):
         assignment_type='tarea',
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     submission = Submission.objects.filter(assignment=assignment, student=request.user).first()
     
@@ -1815,7 +1829,9 @@ def student_submit_assignment(request, assignment_id):
         id=assignment_id,
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     
     sub = Submission.objects.filter(assignment=assignment, student=request.user).first()
@@ -1874,7 +1890,9 @@ def student_evaluation_detail(request, assignment_id):
         assignment_type='evaluacion',
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     submission = Submission.objects.filter(assignment=assignment, student=request.user).first()
     
@@ -1935,7 +1953,9 @@ def student_exam_detail(request, assignment_id):
         assignment_type='examen_online',
         is_visible=True,
         module__is_visible=True,
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     submission = Submission.objects.filter(assignment=assignment, student=request.user).first()
     attempt = None
@@ -1988,8 +2008,10 @@ def student_exam_start(request, assignment_id):
         Assignment,
         id=assignment_id,
         assignment_type='examen_online',
-        is_visible=True,
-        module__course__students=request.user
+        module__is_visible=True,
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     
     # No permitir si ya tiene un intento incompleto, o si agotó sus intentos
@@ -2280,7 +2302,9 @@ def student_exam_finish(request, assignment_id):
         Assignment,
         id=assignment_id,
         assignment_type='examen_online',
-        module__course__students=request.user
+        module__course__in=Course.objects.filter(
+            Q(students=request.user) | Q(cohorts__students=request.user)
+        )
     )
     submission = get_object_or_404(Submission, assignment=assignment, student=request.user)
     attempt = get_object_or_404(ExamAttempt, submission=submission)
