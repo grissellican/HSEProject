@@ -38,6 +38,9 @@ urlpatterns = [
     path('admin/cursos/editar/<int:pk>/', views.course_update, name='course_update'),
     path('admin/cursos/eliminar/<int:pk>/', views.course_delete, name='course_delete'),
     
+    # Detalle de Curso para Admin
+    path('admin/curso/<int:course_id>/', views.admin_course_detail, name='admin_course_detail'),
+    
     # Sílabo y Evaluación para Admin
     path('admin/curso/<int:course_id>/syllabus/editar/', views.admin_edit_syllabus, name='admin_edit_syllabus'),
     path('admin/curso/<int:course_id>/evaluacion/editar/', views.admin_edit_evaluation, name='admin_edit_evaluation'),

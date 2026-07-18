@@ -1147,6 +1147,24 @@ def admin_section_courses(request):
         'courses_list': Course.objects.all().order_by('-id'),
     })
     return render(request, 'dashboards/admin.html', context)
+    
+@_admin_required
+def admin_course_detail(request, course_id):
+    from .models import Course, Cohort
+    course = get_object_or_404(Course, id=course_id)
+    
+    active_cohorts = Cohort.objects.filter(course=course, status='active').count()
+    completed_cohorts = Cohort.objects.filter(course=course, status='completed').count()
+    
+    context = {
+        'course': course,
+        'active_cohorts_count': active_cohorts,
+        'completed_cohorts_count': completed_cohorts,
+        'sidebar_active': 'cursos',
+        'section': 'cursos',
+    }
+    context.update(_sidebar_context(request))
+    return render(request, 'dashboards/admin/admin_course_detail.html', context)
 
 
 # --- OPERACIONES CRUD USUARIOS ---
@@ -2810,7 +2828,7 @@ def admin_cohort_create(request, course_id):
     
     # Verificar que no hay cohorte activa
     if course.cohorts.filter(status='active').exists():
-        messages.error(request, 'Ya existe una cohorte activa para este curso. Ciérrala antes de crear una nueva.')
+        messages.error(request, 'Ya existe un grupo activo para este curso. Ciérralo antes de crear uno nuevo.')
         return redirect('admin_course_cohorts', course_id=course.id)
     
     if request.method == 'POST':
@@ -2825,7 +2843,7 @@ def admin_cohort_create(request, course_id):
             for student in cohort.students.all():
                 course.students.add(student)
             
-            messages.success(request, f'Cohorte "{cohort.name}" creada exitosamente con {cohort.students.count()} estudiantes.')
+            messages.success(request, f'Grupo "{cohort.name}" creado exitosamente con {cohort.students.count()} estudiantes.')
             return redirect('admin_course_cohorts', course_id=course.id)
     else:
         from .models import PlatformSetting
@@ -2834,7 +2852,7 @@ def admin_cohort_create(request, course_id):
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
-        'title': f'Nueva Cohorte — {course.title}',
+        'title': f'Nuevo Grupo — {course.title}',
         'back_url': 'admin_course_cohorts',
         'back_id': course.id,
     })
@@ -2872,7 +2890,7 @@ def admin_cohort_close(request, cohort_id):
             from core.utils import freeze_cohort_content
             freeze_cohort_content(cohort)
             
-            msg = f'Cohorte "{cohort.name}" finalizada exitosamente.'
+            msg = f'Grupo "{cohort.name}" finalizado exitosamente.'
             messages.success(request, msg)
             return redirect('admin_course_cohorts', course_id=course.id)
     else:
@@ -2883,7 +2901,7 @@ def admin_cohort_close(request, cohort_id):
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
-        'title': f'Cerrar Cohorte: {cohort.name}',
+        'title': f'Cerrar Grupo: {cohort.name}',
         'back_url': 'admin_course_cohorts',
         'back_id': course.id,
         'submission': None,  # Para que use max-w-xl

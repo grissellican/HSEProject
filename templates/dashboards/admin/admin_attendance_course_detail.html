@@ -35,7 +35,7 @@
                 {% if active_cohorts %}
                 <div class="flex items-center">
                     <form method="GET" class="flex items-center space-x-2">
-                        <label for="cohort_id" class="text-sm font-semibold text-gray-600">Cohorte:</label>
+                        <label for="cohort_id" class="text-sm font-semibold text-gray-600">Grupo:</label>
                         <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-1.5 px-3" onchange="this.form.submit()">
                             {% for c in active_cohorts %}
                             <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>

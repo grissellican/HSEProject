@@ -44,15 +44,15 @@
                 </div>
                 {% endif %}
 
-                <!-- Cohorte Activa -->
+                <!-- Grupo Activo -->
                 <div class="mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-users-rectangle text-[#2b3494]"></i> Cohorte Activa
+                    <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
+                        <h2 class="text-lg font-black text-[#2b3494] flex items-center">
+                            <i class="fa-solid fa-users-rectangle text-amber-500 mr-2"></i> Grupo Activo
                         </h2>
                         {% if not active_cohort %}
                         <a href="{% url 'admin_cohort_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#2b3494] text-white text-sm font-semibold rounded-xl hover:bg-[#1f276d] transition-colors">
-                            <i class="fa-solid fa-plus mr-2"></i> Nueva Cohorte
+                            <i class="fa-solid fa-plus mr-2"></i> Nuevo Grupo
                         </a>
                         {% endif %}
                     </div>
@@ -79,24 +79,24 @@
                                     <i class="fa-solid fa-eye mr-1.5"></i> Ver
                                 </a>
                                 <a href="{% url 'admin_cohort_close' cohort_id=active_cohort.id %}" class="inline-flex items-center px-3 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 transition-colors">
-                                    <i class="fa-solid fa-flag-checkered mr-1.5"></i> Cerrar Cohorte
+                                    <i class="fa-solid fa-flag-checkered mr-1.5"></i> Cerrar Grupo
                                 </a>
                             </div>
                         </div>
                     </div>
                     {% else %}
                     <div class="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center">
-                        <i class="fa-solid fa-users-slash text-3xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500 text-sm">No hay una cohorte activa para este curso.</p>
-                        <p class="text-gray-400 text-xs mt-1">Crea una nueva cohorte para asignar estudiantes y comenzar un nuevo periodo.</p>
+                        <i class="fa-solid fa-circle-exclamation text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 text-sm">No hay un grupo activo para este curso.</p>
+                        <p class="text-gray-400 text-xs mt-1">Crea un nuevo grupo para asignar estudiantes y comenzar un nuevo periodo.</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Cohortes Finalizadas -->
-                <div>
-                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2 mb-4">
-                        <i class="fa-solid fa-archive text-gray-400"></i> Cohortes Finalizadas
+                <!-- Grupos Finalizados -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-black text-gray-700 mb-6 flex items-center border-b border-gray-100 pb-4">
+                        <i class="fa-solid fa-archive text-gray-400"></i> Grupos Finalizados
                     </h2>
 
                     {% if completed_cohorts %}
@@ -124,8 +124,9 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center">
-                        <p class="text-gray-400 text-sm">Aún no hay cohortes finalizadas para este curso.</p>
+                    <div class="text-center py-8">
+                        <i class="fa-solid fa-clock-rotate-left text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-400 text-sm">Aún no hay grupos finalizados para este curso.</p>
                     </div>
                     {% endif %}
                 </div>

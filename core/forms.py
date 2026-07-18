@@ -93,11 +93,11 @@ class CourseForm(forms.ModelForm):
 
 
 class CohortForm(forms.ModelForm):
-    """Formulario para crear una nueva cohorte dentro de un curso."""
+    """Formulario para crear un nuevo grupo dentro de un curso."""
     students = forms.ModelMultipleChoiceField(
         queryset=User.objects.filter(role='student', is_active=True),
         required=False,
-        label="Estudiantes de esta Cohorte",
+        label="Estudiantes de este Grupo",
         widget=forms.CheckboxSelectMultiple()
     )
 
@@ -118,7 +118,7 @@ class CohortForm(forms.ModelForm):
 
 
 class CohortCloseForm(forms.Form):
-    """Formulario para cerrar/finalizar una cohorte."""
+    """Formulario para cerrar/finalizar un grupo."""
     completed_at = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm'}),
         label="Fecha de Término del Curso"
@@ -418,9 +418,9 @@ class PlatformSettingForm(forms.ModelForm):
 class AttendanceUploadForm(forms.Form):
     cohort = forms.ModelChoiceField(
         queryset=None,
-        label='Cohorte',
+        label='Seleccionar Grupo Activo',
         required=True,
-        empty_label="Selecciona una cohorte",
+        empty_label="Selecciona un grupo",
         widget=forms.Select(attrs={
             'class': 'w-full rounded-lg border-gray-300 focus:border-[#38657f] focus:ring-[#38657f]'
         })

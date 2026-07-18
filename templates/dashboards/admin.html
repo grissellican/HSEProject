@@ -134,26 +134,10 @@
                                 </p>
                             </div>
                         </div>
-                        
-                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-end space-x-3 text-xs">
-                            <a href="{% url 'admin_edit_syllabus' c.id %}" class="text-[#10b981] hover:text-[#059669] font-semibold cursor-pointer" title="Editar Sílabo">
-                                <i class="fa-solid fa-file-signature"></i> Sílabo
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-end">
+                            <a href="{% url 'admin_course_detail' c.id %}" class="inline-flex items-center px-4 py-1.5 bg-[#2b3494] text-white text-xs font-bold rounded-lg hover:bg-[#1f2670] transition-colors shadow-sm cursor-pointer">
+                                Ver Detalle <i class="fa-solid fa-arrow-right ml-1.5"></i>
                             </a>
-                            <a href="{% url 'admin_edit_evaluation' c.id %}" class="text-[#f59e0b] hover:text-[#d97706] font-semibold cursor-pointer" title="Editar Evaluación">
-                                <i class="fa-solid fa-chart-pie"></i> Evaluación
-                            </a>
-                            <a href="{% url 'admin_course_cohorts' course_id=c.id %}" class="text-[#8b5cf6] hover:text-[#7c3aed] font-semibold cursor-pointer" title="Gestionar Cohortes">
-                                <i class="fa-solid fa-users-rectangle"></i> Cohortes
-                            </a>
-                            <a href="{% url 'course_update' c.id %}" class="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">
-                                <i class="fa-solid fa-pen-to-square"></i> Editar
-                            </a>
-                            <form action="{% url 'course_delete' c.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta aula del sistema?');">
-                                {% csrf_token %}
-                                <button type="submit" class="text-red-500 hover:text-red-700 font-semibold cursor-pointer bg-transparent border-0">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button>
-                            </form>
                         </div>
                     </div>
                     {% empty %}
