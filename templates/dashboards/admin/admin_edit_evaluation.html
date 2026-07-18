@@ -50,7 +50,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="update_description" value="1">
                         <div class="mb-4">
-                            <p class="text-xs text-gray-500 mb-2">Redacta una explicación corta sobre cómo se califica este curso.</p>
+                            <p class="text-xs text-gray-500 mb-2">cómo se califica este curso.</p>
                             {{ form.evaluation_system_description }}
                         </div>
                         <div class="flex justify-end">
@@ -67,7 +67,7 @@
                         <div class="w-10 h-10 rounded-xl bg-[#10b981]/10 flex items-center justify-center">
                             <i class="fa-solid fa-images text-[#10b981] text-lg"></i>
                         </div>
-                        <h2 class="text-xl font-black text-gray-800">Imágenes y Rúbricas</h2>
+                        <h2 class="text-xl font-black text-gray-800">Imágenes y Formulas</h2>
                     </div>
                     
                     {% if images %}
