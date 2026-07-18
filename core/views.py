@@ -2440,7 +2440,7 @@ def course_syllabus(request, course_id):
     if request.user.role == 'student':
         course = get_object_or_404(Course, id=course_id, students=request.user)
     elif request.user.role == 'teacher':
-        course = get_object_or_404(Course, id=course_id, teacher=request.user)
+        course = _get_teacher_course(request, course_id)
     else:
         return redirect('login')
         
@@ -2456,7 +2456,7 @@ def course_evaluation(request, course_id):
     if request.user.role == 'student':
         course = get_object_or_404(Course, id=course_id, students=request.user)
     elif request.user.role == 'teacher':
-        course = get_object_or_404(Course, id=course_id, teacher=request.user)
+        course = _get_teacher_course(request, course_id)
     else:
         return redirect('login')
         
@@ -2650,7 +2650,7 @@ def teacher_download_attendance_template(request, course_id):
     import openpyxl
     from django.http import HttpResponse
     
-    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    course = _get_teacher_course(request, course_id)
     students = course.students.all().order_by('first_name', 'last_name')
     
     wb = openpyxl.Workbook()
@@ -2684,7 +2684,7 @@ def teacher_attendance_upload(request, course_id):
     from .models import AttendanceRegister, AttendanceRecord
     import openpyxl
     
-    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    course = _get_teacher_course(request, course_id)
     
     if request.method == 'POST':
         form = AttendanceUploadForm(request.POST, request.FILES, course=course)
