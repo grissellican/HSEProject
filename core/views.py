@@ -1371,9 +1371,7 @@ def _student_sidebar_context(request):
     # Filtrado a nivel Python para usar las configs de cohorte
     pending_count = 0
     assignments = Assignment.objects.filter(
-        module__course__in=Course.objects.filter(
-            Q(students=request.user) | Q(cohorts__students=request.user)
-        ),
+        module__course__students=request.user,
         module__is_visible=True,
         is_visible=True
     ).exclude(
@@ -1486,9 +1484,7 @@ def student_pending(request):
     active_cohorts = Cohort.objects.filter(students=request.user, status='active').values_list('id', flat=True)
     
     pending_assignments = Assignment.objects.filter(
-        module__course__in=Course.objects.filter(
-            Q(students=request.user) | Q(cohorts__students=request.user)
-        ),
+        module__course__students=request.user,
         module__is_visible=True,
         is_visible=True,
     ).exclude(
@@ -1496,9 +1492,7 @@ def student_pending(request):
     ).select_related('module__course')
     
     pending_forums = ModuleForum.objects.filter(
-        module__course__in=Course.objects.filter(
-            Q(students=request.user) | Q(cohorts__students=request.user)
-        ),
+        module__course__students=request.user,
         module__is_visible=True,
         is_visible=True,
     ).filter(
