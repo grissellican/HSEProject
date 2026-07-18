@@ -1054,8 +1054,15 @@ def teacher_student_grades_detail(request, course_id, student_id):
 # --- PERFIL DEL DOCENTE ---
 @_teacher_required
 def teacher_profile(request):
-    user = request.user
-    if request.method == 'POST':
+    user_id = request.GET.get('user_id')
+    if request.user.role == 'admin' and user_id:
+        user = get_object_or_404(User, id=user_id, role='teacher')
+        is_admin_supervising = True
+    else:
+        user = request.user
+        is_admin_supervising = False
+        
+    if request.method == 'POST' and not is_admin_supervising:
         form = TeacherProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
@@ -1063,11 +1070,16 @@ def teacher_profile(request):
             return redirect('teacher_profile')
     else:
         form = TeacherProfileForm(instance=user)
+        if is_admin_supervising:
+            for field in form.fields.values():
+                field.disabled = True
         
     context = {
         'section': 'perfil',
         'form': form,
-        'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
+        'profile_user': user,
+        'is_admin_supervising': is_admin_supervising,
+        'all_courses': Course.objects.filter(teacher=user, is_active=True),
     }
     return render(request, 'dashboards/teacher/teacher_profile.html', context)
 

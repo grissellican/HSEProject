@@ -44,6 +44,27 @@
         <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
             <div class="max-w-7xl mx-auto">
 
+                <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#38657f]{% endif %}"></i> MÓDULOS
+                    </a>
+                    {% if request.user.role != 'admin' %}
+                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                        <i class="fa-solid fa-file-contract mr-2 text-[#38657f]"></i> SÍLABO
+                    </a>
+                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                        <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
+                    </a>
+                    <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-users mr-2 text-[#38657f]"></i> ESTUDIANTES
+                    </a>
+                </div>
+
                 <!-- Info del curso -->
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 mb-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -37,9 +37,7 @@
                 <a href="#clases-en-vivo" class="inline-flex items-center px-3 py-1.5 border border-[#7c3aed]/30 bg-[#7c3aed]/5 text-[#7c3aed] text-sm font-semibold hover:bg-[#7c3aed]/10 transition-all">
                     <i class="fa-solid fa-video mr-1.5"></i> Clases en Vivo
                 </a>
-                <a href="{% url 'teacher_students_list' course_id=course.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-[#e5e9ff] hover:text-[#38657f] hover:border-[#38657f]/30 transition-all">
-                    <i class="fa-solid fa-users mr-1.5"></i> Estudiantes ({{ students|length }})
-                </a>
+
                 <form action="{% url 'logout' %}" method="POST" class="inline">
                     {% csrf_token %}
                     <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
@@ -93,20 +91,23 @@
                     </div>
                 </div>
 
-                <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
+                                <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
                 <div class="flex flex-wrap gap-3 mb-8">
                     <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
                         <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#38657f]{% endif %}"></i> MÓDULOS
                     </a>
+                    {% if request.user.role != 'admin' %}
                     <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
                         <i class="fa-solid fa-file-contract mr-2 text-[#38657f]"></i> SÍLABO
                     </a>
                     <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
                         <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
                     </a>
-                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
+                    {% endif %}
+                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
                         <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
                     </a>
+                    
                     
                     {% if course.allow_teacher_edit_syllabus and request.user.role == 'teacher' %}
                     <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm ml-auto">
