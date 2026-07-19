@@ -299,7 +299,7 @@ class QuestionForm(forms.ModelForm):
         model = Question
         fields = ['text', 'question_type', 'points', 'order']
         widgets = {
-            'text': forms.Textarea(attrs={'class': _textarea_cls, 'rows': 2, 'placeholder': 'Escriba la pregunta aquí...'}),
+            'text': CKEditor5Widget(config_name='extends'),
             'question_type': forms.Select(attrs={'class': _input_cls, 'id': 'id_question_type'}),
             'points': forms.NumberInput(attrs={'class': _input_cls, 'min': 0, 'step': '0.01'}),
             'order': forms.NumberInput(attrs={'class': _input_cls, 'min': 0}),
