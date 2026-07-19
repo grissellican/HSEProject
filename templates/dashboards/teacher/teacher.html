@@ -106,7 +106,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                     {% for c in courses %}
-                    <a href="{% url 'teacher_course_detail' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-md hover:border-[#34627c]/30 hover:-translate-y-0.5 transition-all duration-200" style="border-left:3px solid transparent;" onmouseover="this.style.borderLeftColor='#ad913c'" onmouseout="this.style.borderLeftColor='transparent'">
+                    <a href="{% url 'teacher_course_detail' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-xl hover:border-[#34627c]/50 hover:-translate-y-1.5 transition-all duration-300" style="border-left:3px solid transparent;" onmouseover="this.style.borderLeftColor='#ad913c'" onmouseout="this.style.borderLeftColor='transparent'">
 
                         <!-- Course image/banner -->
                         {% with img=c.get_cover_image %}
