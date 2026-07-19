@@ -2672,7 +2672,17 @@ def teacher_download_attendance_template(request, course_id):
     from django.http import HttpResponse
     
     course = _get_teacher_course(request, course_id)
-    students = course.students.all().order_by('first_name', 'last_name')
+    cohort_id = request.GET.get('cohort')
+    
+    if cohort_id:
+        from .models import Cohort
+        from django.shortcuts import get_object_or_404
+        cohort = get_object_or_404(Cohort, id=cohort_id, course=course)
+        students = cohort.students.all().order_by('first_name', 'last_name')
+        filename = f'Plantilla_Asistencia_{course.title}_{cohort.name}.xlsx'
+    else:
+        students = course.students.all().order_by('first_name', 'last_name')
+        filename = f'Plantilla_Asistencia_{course.title}.xlsx'
     
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -2695,7 +2705,7 @@ def teacher_download_attendance_template(request, course_id):
     ws.column_dimensions['D'].width = 30
         
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="Plantilla_Asistencia_{course.title}.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response
 
@@ -2765,12 +2775,14 @@ def teacher_attendance_upload(request, course_id):
         form = AttendanceUploadForm(course=course)
         
     registers = course.attendance_registers.all().prefetch_related('records')
+    active_cohorts = course.cohorts.filter(status='active')
         
     context = {
         'section': 'curso_detalle',
         'course': course,
         'form': form,
         'registers': registers,
+        'active_cohorts': active_cohorts,
         'sidebar_active': 'curso',
     }
     context.update(_sidebar_context(request))

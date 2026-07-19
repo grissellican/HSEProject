@@ -127,8 +127,14 @@
                         </h2>
                         <p class="text-sm text-gray-500 mt-1">Descarga la plantilla Excel, llénala y súbela para registrar la asistencia auditada.</p>
                     </div>
-                    <div class="flex-shrink-0">
-                        <a href="{% url 'teacher_download_attendance_template' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-white border border-[#10b981] text-[#10b981] text-sm font-bold rounded-md hover:bg-[#10b981] hover:text-white transition-colors shadow-sm cursor-pointer">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <select id="download-cohort-select" class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]">
+                            <option value="">Todos los estudiantes</option>
+                            {% for cohort in active_cohorts %}
+                            <option value="{{ cohort.id }}">{{ cohort.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a id="download-template-btn" href="{% url 'teacher_download_attendance_template' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-white border border-[#10b981] text-[#10b981] text-sm font-bold rounded-md hover:bg-[#10b981] hover:text-white transition-colors shadow-sm cursor-pointer whitespace-nowrap">
                             <i class="fa-solid fa-file-excel mr-1.5"></i> Descargar Plantilla Excel
                         </a>
                     </div>
@@ -214,5 +220,23 @@
             </div>
         </main>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('download-cohort-select');
+            const btn = document.getElementById('download-template-btn');
+            const baseUrl = btn.href;
+            
+            if (select && btn) {
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        btn.href = baseUrl + '?cohort=' + this.value;
+                    } else {
+                        btn.href = baseUrl;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
