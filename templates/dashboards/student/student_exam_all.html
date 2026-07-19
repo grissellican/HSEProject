@@ -82,7 +82,7 @@
                         </div>
 
                         <div class="p-6 md:p-8">
-                            <div class="text-gray-800 text-base font-medium mb-6 leading-relaxed">{{ question.text|linebreaks }}</div>
+                            <div class="text-gray-800 text-base font-medium mb-6 leading-relaxed ck-content">{{ question.text|safe }}</div>
 
                             {% if question.question_type == 'multiple_choice' %}
                             <div class="space-y-3">

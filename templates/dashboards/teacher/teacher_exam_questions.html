@@ -90,7 +90,7 @@
                                     </span>
                                     <span class="text-[10px] font-semibold text-gray-500">{{ q.points }} pts</span>
                                 </div>
-                                <p class="text-base text-gray-800 font-medium whitespace-pre-wrap">{{ q.text }}</p>
+                                <div class="text-base text-gray-800 font-medium whitespace-pre-wrap ck-content">{{ q.text|safe }}</div>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 <a href="{% url 'teacher_question_update' question_id=q.id %}" class="w-7 h-7 flex items-center justify-center text-[#38657f] hover:bg-[#e5e9ff] rounded transition-colors cursor-pointer" title="Editar">
