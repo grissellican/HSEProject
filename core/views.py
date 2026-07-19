@@ -773,13 +773,17 @@ def teacher_forum_reply_delete(request, reply_id):
 def teacher_assignment_submissions(request, assignment_id):
     assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     course = assignment.module.course
-    cohort_id = request.GET.get('cohort_id')
-    active_cohorts = Cohort.objects.filter(course=course, status='active')
-    
-    if cohort_id:
-        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
+    if assignment.target_type == 'specific':
+        active_cohorts = assignment.specific_cohorts.filter(status='active')
     else:
-        current_cohort = active_cohorts.first()
+        active_cohorts = Cohort.objects.filter(course=course, status='active')
+        
+    cohort_id = request.GET.get('cohort_id', 'all')
+    
+    if cohort_id == 'all':
+        current_cohort = None
+    elif cohort_id:
+        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
         
     submissions = assignment.submissions.select_related('student').all()
     if current_cohort:
