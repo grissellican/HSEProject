@@ -1484,19 +1484,40 @@ def _student_required(view_func):
 def _student_sidebar_context(request):
     """Contexto compartido para el sidebar del estudiante."""
     # Filtrado a nivel Python para usar las configs de cohorte
+    active_cohorts = Cohort.objects.filter(students=request.user, status='active').values_list('id', flat=True)
     pending_count = 0
     assignments = Assignment.objects.filter(
         module__course__students=request.user,
-        module__is_visible=True,
-        is_visible=True
+        module__is_visible=True
     ).exclude(
         submissions__student=request.user
     )
     for asg in assignments:
         if not asg.get_is_visible_for_user(request.user): continue
+        if asg.module.target_type == 'specific':
+            if not asg.module.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
         due_date = asg.get_due_date_for_user(request.user)
         if due_date is None or due_date >= timezone.now():
             pending_count += 1
+            
+    forums = ModuleForum.objects.filter(
+        module__course__students=request.user,
+        module__is_visible=True,
+        is_visible=True
+    ).filter(
+        Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True)
+    ).exclude(
+        replies__author=request.user
+    )
+    for forum in forums:
+        if forum.module.target_type == 'specific':
+            if not forum.module.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
+        if forum.target_type == 'specific':
+            if not forum.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
+        pending_count += 1
             
     return {'pending_count': pending_count}
 
@@ -1600,8 +1621,7 @@ def student_pending(request):
     
     pending_assignments = Assignment.objects.filter(
         module__course__students=request.user,
-        module__is_visible=True,
-        is_visible=True,
+        module__is_visible=True
     ).exclude(
         submissions__student=request.user
     ).select_related('module__course')
@@ -1611,8 +1631,6 @@ def student_pending(request):
         module__is_visible=True,
         is_visible=True,
     ).filter(
-        Q(cohort__in=active_cohorts) | Q(cohort__isnull=True)
-    ).filter(
         Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True)
     ).exclude(
         replies__author=request.user
@@ -1621,11 +1639,20 @@ def student_pending(request):
     pending_items = []
     for asg in pending_assignments:
         if not asg.get_is_visible_for_user(request.user): continue
+        if asg.module.target_type == 'specific':
+            if not asg.module.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
         due_date = asg.get_due_date_for_user(request.user)
         if due_date is None or due_date >= timezone.now():
             pending_items.append({'type': 'assignment', 'obj': asg, 'date': due_date})
             
     for forum in pending_forums:
+        if forum.module.target_type == 'specific':
+            if not forum.module.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
+        if forum.target_type == 'specific':
+            if not forum.specific_cohorts.filter(id__in=active_cohorts).exists():
+                continue
         pending_items.append({'type': 'forum', 'obj': forum, 'date': forum.end_date})
         
     import datetime

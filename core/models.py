@@ -233,7 +233,16 @@ class Assignment(models.Model):
             config = self.cohort_configs.filter(cohort=cohort).first()
             if config:
                 return config.is_visible
-        return self.is_visible
+                
+        if not self.is_visible:
+            return False
+            
+        if self.target_type == 'specific':
+            if cohort and self.specific_cohorts.filter(id=cohort.id).exists():
+                return True
+            return False
+            
+        return True
 
     @property
     def filename(self):
