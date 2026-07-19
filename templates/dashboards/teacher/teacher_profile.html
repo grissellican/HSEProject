@@ -20,14 +20,14 @@
         <!-- BARRA SUPERIOR -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_dashboard' %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_dashboard' %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Perfil del Docente</h1>
+                    <h1 class="text-base font-bold text-[#34627c] leading-tight">Perfil del Docente</h1>
                     <p class="text-[10px] text-gray-400">Edita tu presentación y foto</p>
                 </div>
             </div>
@@ -54,14 +54,14 @@
                 {% endif %}
 
                 <!-- Top header CV preview -->
-                <div class="bg-white shadow-lg border border-gray-200 overflow-hidden rounded-md mb-8">
-                    <div class="bg-[#38657f] text-white px-8 py-8 flex flex-col md:flex-row items-center md:items-start gap-8 relative overflow-hidden">
+                <div class="bg-white shadow-lg border border-gray-200 overflow-hidden rounded-sm mb-8">
+                    <div class="bg-[#34627c] text-white px-8 py-8 flex flex-col md:flex-row items-center md:items-start gap-8 relative overflow-hidden">
                         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-5"></div>
                         <div class="relative z-10">
                             {% if profile_user.profile_picture %}
-                            <img src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.first_name }}" class="w-32 h-32 rounded-md object-cover border-4 border-white shadow-lg flex-shrink-0">
+                            <img src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.first_name }}" class="w-32 h-32 rounded-sm object-cover border-4 border-white shadow-lg flex-shrink-0">
                             {% else %}
-                            <div class="w-32 h-32 rounded-md bg-white/20 border-4 border-white flex items-center justify-center shadow-lg flex-shrink-0">
+                            <div class="w-32 h-32 rounded-sm bg-white/20 border-4 border-white flex items-center justify-center shadow-lg flex-shrink-0">
                                 <span class="text-5xl font-black text-white">{{ request.user.first_name|first|upper }}</span>
                             </div>
                             {% endif %}
@@ -85,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
+                <div class="bg-white shadow-sm border border-gray-200 rounded-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                         <h2 class="text-lg font-bold text-gray-800">Editar Perfil Profesional</h2>
                         <p class="text-xs text-gray-500">Actualiza tu foto, presentación y privacidad.</p>
@@ -120,7 +120,7 @@
                             
                             <!-- Presentación (Editor Rico) -->
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-bold text-[#38657f] uppercase tracking-wider mb-2">
+                                <label class="block text-xs font-bold text-[#34627c] uppercase tracking-wider mb-2">
                                     Presentación Docente
                                 </label>
                                 <p class="text-xs text-gray-400 mb-3">Redacta tu biografía, experiencia, o un mensaje de bienvenida. Puedes usar herramientas de texto como negritas, subtítulos o listas.</p>
@@ -131,7 +131,7 @@
                                 {% endif %}
                                 
                                 <div class="mt-6 flex justify-end">
-                                    <button type="submit" class="inline-flex justify-center py-3 px-6 border border-transparent shadow-md text-sm font-bold rounded-xl text-white bg-[#38657f] hover:bg-[#2b5068] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#38657f] transition-all transform active:scale-95">
+                                    <button type="submit" class="inline-flex justify-center py-3 px-6 border border-transparent shadow-md text-sm font-bold rounded text-white bg-[#34627c] hover:bg-[#2a4f64] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#34627c] transition-all transform active:scale-95">
                                         <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
                                     </button>
                                 </div>

@@ -18,16 +18,16 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
-                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px]">{{ course.title }}</a>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[120px]">{{ course.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="hover:text-[#38657f] font-medium">Módulos</a>
+                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="hover:text-[#34627c] font-medium">Módulos</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[150px]">Foro: {{ forum.title }}</a>
+                    <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[150px]">Foro: {{ forum.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
                     <span class="text-gray-700 font-semibold truncate max-w-[150px]">Editar</span>
                 </nav>
@@ -37,8 +37,8 @@
 
         <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
             <div class="max-w-4xl mx-auto">
-                <div class="bg-white shadow-sm border border-gray-300 p-6 mb-8 border-t-4 border-t-[#38657f]">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-pen text-[#38657f]"></i> Editar Respuesta</h3>
+                <div class="bg-white shadow-sm border border-gray-300 p-6 mb-8 border-t-4 border-t-[#34627c]">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-pen text-[#34627c]"></i> Editar Respuesta</h3>
                     <form method="POST">
                         {% csrf_token %}
                         <div class="mb-4">
@@ -48,7 +48,7 @@
                         </div>
                         <div class="flex justify-end gap-2">
                             <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-semibold text-sm rounded-sm">Cancelar</a>
-                            <button type="submit" class="inline-flex items-center px-5 py-2 bg-[#1B5E37] text-white hover:bg-[#134529] transition-colors font-bold text-sm shadow-sm rounded-sm">Guardar Cambios</button>
+                            <button type="submit" class="inline-flex items-center px-5 py-2 bg-[#4c8a67] text-white hover:bg-[#134529] transition-colors font-bold text-sm shadow-sm rounded-sm">Guardar Cambios</button>
                         </div>
                     </form>
                 </div>

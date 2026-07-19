@@ -6,13 +6,13 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
 
 <style>
     :root {
-        --hse-green:   #1B5E37;
-        --hse-green-dk:#134529;
-        --hse-blue:    #38657f;
-        --hse-blue-dk: #2b5068;
-        --hse-gold:    #B8973A;
-        --hse-hover:   #e5e9ff;
-        --hse-purple:  #7c3aed;
+        --hse-green:   #4c8a67;
+        --hse-green-dk:#3d7055;
+        --hse-primary:   #34627c;
+        --hse-primary-dk:#2a4f64;
+        --hse-gold:    #ad913c;
+        --hse-hover:   #f0f4f7;
+        
     }
     body { font-family: 'Inter', sans-serif; }
 
@@ -44,8 +44,8 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     }
     .sidebar-item:hover {
         background: var(--hse-hover);
-        border-left-color: var(--hse-blue);
-        color: var(--hse-blue);
+        border-left-color: var(--hse-primary);
+        color: var(--hse-primary);
     }
     .sidebar-item-active {
         background: var(--hse-hover);
@@ -103,12 +103,12 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
 
     /* CKEditor link fixes (Tailwind reset fix) */
     .ck-content a {
-        color: var(--hse-blue);
+        color: var(--hse-primary);
         text-decoration: underline;
         font-weight: 500;
     }
     .ck-content a:hover {
-        color: var(--hse-blue-dk);
+        color: var(--hse-primary-dk);
     }
 
     /* Module item rows */
@@ -130,7 +130,7 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
     }
     .hse-input:focus {
         outline: none;
-        border-color: var(--hse-blue);
+        border-color: var(--hse-primary);
         box-shadow: 0 0 0 3px rgba(56,101,127,0.12);
     }
     select.hse-input { appearance: none; }
@@ -150,8 +150,8 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
                 <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-8 w-auto object-contain flex-shrink-0">
             {% endif %}
             <div class="logo-text min-w-0">
-                <span class="text-base font-black text-[#38657f] tracking-tight leading-none block truncate">{{ platform_settings.company_name|default:"QHSE Academy" }}</span>
-                <span class="text-[10px] font-semibold text-[#B8973A] uppercase tracking-widest">Docente</span>
+                <span class="text-base font-black text-[#34627c] tracking-tight leading-none block truncate">{{ platform_settings.company_name|default:"QHSE Academy" }}</span>
+                <span class="text-[10px] font-semibold text-[#ad913c] uppercase tracking-widest">Docente</span>
             </div>
         </a>
     </div>
@@ -163,8 +163,8 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
             {% if display_user.profile_picture %}
                 <img src="{{ display_user.profile_picture.url }}" alt="Perfil" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200">
             {% else %}
-                <div class="w-12 h-12 rounded-full bg-[#38657f]/10 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-user text-lg text-[#38657f]"></i>
+                <div class="w-12 h-12 rounded-full bg-[#34627c]/10 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-user text-lg text-[#34627c]"></i>
                 </div>
             {% endif %}
             <div class="min-w-0 user-text">
@@ -181,17 +181,17 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
 
             <!-- Panel General -->
             <a href="{% url 'teacher_dashboard' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-base {% if sidebar_active == 'dashboard' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-chart-pie w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-chart-pie w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label">Panel General</span>
             </a>
 
             <!-- Sección: Pendientes -->
             <div class="pt-4 pb-2 px-3 sidebar-section-label">
-                <p class="text-xs font-black text-[#B8973A] uppercase tracking-[0.2em]">Por Calificar</p>
+                <p class="text-xs font-black text-[#ad913c] uppercase tracking-[0.2em]">Por Calificar</p>
             </div>
 
             <a href="{% url 'teacher_dashboard' %}#pendientes" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-base {% if sidebar_active == 'pending' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-clipboard-check w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-clipboard-check w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label flex items-center gap-2">
                     Actividades
                     {% if pending_sidebar_count and pending_sidebar_count > 0 %}
@@ -204,7 +204,7 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
             <div class="px-2 space-y-1 sidebar-label mt-1">
                 {% for sub in pending_sidebar|slice:":6" %}
                 <a href="{% url 'teacher_assignment_submissions' assignment_id=sub.assignment.id %}"
-                   class="flex items-start gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-[#e5e9ff] hover:text-[#38657f] rounded transition-colors cursor-pointer"
+                   class="flex items-start gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-[#f0f4f7] hover:text-[#34627c] rounded transition-colors cursor-pointer"
                    title="{{ sub.assignment.title }} — {{ sub.student.first_name }}">
                     <i class="fa-solid fa-circle-dot text-amber-400 mt-1 flex-shrink-0 text-[10px]"></i>
                     <span class="truncate leading-tight">
@@ -226,7 +226,7 @@ Variables esperadas: sidebar_active ('dashboard'|'pending'), pending_sidebar, pe
 
     <!-- Sidebar Toggle -->
     <div class="flex-shrink-0 border-t border-gray-100">
-        <button id="sidebar-toggle" class="w-full h-12 flex items-center justify-center text-gray-400 hover:text-[#38657f] hover:bg-[#e5e9ff] transition-colors cursor-pointer" title="Colapsar/Expandir panel">
+        <button id="sidebar-toggle" class="w-full h-12 flex items-center justify-center text-gray-400 hover:text-[#34627c] hover:bg-[#f0f4f7] transition-colors cursor-pointer" title="Colapsar/Expandir panel">
             <i class="fa-solid fa-angles-left text-base toggle-icon"></i>
         </button>
     </div>

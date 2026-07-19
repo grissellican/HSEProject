@@ -20,11 +20,11 @@
         <!-- Top bar -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 <div class="hidden md:block">
-                    <h1 class="text-base font-bold text-[#38657f]">Mi Tablero</h1>
+                    <h1 class="text-base font-bold text-[#34627c]">Mi Tablero</h1>
                     <p class="text-[10px] text-gray-400">Bienvenido, {{ request.user.first_name }}</p>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                 <!-- Messages -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                        <div class="mb-4 p-3 bg-[#34627c]/8 border-l-4 border-[#34627c] text-base font-semibold text-[#34627c] flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i>{{ message }}
                         </div>
                     {% endfor %}
@@ -61,7 +61,7 @@
                 <!-- Course cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for c in courses %}
-                    <a href="{% url 'student_course_home' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-lg hover:border-[#38657f]/30 hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden">
+                    <a href="{% url 'student_course_home' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-lg hover:border-[#34627c]/30 hover:-translate-y-1 transition-all duration-300 rounded overflow-hidden">
 
                         <!-- Course image -->
                         {% with img=c.get_cover_image %}
@@ -71,7 +71,7 @@
                             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                         </div>
                         {% else %}
-                        <div class="h-36 bg-gradient-to-br from-[#38657f] via-[#2b5068] to-[#1B5E37] flex items-center justify-center relative overflow-hidden">
+                        <div class="h-36 bg-gradient-to-br from-[#34627c] via-[#2a4f64] to-[#4c8a67] flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
                             <i class="fa-solid fa-book-open text-5xl text-white/40 relative z-10"></i>
                         </div>
@@ -80,14 +80,14 @@
 
                         <div class="p-5 flex-1 flex flex-col">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-[10px] px-2.5 py-0.5 uppercase tracking-wider font-bold bg-[#38657f]/8 text-[#38657f] rounded-full">{{ c.category }}</span>
+                                <span class="text-[10px] px-2.5 py-0.5 uppercase tracking-wider font-bold bg-[#34627c]/8 text-[#34627c] rounded-full">{{ c.category }}</span>
                             </div>
-                            <h3 class="text-base font-black text-gray-800 mb-3 leading-snug group-hover:text-[#38657f] transition-colors">{{ c.title }}</h3>
+                            <h3 class="text-base font-black text-gray-800 mb-3 leading-snug group-hover:text-[#34627c] transition-colors">{{ c.title }}</h3>
 
                             <div class="mt-auto space-y-1.5 text-sm text-gray-500">
                                 {% if c.teacher %}
                                 <div class="flex items-center">
-                                    <i class="fa-solid fa-chalkboard-user mr-2 text-[#B8973A] w-4"></i>
+                                    <i class="fa-solid fa-chalkboard-user mr-2 text-[#ad913c] w-4"></i>
                                     <span class="text-gray-600">{{ c.teacher.first_name }} {{ c.teacher.lastname }}</span>
                                 </div>
                                 {% endif %}
@@ -100,13 +100,13 @@
 
                         <div class="px-5 py-3 bg-gray-50/80 border-t border-gray-100 flex items-center justify-between text-sm">
                             <span class="text-gray-400 font-medium">Ingresar al curso</span>
-                            <i class="fa-solid fa-arrow-right text-[#38657f] group-hover:translate-x-1 transition-transform"></i>
+                            <i class="fa-solid fa-arrow-right text-[#34627c] group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </a>
                     {% empty %}
-                    <div class="col-span-full bg-white border-2 border-dashed border-gray-200 p-16 text-center text-gray-400 rounded-xl">
-                        <div class="w-16 h-16 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                            <i class="fa-solid fa-graduation-cap text-3xl text-[#38657f]"></i>
+                    <div class="col-span-full bg-white border-2 border-dashed border-gray-200 p-16 text-center text-gray-400 rounded">
+                        <div class="w-16 h-16 bg-[#34627c]/10 rounded flex items-center justify-center mx-auto mb-5">
+                            <i class="fa-solid fa-graduation-cap text-3xl text-[#34627c]"></i>
                         </div>
                         <p class="text-base font-semibold text-gray-500">Aún no estás matriculado en ningún curso.</p>
                         <p class="text-sm mt-1">Contacta al administrador para inscribirte.</p>
@@ -128,7 +128,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for item in completed_courses %}
                     {% with c=item.course cohort=item.cohort %}
-                    <a href="{% url 'student_course_home' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-md hover:border-amber-400/30 transition-all duration-300 rounded-xl overflow-hidden grayscale-[20%] hover:grayscale-0">
+                    <a href="{% url 'student_course_home' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-md hover:border-amber-400/30 transition-all duration-300 rounded overflow-hidden grayscale-[20%] hover:grayscale-0">
 
                         <!-- Course image -->
                         {% with img=c.get_cover_image %}

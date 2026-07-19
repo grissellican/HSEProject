@@ -21,11 +21,11 @@
         <!-- Top bar -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 <div class="hidden md:block">
-                    <h1 class="text-base font-bold text-[#38657f]">Panel del Docente</h1>
+                    <h1 class="text-base font-bold text-[#34627c]">Panel del Docente</h1>
                     <p class="text-[10px] text-gray-400">Bienvenido, {{ request.user.first_name }}</p>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                 <!-- Messages -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                        <div class="mb-4 p-3 bg-[#34627c]/8 border-l-4 border-[#34627c] text-base font-semibold text-[#34627c] flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i>{{ message }}
                         </div>
                     {% endfor %}
@@ -53,27 +53,27 @@
                 <!-- KPI Cards -->
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-10">
 
-                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #38657f;">
+                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #34627c;">
                         <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Cursos Asignados</p>
                             <p class="text-2xl font-black text-gray-800">{{ total_courses }}</p>
                         </div>
-                        <div class="w-8 h-8 bg-[#38657f] flex items-center justify-center">
+                        <div class="w-8 h-8 bg-[#34627c] flex items-center justify-center">
                             <i class="fa-solid fa-book text-white text-sm"></i>
                         </div>
                     </div>
 
-                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #B8973A;">
+                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #ad913c;">
                         <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Total Estudiantes</p>
                             <p class="text-2xl font-black text-gray-800">{{ total_students }}</p>
                         </div>
-                        <div class="w-8 h-8 bg-[#B8973A] flex items-center justify-center">
+                        <div class="w-8 h-8 bg-[#ad913c] flex items-center justify-center">
                             <i class="fa-solid fa-users text-white text-sm"></i>
                         </div>
                     </div>
 
-                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" {% if pending_reviews > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #38657f;"{% endif %}>
+                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" {% if pending_reviews > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #34627c;"{% endif %}>
                         <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Pendientes Revisión</p>
                             <p class="text-2xl font-black {% if pending_reviews > 0 %}text-amber-600{% else %}text-gray-800{% endif %}">{{ pending_reviews }}</p>
@@ -83,12 +83,12 @@
                         </div>
                     </div>
 
-                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #7c3aed;">
+                    <div class="bg-white px-4 py-3 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #34627c;">
                         <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Sesiones Próximas</p>
                             <p class="text-2xl font-black text-gray-800">{{ upcoming_sessions|length }}</p>
                         </div>
-                        <div class="w-8 h-8 bg-[#7c3aed] flex items-center justify-center">
+                        <div class="w-8 h-8 bg-[#34627c] flex items-center justify-center">
                             <i class="fa-solid fa-video text-white text-sm"></i>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                     {% for c in courses %}
-                    <a href="{% url 'teacher_course_detail' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-md hover:border-[#38657f]/30 hover:-translate-y-0.5 transition-all duration-200" style="border-left:3px solid transparent;" onmouseover="this.style.borderLeftColor='#B8973A'" onmouseout="this.style.borderLeftColor='transparent'">
+                    <a href="{% url 'teacher_course_detail' course_id=c.id %}" class="bg-white shadow-sm border border-gray-200 flex flex-col group hover:shadow-md hover:border-[#34627c]/30 hover:-translate-y-0.5 transition-all duration-200" style="border-left:3px solid transparent;" onmouseover="this.style.borderLeftColor='#ad913c'" onmouseout="this.style.borderLeftColor='transparent'">
 
                         <!-- Course image/banner -->
                         {% with img=c.get_cover_image %}
@@ -115,7 +115,7 @@
                             <img src="{{ img }}" alt="{{ c.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         </div>
                         {% else %}
-                        <div class="h-32 bg-gradient-to-br from-[#38657f] via-[#2b5068] to-[#1B5E37] flex items-center justify-center relative overflow-hidden">
+                        <div class="h-32 bg-gradient-to-br from-[#34627c] via-[#2a4f64] to-[#4c8a67] flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
                             <i class="fa-solid fa-book-open text-4xl text-white/50 relative z-10"></i>
                         </div>
@@ -124,18 +124,18 @@
 
                         <div class="p-4 flex-1">
                             <div class="flex items-center justify-between mb-2.5">
-                                <span class="text-[10px] px-2 py-0.5 uppercase tracking-wider font-bold bg-[#38657f]/8 text-[#38657f]">{{ c.category }}</span>
+                                <span class="text-[10px] px-2 py-0.5 uppercase tracking-wider font-bold bg-[#34627c]/8 text-[#34627c]">{{ c.category }}</span>
                                 <span class="h-2 w-2 rounded-full {% if c.is_active %}bg-green-500{% else %}bg-gray-400{% endif %}" title="{% if c.is_active %}Activo{% else %}Inactivo{% endif %}"></span>
                             </div>
-                            <h3 class="text-base font-black text-gray-800 mb-3 leading-snug group-hover:text-[#38657f] transition-colors">{{ c.title }}</h3>
+                            <h3 class="text-base font-black text-gray-800 mb-3 leading-snug group-hover:text-[#34627c] transition-colors">{{ c.title }}</h3>
 
                             <div class="space-y-1 text-sm text-gray-500">
                                 <div class="flex items-center">
-                                    <i class="fa-solid fa-users mr-2 text-[#B8973A] w-3"></i>
+                                    <i class="fa-solid fa-users mr-2 text-[#ad913c] w-3"></i>
                                     <strong class="text-gray-700">{{ c.students.count }}</strong>&nbsp;estudiantes
                                 </div>
                                 <div class="flex items-center">
-                                    <i class="fa-solid fa-layer-group mr-2 text-[#38657f] w-3"></i>
+                                    <i class="fa-solid fa-layer-group mr-2 text-[#34627c] w-3"></i>
                                     <strong class="text-gray-700">{{ c.modules.count }}</strong>&nbsp;módulos
                                 </div>
                                 <div class="flex items-center">
@@ -147,13 +147,13 @@
 
                         <div class="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-sm">
                             <span class="text-gray-400 font-medium">Gestionar curso</span>
-                            <i class="fa-solid fa-arrow-right text-[#38657f] group-hover:translate-x-1 transition-transform"></i>
+                            <i class="fa-solid fa-arrow-right text-[#34627c] group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </a>
                     {% empty %}
                     <div class="col-span-full bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400">
-                        <div class="w-14 h-14 bg-[#38657f]/10 flex items-center justify-center mx-auto mb-4">
-                            <i class="fa-solid fa-book-open text-3xl text-[#38657f]"></i>
+                        <div class="w-14 h-14 bg-[#34627c]/10 flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-book-open text-3xl text-[#34627c]"></i>
                         </div>
                         <p class="text-base font-semibold">Aún no tienes cursos asignados.</p>
                         <p class="text-sm mt-1">Contacta al administrador para que te asigne un curso.</p>
@@ -165,12 +165,12 @@
                 {% if upcoming_sessions %}
                 <div id="pendientes" class="mb-6 flex items-center justify-between">
                     <h2 class="text-base font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-video text-[#7c3aed]"></i>Próximas Clases en Vivo
+                        <i class="fa-solid fa-video text-[#34627c]"></i>Próximas Clases en Vivo
                     </h2>
                     <div class="h-px flex-1 bg-gray-200 ml-4"></div>
                 </div>
 
-                <div class="bg-white shadow-sm border border-gray-200 overflow-hidden mb-12" style="border-top: 3px solid #7c3aed;">
+                <div class="bg-white shadow-sm border border-gray-200 overflow-hidden mb-12" style="border-top: 3px solid #34627c;">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -185,7 +185,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-base text-gray-600">
                                 {% for s in upcoming_sessions %}
-                                <tr class="hover:bg-[#e5e9ff]/40 transition-colors">
+                                <tr class="hover:bg-[#f0f4f7]/40 transition-colors">
                                     <td class="px-5 py-3.5 font-bold text-gray-800 text-sm">{{ s.title }}</td>
                                     <td class="px-5 py-3.5 text-sm text-gray-500">{{ s.course.title }}</td>
                                     <td class="px-5 py-3.5">
@@ -203,7 +203,7 @@
                                         {% if s.is_finished %}
                                             <span class="inline-flex items-center px-2.5 py-1.5 bg-gray-100 text-gray-500 text-[11px] font-bold rounded"><i class="fa-solid fa-check-double mr-1"></i> Culminada</span>
                                         {% else %}
-                                            <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-[#7c3aed] text-white text-[11px] font-bold hover:bg-[#6d28d9] transition-colors">
+                                            <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-[#34627c] text-white text-[11px] font-bold hover:bg-[#6d28d9] transition-colors">
                                                 <i class="fa-solid fa-external-link mr-1"></i> Abrir
                                             </a>
                                         {% endif %}

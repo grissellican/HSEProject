@@ -19,11 +19,11 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">Sistema de Evaluación</h1>
+                    <h1 class="text-xl font-bold text-[#34627c] leading-tight">Sistema de Evaluación</h1>
                     <p class="text-xs text-gray-500">{{ course.title }}</p>
                 </div>
             </div>
@@ -39,9 +39,9 @@
                     {% endfor %}
                 {% endif %}
                 <!-- FORMULARIO 1: Redacción de la evaluación -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="bg-white rounded shadow-sm border border-gray-200 p-8">
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 rounded-xl bg-[#f59e0b]/10 flex items-center justify-center">
+                        <div class="w-10 h-10 rounded bg-[#f59e0b]/10 flex items-center justify-center">
                             <i class="fa-solid fa-align-left text-[#f59e0b] text-lg"></i>
                         </div>
                         <h2 class="text-xl font-black text-gray-800">Descripción General</h2>
@@ -54,7 +54,7 @@
                             {{ form.evaluation_system_description }}
                         </div>
                         <div class="flex justify-end">
-                            <button type="submit" class="px-5 py-2.5 bg-[#f59e0b] text-white rounded-xl font-bold hover:bg-[#d97706] transition-colors shadow-sm">
+                            <button type="submit" class="px-5 py-2.5 bg-[#f59e0b] text-white rounded font-bold hover:bg-[#d97706] transition-colors shadow-sm">
                                 <i class="fa-solid fa-save mr-2"></i> Guardar Descripción
                             </button>
                         </div>
@@ -62,9 +62,9 @@
                 </div>
 
                 <!-- LISTA DE IMÁGENES -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="bg-white rounded shadow-sm border border-gray-200 p-8">
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 rounded-xl bg-[#10b981]/10 flex items-center justify-center">
+                        <div class="w-10 h-10 rounded bg-[#10b981]/10 flex items-center justify-center">
                             <i class="fa-solid fa-images text-[#10b981] text-lg"></i>
                         </div>
                         <h2 class="text-xl font-black text-gray-800">Imágenes y Rúbricas</h2>
@@ -73,7 +73,7 @@
                     {% if images %}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                         {% for img in images %}
-                        <div class="border border-gray-200 rounded-xl overflow-hidden relative group bg-gray-50">
+                        <div class="border border-gray-200 rounded overflow-hidden relative group bg-gray-50">
                             <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-full h-40 object-cover opacity-90 group-hover:opacity-100 transition-opacity">
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex justify-between items-end">
                                 <h3 class="text-white font-bold text-sm truncate pr-2">{{ img.title }}</h3>
@@ -85,7 +85,7 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="text-center py-6 mb-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <div class="text-center py-6 mb-6 bg-gray-50 rounded border border-dashed border-gray-200">
                         <p class="text-gray-500 text-sm">No hay imágenes subidas aún.</p>
                     </div>
                     {% endif %}
@@ -105,7 +105,7 @@
                                 {{ img_form.image }}
                             </div>
                             <div class="w-full sm:w-auto">
-                                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-[#059669] transition-colors shadow-sm whitespace-nowrap">
+                                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 bg-[#10b981] text-white rounded font-bold hover:bg-[#059669] transition-colors shadow-sm whitespace-nowrap">
                                     <i class="fa-solid fa-upload mr-2"></i> Subir
                                 </button>
                             </div>

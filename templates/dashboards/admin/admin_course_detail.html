@@ -52,7 +52,7 @@
             <div class="max-w-6xl mx-auto">
                 
                 <!-- Info Básica -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="bg-white rounded shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-black text-gray-800">{{ course.title }}</h2>
                         <div class="mt-2 flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -67,8 +67,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     
                     <!-- Sílabo -->
-                    <a href="{% url 'admin_edit_syllabus' course.id %}" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#10b981] transition-all group flex flex-col h-full cursor-pointer">
-                        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-[#10b981] mb-4 group-hover:scale-110 transition-transform">
+                    <a href="{% url 'admin_edit_syllabus' course.id %}" class="bg-white rounded shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#10b981] transition-all group flex flex-col h-full cursor-pointer">
+                        <div class="w-12 h-12 rounded bg-green-50 flex items-center justify-center text-[#10b981] mb-4 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-file-signature text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Sílabo y Módulos</h3>
@@ -79,8 +79,8 @@
                     </a>
 
                     <!-- Evaluación -->
-                    <a href="{% url 'admin_edit_evaluation' course.id %}" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#f59e0b] transition-all group flex flex-col h-full cursor-pointer">
-                        <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center text-[#f59e0b] mb-4 group-hover:scale-110 transition-transform">
+                    <a href="{% url 'admin_edit_evaluation' course.id %}" class="bg-white rounded shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#f59e0b] transition-all group flex flex-col h-full cursor-pointer">
+                        <div class="w-12 h-12 rounded bg-yellow-50 flex items-center justify-center text-[#f59e0b] mb-4 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-chart-pie text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Sistema de Evaluación</h3>
@@ -91,8 +91,8 @@
                     </a>
 
                     <!-- Grupos -->
-                    <a href="{% url 'admin_course_cohorts' course_id=course.id %}" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#8b5cf6] transition-all group flex flex-col h-full cursor-pointer">
-                        <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-[#8b5cf6] mb-4 group-hover:scale-110 transition-transform">
+                    <a href="{% url 'admin_course_cohorts' course_id=course.id %}" class="bg-white rounded shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-[#8b5cf6] transition-all group flex flex-col h-full cursor-pointer">
+                        <div class="w-12 h-12 rounded bg-purple-50 flex items-center justify-center text-[#8b5cf6] mb-4 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-users-rectangle text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Gestión de Grupos</h3>
@@ -106,37 +106,37 @@
                     </a>
 
                     <!-- Option: Configurar -->
-                    <a href="{% url 'course_update' course.id %}" class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-[#38657f]/30 hover:shadow-md transition-all flex flex-col h-full">
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-[#38657f] mb-4 group-hover:scale-110 transition-transform">
+                    <a href="{% url 'course_update' course.id %}" class="group bg-white p-6 rounded shadow-sm border border-gray-100 hover:border-[#34627c]/30 hover:shadow-md transition-all flex flex-col h-full">
+                        <div class="w-12 h-12 rounded bg-blue-50 flex items-center justify-center text-[#34627c] mb-4 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-cog text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Configuración General</h3>
                         <p class="text-sm text-gray-500 flex-1">Edita el nombre, categoría, docente asignado, imagen de portada y fecha de inicio de esta aula virtual.</p>
-                        <div class="mt-4 text-[#38657f] text-sm font-semibold flex items-center">
+                        <div class="mt-4 text-[#34627c] text-sm font-semibold flex items-center">
                             Abrir Configuración <i class="fa-solid fa-arrow-right ml-2 text-xs transition-transform group-hover:translate-x-1"></i>
                         </div>
                     </a>
 
                     <!-- Option: Matricular Alumnos -->
-                    <a href="{% url 'course_students_update' course.id %}" class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-[#38657f]/30 hover:shadow-md transition-all flex flex-col h-full">
-                        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
+                    <a href="{% url 'course_students_update' course.id %}" class="group bg-white p-6 rounded shadow-sm border border-gray-100 hover:border-[#34627c]/30 hover:shadow-md transition-all flex flex-col h-full">
+                        <div class="w-12 h-12 rounded bg-green-50 flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-user-plus text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Matricular Alumnos</h3>
                         <p class="text-sm text-gray-500 flex-1">Inscribe nuevos alumnos en esta aula virtual o visualiza la lista de estudiantes matriculados y sus perfiles.</p>
-                        <div class="mt-4 text-[#38657f] text-sm font-semibold flex items-center">
+                        <div class="mt-4 text-[#34627c] text-sm font-semibold flex items-center">
                             Gestionar Matrícula <i class="fa-solid fa-arrow-right ml-2 text-xs transition-transform group-hover:translate-x-1"></i>
                         </div>
                     </a>
                 </div>
 
                 <!-- Zona de Peligro -->
-                <div class="bg-red-50 rounded-xl border border-red-200 p-6">
+                <div class="bg-red-50 rounded border border-red-200 p-6">
                     <h3 class="text-lg font-bold text-red-800 mb-2">Zona de Peligro</h3>
                     <p class="text-sm text-red-600 mb-4">Eliminar este curso borrará todas las evaluaciones, módulos, recursos y calificaciones asociadas. Esta acción no se puede deshacer.</p>
                     <form action="{% url 'course_delete' course.id %}" method="POST" onsubmit="return confirm('¿Estás absolutamente seguro de eliminar esta aula del sistema? Perderás todos los datos y tareas.');">
                         {% csrf_token %}
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors cursor-pointer shadow-sm">
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-sm hover:bg-red-700 transition-colors cursor-pointer shadow-sm">
                             <i class="fa-solid fa-trash mr-1.5"></i> Eliminar Curso Permanentemente
                         </button>
                     </form>

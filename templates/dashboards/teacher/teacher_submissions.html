@@ -22,14 +22,14 @@
         <!-- BARRA SUPERIOR -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_course_detail' course_id=assignment.module.course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_course_detail' course_id=assignment.module.course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Entregas — {{ assignment.title }}</h1>
+                    <h1 class="text-base font-bold text-[#34627c] leading-tight">Entregas — {{ assignment.title }}</h1>
                     <p class="text-[10px] text-gray-400">{{ course.title }}</p>
                 </div>
             </div>
@@ -48,14 +48,14 @@
                 <!-- MENSAJES -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                        <div class="mb-4 p-3 bg-[#34627c]/8 border-l-4 border-[#34627c] text-base font-semibold text-[#34627c] flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i>{{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
 
                 <!-- Info de la Tarea -->
-                <div class="bg-white border border-gray-200 shadow-sm p-5 mb-5" style="border-left: 3px solid #38657f;">
+                <div class="bg-white border border-gray-200 shadow-sm p-5 mb-5" style="border-left: 3px solid #34627c;">
                     <div class="flex items-start justify-between">
                         <div>
                             <div class="flex items-center gap-2 mb-1.5">
@@ -94,7 +94,7 @@
                             {% if active_cohorts %}
                             <form method="GET" class="flex items-center space-x-2">
                                 <label for="cohort_id" class="text-sm font-semibold text-gray-600">Grupo:</label>
-                                <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-2 px-3" onchange="this.form.submit()">
+                                <select name="cohort_id" id="cohort_id" class="rounded-sm border-gray-300 text-sm focus:border-[#34627c] focus:ring-[#34627c] py-2 px-3" onchange="this.form.submit()">
                                     <option value="all" {% if not current_cohort %}selected{% endif %}>Todas las entregas</option>
                                     {% for c in active_cohorts %}
                                     <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>
@@ -108,21 +108,21 @@
 
                 <!-- KPIs de entregas -->
                 <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-5">
-                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #38657f;">
+                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #34627c;">
                         <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Total</p>
                         <p class="text-2xl font-black text-gray-800">{{ total_submissions }}</p>
                     </div>
-                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #1B5E37;">
+                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #4c8a67;">
                         <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Calificadas</p>
                         <p class="text-2xl font-black text-green-600">{{ graded_count }}</p>
                     </div>
-                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" {% if pending_count > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #38657f;"{% endif %}>
+                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" {% if pending_count > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #34627c;"{% endif %}>
                         <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Pendientes</p>
                         <p class="text-2xl font-black {% if pending_count > 0 %}text-amber-600{% else %}text-gray-800{% endif %}">{{ pending_count }}</p>
                     </div>
-                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #38657f;">
+                    <div class="bg-white px-3 py-2 shadow-sm border border-gray-200 text-center" style="border-top: 3px solid #34627c;">
                         <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Promedio</p>
-                        <p class="text-2xl font-black text-[#38657f]">{% if avg_percentage != None %}{{ avg_percentage }}%{% else %}—{% endif %}</p>
+                        <p class="text-2xl font-black text-[#34627c]">{% if avg_percentage != None %}{{ avg_percentage }}%{% else %}—{% endif %}</p>
                     </div>
                 </div>
 
@@ -145,14 +145,14 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-base text-gray-600">
                                 {% for sub in submissions %}
-                                <tr class="hover:bg-[#e5e9ff]/30 transition-colors">
+                                <tr class="hover:bg-[#f0f4f7]/30 transition-colors">
                                     <td class="px-5 py-3.5 font-semibold text-gray-800 text-base">{{ sub.student.first_name }} {{ sub.student.lastname }}</td>
                                     <td class="px-5 py-3.5 text-sm text-gray-500">{{ sub.submitted_at|date:"d/m/Y H:i" }}</td>
                                     <td class="px-5 py-3.5">
                                         {% if sub.files.all %}
                                             <div class="flex flex-col gap-1">
                                             {% for s_file in sub.files.all %}
-                                                <a href="{{ s_file.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] text-sm font-semibold truncate max-w-[150px]" title="{{ s_file.file.name|cut:'submissions/' }}">
+                                                <a href="{{ s_file.file.url }}" target="_blank" class="text-[#34627c] hover:text-[#2a4f64] text-sm font-semibold truncate max-w-[150px]" title="{{ s_file.file.name|cut:'submissions/' }}">
                                                     <i class="fa-solid fa-download mr-1"></i>{{ s_file.file.name|cut:'submissions/'|truncatechars:20 }}
                                                 </a>
                                             {% endfor %}
@@ -181,7 +181,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
-                                        <a href="{% url 'teacher_grade_submission' submission_id=sub.id %}" class="inline-flex items-center px-3 py-1.5 {% if sub.is_graded %}bg-[#38657f]/10 text-[#38657f]{% else %}bg-[#38657f] text-white{% endif %} text-[11px] font-bold hover:opacity-80 transition-all cursor-pointer">
+                                        <a href="{% url 'teacher_grade_submission' submission_id=sub.id %}" class="inline-flex items-center px-3 py-1.5 {% if sub.is_graded %}bg-[#34627c]/10 text-[#34627c]{% else %}bg-[#34627c] text-white{% endif %} text-[11px] font-bold hover:opacity-80 transition-all cursor-pointer">
                                             <i class="fa-solid fa-pen mr-1"></i> {% if sub.is_graded %}Editar Nota{% else %}Calificar{% endif %}
                                         </a>
                                     </td>

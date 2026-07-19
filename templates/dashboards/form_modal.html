@@ -103,7 +103,7 @@
 </head>
 <body class="bg-gray-50/50 min-h-full py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
 
-    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="max-w-3xl w-full bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
         <div class="bg-[#2b3494] px-6 py-4 flex items-center justify-between">
             <h2 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-folder-plus mr-2"></i> {{ title }}</h2>
             <button onclick="window.history.back();" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -118,7 +118,7 @@
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1.5">{{ field.label }}</label>
                     {% if field.name == 'students' or field.name == 'enrolled_courses' %}
                     <div class="mb-2">
-                        <input type="text" id="studentsSearchModal" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#2b3494] focus:outline-none focus:ring-1 focus:ring-[#2b3494]" placeholder="Buscar...">
+                        <input type="text" id="studentsSearchModal" class="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:border-[#2b3494] focus:outline-none focus:ring-1 focus:ring-[#2b3494]" placeholder="Buscar...">
                     </div>
                     {% endif %}
                     {{ field }}
@@ -129,8 +129,8 @@
             </div>
 
             <div class="pt-4 border-t border-gray-100 flex justify-end space-x-2.5">
-                <button type="button" onclick="window.history.back();" class="px-4 py-2 border border-gray-300 text-gray-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition-colors">Cancelar</button>
-                <button type="submit" class="px-5 py-2 bg-[#2b3494] text-white text-xs font-semibold rounded-xl hover:bg-[#1e256b] transition-colors shadow-sm">Guardar Registro</button>
+                <button type="button" onclick="window.history.back();" class="px-4 py-2 border border-gray-300 text-gray-600 text-xs font-semibold rounded hover:bg-gray-50 transition-colors">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-[#2b3494] text-white text-xs font-semibold rounded hover:bg-[#1e256b] transition-colors shadow-sm">Guardar Registro</button>
             </div>
         </form>
     </div>
@@ -178,7 +178,7 @@
                 const previewContainer = document.createElement('div');
                 previewContainer.className = 'mt-2 mb-3 hidden';
                 const img = document.createElement('img');
-                img.className = 'w-full h-48 object-cover rounded-xl border border-gray-200 shadow-sm';
+                img.className = 'w-full h-48 object-cover rounded border border-gray-200 shadow-sm';
                 previewContainer.appendChild(img);
                 
                 // Mostrar imagen actual si existe en el HTML generado por Django (tag <a> antes del input)

@@ -17,8 +17,8 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none"><i class="fa-solid fa-bars text-lg"></i></button>
-                <div class="hidden md:block"><h1 class="text-base font-bold text-[#38657f]">Mis Archivos</h1></div>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none"><i class="fa-solid fa-bars text-lg"></i></button>
+                <div class="hidden md:block"><h1 class="text-base font-bold text-[#34627c]">Mis Archivos</h1></div>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Cerrar Sesión</button></form>
         </div>
@@ -29,7 +29,7 @@
                 <div class="flex items-center justify-between mb-8">
                     <div>
                         <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-folder-open text-[#38657f]"></i> Mis Archivos Subidos
+                            <i class="fa-solid fa-folder-open text-[#34627c]"></i> Mis Archivos Subidos
                         </h2>
                         <p class="text-sm text-gray-400 mt-0.5">Archivos que has entregado en tus actividades.</p>
                     </div>
@@ -38,8 +38,8 @@
 
                 {% if submissions_with_files %}
                 <!-- Regular submissions -->
-                <h3 class="text-xs font-black text-[#B8973A] uppercase tracking-widest mb-4">Entregas de Tareas y Evaluaciones</h3>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-10">
+                <h3 class="text-xs font-black text-[#ad913c] uppercase tracking-widest mb-4">Entregas de Tareas y Evaluaciones</h3>
+                <div class="bg-white rounded shadow-sm border border-gray-200 overflow-hidden mb-10">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
@@ -55,8 +55,8 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-5 py-3.5">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-lg bg-[#38657f]/10 flex items-center justify-center flex-shrink-0">
-                                            <i class="fa-solid fa-file text-[#38657f] text-sm"></i>
+                                        <div class="w-8 h-8 rounded-sm bg-[#34627c]/10 flex items-center justify-center flex-shrink-0">
+                                            <i class="fa-solid fa-file text-[#34627c] text-sm"></i>
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]">{{ sub.file.name|cut:"submissions/" }}</span>
                                     </div>
@@ -65,7 +65,7 @@
                                 <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.submission.assignment.module.course.title }}</td>
                                 <td class="px-5 py-3.5 text-xs text-gray-400">{{ sub.uploaded_at|date:"d/m/Y H:i" }}</td>
                                 <td class="px-5 py-3.5 text-center">
-                                    <a href="{{ sub.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#38657f]/8 text-[#38657f] hover:bg-[#38657f]/15 transition-colors">
+                                    <a href="{{ sub.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-sm bg-[#34627c]/8 text-[#34627c] hover:bg-[#34627c]/15 transition-colors">
                                         <i class="fa-solid fa-download text-sm"></i>
                                     </a>
                                 </td>
@@ -78,8 +78,8 @@
 
                 {% if exam_files %}
                 <!-- Exam file responses -->
-                <h3 class="text-xs font-black text-[#B8973A] uppercase tracking-widest mb-4">Archivos de Exámenes</h3>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-10">
+                <h3 class="text-xs font-black text-[#ad913c] uppercase tracking-widest mb-4">Archivos de Exámenes</h3>
+                <div class="bg-white rounded shadow-sm border border-gray-200 overflow-hidden mb-10">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
@@ -94,7 +94,7 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-5 py-3.5">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-sm bg-indigo-50 flex items-center justify-center flex-shrink-0">
                                             <i class="fa-solid fa-file text-indigo-500 text-sm"></i>
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]">{{ qr.file.name|cut:"submissions/exam_files/" }}</span>
@@ -103,7 +103,7 @@
                                 <td class="px-5 py-3.5 text-sm text-gray-600">{{ qr.response.submission.assignment.title }}</td>
                                 <td class="px-5 py-3.5 text-xs text-gray-400">{{ qr.response.submission.assignment.module.course.title }}</td>
                                 <td class="px-5 py-3.5 text-center">
-                                    <a href="{{ qr.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition-colors">
+                                    <a href="{{ qr.file.url }}" download class="inline-flex items-center justify-center w-8 h-8 rounded-sm bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition-colors">
                                         <i class="fa-solid fa-download text-sm"></i>
                                     </a>
                                 </td>
@@ -115,9 +115,9 @@
                 {% endif %}
 
                 {% if not submissions_with_files and not exam_files %}
-                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-xl">
-                    <div class="w-14 h-14 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-folder-open text-2xl text-[#38657f]"></i>
+                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded">
+                    <div class="w-14 h-14 bg-[#34627c]/10 rounded flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-folder-open text-2xl text-[#34627c]"></i>
                     </div>
                     <p class="text-base font-semibold text-gray-500">No has subido archivos aún.</p>
                 </div>

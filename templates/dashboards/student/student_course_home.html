@@ -24,15 +24,15 @@
         <!-- Top bar -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between border-b border-gray-200 bg-white">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 <!-- Breadcrumbs -->
-                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium transition-colors">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <span class="text-[#38657f] font-semibold truncate max-w-[200px]">{{ course.title }}</span>
+                    <span class="text-[#34627c] font-semibold truncate max-w-[200px]">{{ course.title }}</span>
                 </nav>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">
@@ -50,16 +50,16 @@
                 <!-- Course banner -->
                 {% with img=course.get_cover_image %}
                 {% if img %}
-                <div class="rounded-md overflow-hidden shadow-sm border border-gray-200 mb-8 relative h-48 md:h-64">
+                <div class="rounded-sm overflow-hidden shadow-sm border border-gray-200 mb-8 relative h-48 md:h-64">
                     <img src="{{ img }}" alt="{{ course.title }}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                     <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                        <span class="text-xs px-3 py-1 uppercase tracking-wider font-bold bg-[#38657f] text-white rounded mb-3 inline-block">{{ course.category }}</span>
+                        <span class="text-xs px-3 py-1 uppercase tracking-wider font-bold bg-[#34627c] text-white rounded mb-3 inline-block">{{ course.category }}</span>
                         <h1 class="text-2xl md:text-3xl font-black text-white leading-tight drop-shadow-md">{{ course.title }}</h1>
                     </div>
                 </div>
                 {% else %}
-                <div class="rounded-md overflow-hidden shadow-sm border border-gray-200 mb-8 relative h-48 md:h-64 bg-gradient-to-br from-[#38657f] via-[#2b5068] to-[#1B5E37] flex items-end">
+                <div class="rounded-sm overflow-hidden shadow-sm border border-gray-200 mb-8 relative h-48 md:h-64 bg-gradient-to-br from-[#34627c] via-[#2a4f64] to-[#4c8a67] flex items-end">
                     <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 16px 16px;"></div>
                     <div class="relative z-10 p-6 md:p-8">
                         <span class="text-xs px-3 py-1 uppercase tracking-wider font-bold bg-black/30 text-white rounded mb-3 inline-block">{{ course.category }}</span>
@@ -71,8 +71,8 @@
 
                 <!-- Welcome description -->
                 {% if course.welcome_description %}
-                <div class="bg-white rounded-md shadow-sm border border-[#38657f] p-6 md:p-8 mb-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-[#38657f]"></div>
+                <div class="bg-white rounded-sm shadow-sm border border-[#34627c] p-6 md:p-8 mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[#34627c]"></div>
                     <div class="prose prose-sm max-w-none text-gray-700 leading-relaxed font-medium">
                         {{ course.welcome_description|safe }}
                     </div>
@@ -82,43 +82,43 @@
                 <!-- Navigation buttons -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-8">
                     <!-- Docente -->
-                    <a href="{% url 'student_course_teacher' course_id=course.id %}" class="group bg-white rounded-md shadow-sm border border-[#B8973A] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#B8973A] transition-colors duration-300">
+                    <a href="{% url 'student_course_teacher' course_id=course.id %}" class="group bg-white rounded-sm shadow-sm border border-[#ad913c] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#ad913c] transition-colors duration-300">
                         <span class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-gray-800 group-hover:text-white">Docente</span>
-                        <i class="fa-solid fa-chalkboard-user text-lg text-[#B8973A] group-hover:text-white"></i>
+                        <i class="fa-solid fa-chalkboard-user text-lg text-[#ad913c] group-hover:text-white"></i>
                     </a>
 
                     <!-- Sílabo -->
-                    <a href="{% url 'course_syllabus' course_id=course.id %}" class="group bg-white rounded-md shadow-sm border border-[#10b981] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#10b981] transition-colors duration-300">
+                    <a href="{% url 'course_syllabus' course_id=course.id %}" class="group bg-white rounded-sm shadow-sm border border-[#34627c] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#34627c] transition-colors duration-300">
                         <span class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-gray-800 group-hover:text-white">Sílabo</span>
-                        <i class="fa-solid fa-file-contract text-lg text-[#10b981] group-hover:text-white"></i>
+                        <i class="fa-solid fa-file-contract text-lg text-[#34627c] group-hover:text-white"></i>
                     </a>
 
                     <!-- Módulos -->
-                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="group bg-white rounded-md shadow-sm border border-[#38657f] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#38657f] transition-colors duration-300">
+                    <a href="{% url 'student_course_modules' course_id=course.id %}" class="group bg-white rounded-sm shadow-sm border border-[#34627c] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#34627c] transition-colors duration-300">
                         <span class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-gray-800 group-hover:text-white">Módulos</span>
-                        <i class="fa-solid fa-layer-group text-lg text-[#38657f] group-hover:text-white"></i>
+                        <i class="fa-solid fa-layer-group text-lg text-[#34627c] group-hover:text-white"></i>
                     </a>
 
                     <!-- Clases en Vivo -->
-                    <a href="{% url 'student_course_live' course_id=course.id %}" class="group bg-white rounded-md shadow-sm border border-[#7c3aed] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#7c3aed] transition-colors duration-300">
+                    <a href="{% url 'student_course_live' course_id=course.id %}" class="group bg-white rounded-sm shadow-sm border border-[#34627c] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#34627c] transition-colors duration-300">
                         <span class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-gray-800 group-hover:text-white leading-tight">Clases<br>Vivo</span>
-                        <i class="fa-solid fa-video text-lg text-[#7c3aed] group-hover:text-white"></i>
+                        <i class="fa-solid fa-video text-lg text-[#34627c] group-hover:text-white"></i>
                     </a>
 
                     <!-- Sistema de Evaluación -->
-                    <a href="{% url 'course_evaluation' course_id=course.id %}" class="group bg-white rounded-md shadow-sm border border-[#f59e0b] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#f59e0b] transition-colors duration-300">
+                    <a href="{% url 'course_evaluation' course_id=course.id %}" class="group bg-white rounded-sm shadow-sm border border-[#34627c] p-3 md:p-4 flex items-center justify-between gap-2 hover:bg-[#34627c] transition-colors duration-300">
                         <span class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-gray-800 group-hover:text-white">Evaluación</span>
-                        <i class="fa-solid fa-chart-pie text-lg text-[#f59e0b] group-hover:text-white"></i>
+                        <i class="fa-solid fa-chart-pie text-lg text-[#34627c] group-hover:text-white"></i>
                     </a>
                 </div>
 
                 <!-- Capacidades del curso -->
                 {% if course.capacities %}
-                <div class="mb-10 shadow-sm rounded-md">
-                    <div class="bg-[#38657f] text-white py-3 px-6 rounded-t-md text-center">
+                <div class="mb-10 shadow-sm rounded-sm">
+                    <div class="bg-[#34627c] text-white py-3 px-6 rounded-t-md text-center">
                         <h2 class="text-sm font-bold uppercase tracking-wider">Capacidades</h2>
                     </div>
-                    <div class="bg-white border border-[#38657f] border-t-0 rounded-b-md px-6 py-4 md:px-8 md:py-4">
+                    <div class="bg-white border border-[#34627c] border-t-0 rounded-b-md px-6 py-4 md:px-8 md:py-4">
                         <div class="prose prose-sm md:prose-base max-w-none text-gray-700 break-words whitespace-pre-wrap [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&>ul:first-child]:mt-0 [&>ul:last-child]:mb-0">
                             {{ course.capacities|safe }}
                         </div>

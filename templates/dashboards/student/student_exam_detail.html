@@ -17,14 +17,14 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
-                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium transition-colors">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px] transition-colors">{{ course.title }}</a>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[120px] transition-colors">{{ course.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <span class="text-[#38657f] font-semibold truncate max-w-[150px]">{{ assignment.title }}</span>
+                    <span class="text-[#34627c] font-semibold truncate max-w-[150px]">{{ assignment.title }}</span>
                 </nav>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
@@ -36,13 +36,13 @@
                 <!-- Main Content Column -->
                 <div class="flex-1">
 
-                    {% if messages %}{% for message in messages %}<div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#38657f]/10 border-[#38657f] text-[#38657f]{% endif %}"><i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %} text-lg"></i>{{ message }}</div>{% endfor %}{% endif %}
+                    {% if messages %}{% for message in messages %}<div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#34627c]/10 border-[#34627c] text-[#34627c]{% endif %}"><i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %} text-lg"></i>{{ message }}</div>{% endfor %}{% endif %}
 
                     <!-- Assignment info card -->
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm mb-6" style="border-top: 3px solid #38657f;">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm mb-6" style="border-top: 3px solid #34627c;">
                         <div class="p-6 md:p-8">
                             <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ assignment.title }}</h1>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-6 flex items-center gap-2"><i class="fa-solid fa-laptop-code text-[#38657f]"></i> Examen Online · {{ module.title }}</p>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-6 flex items-center gap-2"><i class="fa-solid fa-laptop-code text-[#34627c]"></i> Examen Online · {{ module.title }}</p>
 
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-gray-100 mb-6">
                                 <div>
@@ -76,7 +76,7 @@
                             </div>
 
                             {% if assignment.description or assignment.attached_file %}
-                            <div class="bg-gray-50 rounded-md p-5 border border-gray-100 mb-2">
+                            <div class="bg-gray-50 rounded-sm p-5 border border-gray-100 mb-2">
                                 {% if assignment.description %}
                                 <div class="mb-4">
                                     <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Instrucciones</h3>
@@ -86,7 +86,7 @@
 
                                 {% if assignment.attached_file %}
                                 <div class="{% if assignment.description %}pt-4 border-t border-gray-200{% endif %}">
-                                    <a href="{{ assignment.attached_file.url }}" download class="inline-flex items-center text-[#38657f] hover:text-[#2c5065] text-sm font-semibold transition-colors">
+                                    <a href="{{ assignment.attached_file.url }}" download class="inline-flex items-center text-[#34627c] hover:text-[#2c5065] text-sm font-semibold transition-colors">
                                         <i class="fa-solid fa-download mr-1.5"></i> Descargar Archivo Adjunto
                                     </a>
                                 </div>
@@ -98,12 +98,12 @@
 
                     <!-- Modal Confirmation (Placed outside conditionals) -->
                     <div id="start-exam-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-                        <div class="bg-white rounded-md shadow-lg max-w-md w-full overflow-hidden">
+                        <div class="bg-white rounded-sm shadow-lg max-w-md w-full overflow-hidden">
                             <div class="p-6 text-center">
                                 <i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 mb-4"></i>
                                 <h3 class="text-xl font-bold text-gray-800 mb-2">Atención antes de empezar</h3>
                                 
-                                <div class="bg-amber-50 border border-amber-100 rounded-md p-4 my-4 text-left text-sm text-gray-700 space-y-2">
+                                <div class="bg-amber-50 border border-amber-100 rounded-sm p-4 my-4 text-left text-sm text-gray-700 space-y-2">
                                     {% if assignment.show_all_questions %}
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i>El examen consta de <strong>{{ total_questions }} preguntas</strong> mostradas todas en una sola página.</p>
                                     <p><i class="fa-solid fa-circle text-[6px] text-amber-500 align-middle mr-2"></i><strong>
@@ -123,7 +123,7 @@
                                 <button onclick="document.getElementById('start-exam-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">Cancelar</button>
                                 <form action="{% url 'student_exam_start' assignment_id=assignment.id %}" method="POST" class="inline m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="px-5 py-2 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">Aceptar e Iniciar</button>
+                                    <button type="submit" class="px-5 py-2 bg-[#34627c] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">Aceptar e Iniciar</button>
                                 </form>
                             </div>
                         </div>
@@ -131,41 +131,41 @@
 
                     <!-- Action Area -->
                     {% if is_frozen_cohort %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-6 text-center">
                         <i class="fa-solid fa-lock text-3xl text-gray-500 mb-3"></i>
                         <h3 class="text-lg font-bold text-gray-800 mb-2">Curso Culminado</h3>
                         <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Este grupo ha finalizado. Los recursos están en modo de solo lectura y no se permiten nuevas entregas.</p>
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">Volver al curso</a>
                     </div>
                     {% elif is_past_due and not submission %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-6 text-center">
                         <i class="fa-solid fa-clock-rotate-left text-3xl text-red-500 mb-3"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">La fecha límite para este examen ha pasado y no realizaste ninguna entrega.</p>
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">Volver al curso</a>
                     </div>
                     {% elif not attempt %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
-                        <i class="fa-solid fa-clipboard-question text-4xl text-[#38657f] mb-4"></i>
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fa-solid fa-clipboard-question text-4xl text-[#34627c] mb-4"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Una vez que comiences, el tiempo empezará a correr y no podrás pausarlo.</p>
-                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#34627c] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
                             Empezar Examen
                         </button>
                     </div>
 
                     {% elif not attempt.is_completed %}
-                    <div class="bg-[#38657f] rounded-md shadow-sm p-8 text-center text-white border border-[#2c5065]">
+                    <div class="bg-[#34627c] rounded-sm shadow-sm p-8 text-center text-white border border-[#2c5065]">
                         <i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-blue-200"></i>
                         <h3 class="text-xl font-bold mb-2">Examen en curso</h3>
                         <p class="text-blue-100 text-sm mb-6 max-w-md mx-auto">Continúa respondiendo el examen donde te quedaste.</p>
                         {% if assignment.show_all_questions %}
-                        <a href="{% url 'student_exam_all' assignment_id=assignment.id %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#38657f] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
+                        <a href="{% url 'student_exam_all' assignment_id=assignment.id %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#34627c] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
                         {% else %}
-                        <a href="{% url 'student_exam_question' assignment_id=assignment.id q=attempt.current_question_index %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#38657f] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
+                        <a href="{% url 'student_exam_question' assignment_id=assignment.id q=attempt.current_question_index %}" class="inline-flex items-center px-6 py-2.5 bg-white text-[#34627c] text-sm font-bold rounded hover:bg-gray-100 transition-colors">Continuar Examen</a>
                         {% endif %}
                     </div>
 
                     {% else %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-8 text-center">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-8 text-center">
                         {% if submission.is_graded %}
                         <i class="fa-solid fa-flag-checkered text-3xl text-green-600 mb-3"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Has completado todas las preguntas del examen.</p>
@@ -173,7 +173,7 @@
                         <p class="text-gray-600 font-medium text-sm mb-6 max-w-sm mx-auto">Tu examen todavía no ha sido calificado por tu docente</p>
                         {% endif %}
                         {% if can_retake %}
-                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#38657f] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#34627c] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
                         {% endif %}
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="inline-flex items-center px-5 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">
                             Volver al curso
@@ -184,7 +184,7 @@
 
                 <!-- Detalles de Entrega Sidebar -->
                 <div class="w-full lg:w-72 flex-shrink-0">
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-5 sticky top-6">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-5 sticky top-6">
                         <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-gray-400"></i> Detalles
                         </h3>
@@ -223,9 +223,9 @@
                 {% if submission %}
                     <div class="mb-6 border-t border-gray-100 pt-5">
                         <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">INTENTOS</p>
-                        <div class="bg-gray-50 rounded-lg p-3 flex justify-between items-center border border-gray-100">
+                        <div class="bg-gray-50 rounded-sm p-3 flex justify-between items-center border border-gray-100">
                             <span class="text-sm text-gray-600 font-medium">Intento {{ submission.attempts }} de {% if assignment.max_attempts == 0 %}∞{% else %}{{ assignment.max_attempts }}{% endif %}</span>
-                            <span class="text-sm font-bold text-[#38657f]">{% if submission.score is not None %}{{ submission.score|floatformat:0 }} pts{% else %}-{% endif %}</span>
+                            <span class="text-sm font-bold text-[#34627c]">{% if submission.score is not None %}{{ submission.score|floatformat:0 }} pts{% else %}-{% endif %}</span>
                         </div>
                     </div>
                 {% endif %}

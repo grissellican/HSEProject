@@ -21,14 +21,14 @@
         <!-- BARRA SUPERIOR -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_course_detail' course_id=assignment.module.course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_course_detail' course_id=assignment.module.course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Preguntas — {{ assignment.title }}</h1>
+                    <h1 class="text-base font-bold text-[#34627c] leading-tight">Preguntas — {{ assignment.title }}</h1>
                     <p class="text-[10px] text-gray-400">{{ course.title }}</p>
                 </div>
             </div>
@@ -47,14 +47,14 @@
                 <!-- MENSAJES -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                        <div class="mb-4 p-3 bg-[#34627c]/8 border-l-4 border-[#34627c] text-base font-semibold text-[#34627c] flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i>{{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
 
                 <!-- Info del Examen -->
-                <div class="bg-white border border-gray-200 shadow-sm p-5 mb-5 flex justify-between items-center" style="border-left: 3px solid #38657f;">
+                <div class="bg-white border border-gray-200 shadow-sm p-5 mb-5 flex justify-between items-center" style="border-left: 3px solid #34627c;">
                     <div>
                         <div class="flex items-center gap-2 mb-1.5">
                             <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-teal-50 text-teal-700"><i class="fa-solid fa-laptop-code mr-1"></i>Examen Online</span>
@@ -68,7 +68,7 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{% url 'teacher_question_create' assignment_id=assignment.id %}" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer">
+                        <a href="{% url 'teacher_question_create' assignment_id=assignment.id %}" class="inline-flex items-center px-4 py-2 bg-[#34627c] text-white text-sm font-bold hover:bg-[#2a4f64] transition-colors shadow-sm cursor-pointer">
                             <i class="fa-solid fa-plus mr-1.5"></i> Añadir Pregunta
                         </a>
                     </div>
@@ -81,9 +81,9 @@
                         <div class="px-5 py-4 border-b border-gray-100 flex items-start justify-between bg-gray-50/50">
                             <div class="flex-1 pr-4">
                                 <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="text-sm font-bold text-[#38657f]">Pregunta {{ q.order }}</span>
+                                    <span class="text-sm font-bold text-[#34627c]">Pregunta {{ q.order }}</span>
                                     <span class="inline-flex items-center px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider
-                                        {% if q.question_type == 'multiple_choice' %}bg-[#38657f]/10 text-[#38657f]
+                                        {% if q.question_type == 'multiple_choice' %}bg-[#34627c]/10 text-[#34627c]
                                         {% elif q.question_type == 'text' %}bg-amber-100 text-amber-700
                                         {% else %}bg-purple-100 text-purple-700{% endif %}">
                                         {{ q.get_question_type_display }}
@@ -93,7 +93,7 @@
                                 <div class="text-base text-gray-800 font-medium whitespace-pre-wrap ck-content">{{ q.text|safe }}</div>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
-                                <a href="{% url 'teacher_question_update' question_id=q.id %}" class="w-7 h-7 flex items-center justify-center text-[#38657f] hover:bg-[#e5e9ff] rounded transition-colors cursor-pointer" title="Editar">
+                                <a href="{% url 'teacher_question_update' question_id=q.id %}" class="w-7 h-7 flex items-center justify-center text-[#34627c] hover:bg-[#f0f4f7] rounded transition-colors cursor-pointer" title="Editar">
                                     <i class="fa-solid fa-pen-to-square text-sm"></i>
                                 </a>
                                 <form action="{% url 'teacher_question_delete' question_id=q.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta pregunta?');">
@@ -129,7 +129,7 @@
                                 <li class="text-sm text-red-500 italic">No hay opciones definidas. Los estudiantes no podrán responder.</li>
                                 {% endfor %}
                             </ul>
-                            <a href="{% url 'teacher_choice_create' question_id=q.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-600 text-[11px] font-semibold hover:bg-[#e5e9ff] hover:text-[#38657f] hover:border-[#38657f]/30 transition-colors cursor-pointer">
+                            <a href="{% url 'teacher_choice_create' question_id=q.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-600 text-[11px] font-semibold hover:bg-[#f0f4f7] hover:text-[#34627c] hover:border-[#34627c]/30 transition-colors cursor-pointer">
                                 <i class="fa-solid fa-plus mr-1"></i> Añadir Opción
                             </a>
                         </div>

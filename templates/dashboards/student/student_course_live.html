@@ -18,12 +18,12 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
-                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[150px]">{{ course.title }}</a>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[150px]">{{ course.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
                     <span class="text-gray-700 font-semibold">Clases en Vivo</span>
                 </nav>
@@ -35,7 +35,7 @@
             <div class="max-w-4xl mx-auto">
 
                 <div class="mb-10">
-                    <h2 class="text-2xl font-normal text-[#7c3aed] mb-2 border-b border-gray-200 pb-3 flex items-center gap-3">
+                    <h2 class="text-2xl font-normal text-[#34627c] mb-2 border-b border-gray-200 pb-3 flex items-center gap-3">
                         <i class="fa-solid fa-video"></i> Clases en Vivo
                     </h2>
                     <p class="text-sm text-gray-500">Sesiones programadas para este curso.</p>
@@ -43,7 +43,7 @@
 
                 <div class="space-y-4">
                     {% for s in sessions %}
-                    <div class="bg-white border border-gray-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-gray-50" {% if not s.is_finished %}style="border-left: 4px solid #7c3aed;"{% else %}style="border-left: 4px solid #d1d5db;"{% endif %}>
+                    <div class="bg-white border border-gray-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-gray-50" {% if not s.is_finished %}style="border-left: 4px solid #34627c;"{% else %}style="border-left: 4px solid #d1d5db;"{% endif %}>
                         <div class="flex-1 min-w-0">
                             <h3 class="text-lg font-semibold {% if s.is_finished %}text-gray-500{% else %}text-gray-800{% endif %} mb-2">{{ s.title }}</h3>
                             <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -64,7 +64,7 @@
                                 <a href="{{ s.google_calendar_url }}" target="_blank" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:text-blue-600 transition-colors shadow-sm" title="Añadir a Google Calendar">
                                     <i class="fa-regular fa-calendar-plus"></i>
                                 </a>
-                                <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-5 py-2 bg-[#7c3aed] text-white text-sm font-medium hover:bg-[#6d28d9] transition-colors shadow-sm">
+                                <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-5 py-2 bg-[#34627c] text-white text-sm font-medium hover:bg-[#6d28d9] transition-colors shadow-sm">
                                     <i class="fa-solid fa-external-link mr-2"></i> Unirme a la clase
                                 </a>
                             {% endif %}

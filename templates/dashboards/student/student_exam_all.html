@@ -18,15 +18,15 @@
         <!-- Topbar -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium transition-colors">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[120px] transition-colors">{{ course.title }}</a>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[120px] transition-colors">{{ course.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_exam_detail' assignment_id=assignment.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[150px] transition-colors">{{ assignment.title }}</a>
+                    <a href="{% url 'student_exam_detail' assignment_id=assignment.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[150px] transition-colors">{{ assignment.title }}</a>
                 </nav>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">
@@ -43,7 +43,7 @@
 
                 {% if messages %}
                 {% for message in messages %}
-                <div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#38657f]/10 border-[#38657f] text-[#38657f]{% endif %}">
+                <div class="mb-6 p-4 border-l-4 text-sm font-semibold flex items-center gap-3 rounded-r-md {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% else %}bg-[#34627c]/10 border-[#34627c] text-[#34627c]{% endif %}">
                     <i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %} text-lg"></i>
                     {{ message }}
                 </div>
@@ -51,7 +51,7 @@
                 {% endif %}
 
                 <!-- Exam Header -->
-                <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 flex flex-col md:flex-row items-center justify-between mb-6" style="border-top: 3px solid #38657f;">
+                <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-6 flex flex-col md:flex-row items-center justify-between mb-6" style="border-top: 3px solid #34627c;">
                     <div>
                         <h1 class="text-xl font-bold text-gray-800">{{ assignment.title }}</h1>
                         <p class="text-xs font-semibold text-gray-500 uppercase mt-1">{{ prepared_questions|length }} preguntas</p>
@@ -69,11 +69,11 @@
                     
                     {% for item in prepared_questions %}
                     {% with question=item.question q_num=item.question_num existing=item.existing_response choices=item.choices text_form=item.text_form %}
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden" id="q-{{ question.id }}">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm overflow-hidden" id="q-{{ question.id }}">
                         <!-- Encabezado de la pregunta -->
                         <div class="bg-gray-50 border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-                            <h2 class="text-sm font-bold text-[#38657f] flex items-center gap-2">
-                                <span class="flex items-center justify-center w-6 h-6 rounded bg-[#38657f] text-white text-xs">{{ q_num }}</span>
+                            <h2 class="text-sm font-bold text-[#34627c] flex items-center gap-2">
+                                <span class="flex items-center justify-center w-6 h-6 rounded bg-[#34627c] text-white text-xs">{{ q_num }}</span>
                                 Pregunta
                             </h2>
                             <span class="px-2.5 py-1 bg-white border border-gray-200 rounded text-xs font-bold text-gray-500">
@@ -87,11 +87,11 @@
                             {% if question.question_type == 'multiple_choice' %}
                             <div class="space-y-3">
                                 {% for choice in choices %}
-                                <label class="flex items-start p-4 border rounded-md cursor-pointer transition-colors relative group 
-                                    has-[:checked]:bg-[#38657f]/5 has-[:checked]:border-[#38657f] has-[:checked]:shadow-sm
+                                <label class="flex items-start p-4 border rounded-sm cursor-pointer transition-colors relative group 
+                                    has-[:checked]:bg-[#34627c]/5 has-[:checked]:border-[#34627c] has-[:checked]:shadow-sm
                                     hover:bg-gray-50 border-gray-200">
                                     <div class="flex items-center h-5">
-                                        <input type="radio" name="choice_{{ question.id }}" value="{{ choice.id }}" class="w-4 h-4 text-[#38657f] border-gray-300 focus:ring-[#38657f]" {% if existing and existing.selected_choice_id == choice.id %}checked{% endif %}>
+                                        <input type="radio" name="choice_{{ question.id }}" value="{{ choice.id }}" class="w-4 h-4 text-[#34627c] border-gray-300 focus:ring-[#34627c]" {% if existing and existing.selected_choice_id == choice.id %}checked{% endif %}>
                                     </div>
                                     <div class="ml-3 text-sm text-gray-700 font-medium pt-0.5 leading-snug">
                                         {{ choice.text }}
@@ -103,17 +103,17 @@
                             {% elif question.question_type == 'text' %}
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tu Respuesta</label>
-                                <textarea name="text_{{ question.id }}" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-[#38657f] focus:border-[#38657f] text-sm text-gray-800 transition-colors" placeholder="Escribe tu respuesta aquí...">{{ existing.text_answer|default:'' }}</textarea>
+                                <textarea name="text_{{ question.id }}" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-sm shadow-sm focus:ring-[#34627c] focus:border-[#34627c] text-sm text-gray-800 transition-colors" placeholder="Escribe tu respuesta aquí...">{{ existing.text_answer|default:'' }}</textarea>
                             </div>
 
                             {% elif question.question_type == 'file' %}
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Adjuntar Archivo(s)</label>
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-gray-50">
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-sm bg-gray-50">
                                     <div class="space-y-1 text-center">
                                         <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
                                         <div class="flex text-sm text-gray-600 justify-center">
-                                            <input type="file" name="file_{{ question.id }}" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#38657f]/10 file:text-[#38657f] hover:file:bg-[#38657f]/20 cursor-pointer">
+                                            <input type="file" name="file_{{ question.id }}" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#34627c]/10 file:text-[#34627c] hover:file:bg-[#34627c]/20 cursor-pointer">
                                         </div>
                                     </div>
                                 </div>
@@ -124,9 +124,9 @@
                     {% endwith %}
                     {% endfor %}
 
-                    <div class="bg-white rounded-md border border-gray-200 shadow-sm p-6 text-center">
+                    <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-6 text-center">
                         <p class="text-sm text-gray-500 mb-6">Asegúrate de haber contestado todas las preguntas antes de entregar.</p>
-                        <button type="submit" class="w-full md:w-auto px-10 py-3 bg-[#38657f] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
+                        <button type="submit" class="w-full md:w-auto px-10 py-3 bg-[#34627c] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
                             Entregar Examen
                         </button>
                     </div>

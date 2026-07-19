@@ -17,14 +17,14 @@
         
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between border-b border-gray-200 bg-white">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_students_list' course_id=course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_students_list' course_id=course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Notas: {{ student.get_full_name }}</h1>
+                    <h1 class="text-base font-bold text-[#34627c] leading-tight">Notas: {{ student.get_full_name }}</h1>
                     <p class="text-[10px] text-gray-400">Detalle por módulos</p>
                 </div>
             </div>
@@ -42,9 +42,9 @@
             <div class="max-w-5xl mx-auto">
 
                 <!-- Info Estudiante -->
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 mb-8 flex items-center justify-between">
+                <div class="bg-white rounded border border-gray-200 shadow-xs p-6 mb-8 flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 bg-[#38657f]/10 text-[#38657f] rounded-full flex items-center justify-center font-bold text-2xl flex-shrink-0">
+                        <div class="w-16 h-16 bg-[#34627c]/10 text-[#34627c] rounded-full flex items-center justify-center font-bold text-2xl flex-shrink-0">
                             {{ student.first_name|first|default:student.username|first|upper }}
                         </div>
                         <div>
@@ -58,9 +58,9 @@
                 <div class="space-y-6">
                     {% for m_data in module_data %}
                         {% if m_data.assignments_data %}
-                        <div class="bg-white shadow-xs border border-gray-200/60 rounded-xl overflow-hidden">
+                        <div class="bg-white shadow-xs border border-gray-200/60 rounded overflow-hidden">
                             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                                <h4 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-folder-open mr-2 text-[#38657f]"></i> {{ m_data.module.title }}</h4>
+                                <h4 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-folder-open mr-2 text-[#34627c]"></i> {{ m_data.module.title }}</h4>
                                 <span class="text-xs font-semibold bg-gray-200 text-gray-600 px-3 py-1 rounded-full">{{ m_data.assignments_data|length }} Actividades</span>
                             </div>
                             <div class="overflow-x-auto">
@@ -113,7 +113,7 @@
                                             </td>
                                             <td class="px-6 py-4 text-center">
                                                 {% if a_data.submission %}
-                                                    <a href="{% url 'teacher_grade_submission' submission_id=a_data.submission.id %}" class="inline-flex items-center px-3 py-1.5 bg-[#38657f] text-white text-xs font-bold rounded hover:bg-[#2b5068] transition-colors">
+                                                    <a href="{% url 'teacher_grade_submission' submission_id=a_data.submission.id %}" class="inline-flex items-center px-3 py-1.5 bg-[#34627c] text-white text-xs font-bold rounded hover:bg-[#2a4f64] transition-colors">
                                                         {% if a_data.submission.score != None %}Ver/Editar{% else %}Calificar{% endif %}
                                                     </a>
                                                 {% else %}
@@ -128,7 +128,7 @@
                         </div>
                         {% endif %}
                     {% empty %}
-                        <div class="text-center py-12 bg-white border border-dashed border-gray-300 rounded-xl">
+                        <div class="text-center py-12 bg-white border border-dashed border-gray-300 rounded">
                             <i class="fa-regular fa-folder-open text-4xl text-gray-300 mb-3 block"></i>
                             <p class="text-gray-500 font-medium">Este curso aún no tiene actividades calificables.</p>
                         </div>

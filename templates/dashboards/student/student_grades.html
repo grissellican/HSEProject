@@ -17,8 +17,8 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-6 justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none"><i class="fa-solid fa-bars text-lg"></i></button>
-                <div class="hidden md:block"><h1 class="text-base font-bold text-[#38657f]">Mis Calificaciones</h1></div>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none"><i class="fa-solid fa-bars text-lg"></i></button>
+                <div class="hidden md:block"><h1 class="text-base font-bold text-[#34627c]">Mis Calificaciones</h1></div>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Cerrar Sesión</button></form>
         </div>
@@ -29,7 +29,7 @@
                 <div class="flex items-center justify-between mb-8">
                     <div>
                         <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-chart-column text-[#38657f]"></i> Calificaciones
+                            <i class="fa-solid fa-chart-column text-[#34627c]"></i> Calificaciones
                         </h2>
                         <p class="text-sm text-gray-400 mt-0.5">Actividades calificadas por tus docentes.</p>
                     </div>
@@ -42,10 +42,10 @@
                     <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Cursos Activos</h2>
                     {% for group in active_grades %}
                     <div class="mb-8">
-                        <h3 class="text-sm font-black text-[#38657f] uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-book text-[#B8973A]"></i> {{ group.course.title }}
+                        <h3 class="text-sm font-black text-[#34627c] uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-book text-[#ad913c]"></i> {{ group.course.title }}
                         </h3>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
                             <table class="w-full text-left">
                                 <thead>
                                     <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-50">
@@ -99,7 +99,7 @@
                         <h3 class="text-sm font-black text-gray-600 uppercase tracking-wider mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-flag-checkered text-amber-500"></i> {{ group.course.title }}
                         </h3>
-                        <div class="bg-gray-50 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-50 rounded shadow-sm border border-gray-200 overflow-hidden">
                             <table class="w-full text-left">
                                 <thead>
                                     <tr class="border-b border-gray-200 text-[10px] font-black text-gray-500 uppercase tracking-widest bg-gray-100">
@@ -138,9 +138,9 @@
                 {% endif %}
 
                 {% if not active_grades and not completed_grades %}
-                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-xl">
-                    <div class="w-14 h-14 bg-[#38657f]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-chart-column text-2xl text-[#38657f]"></i>
+                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded">
+                    <div class="w-14 h-14 bg-[#34627c]/10 rounded flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-chart-column text-2xl text-[#34627c]"></i>
                     </div>
                     <p class="text-base font-semibold text-gray-500">Aún no tienes calificaciones registradas.</p>
                 </div>

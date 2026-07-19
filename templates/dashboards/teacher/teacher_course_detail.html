@@ -21,20 +21,20 @@
         <!-- BARRA SUPERIOR -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_dashboard' %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_dashboard' %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-xl font-bold text-[#38657f] leading-tight">{{ course.title }}</h1>
+                    <h1 class="text-xl font-bold text-[#34627c] leading-tight">{{ course.title }}</h1>
                     <p class="text-xs text-gray-500">Gestión del curso</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <!-- Acceso rápido a clases en vivo -->
-                <a href="#clases-en-vivo" class="inline-flex items-center px-3 py-1.5 border border-[#7c3aed]/30 bg-[#7c3aed]/5 text-[#7c3aed] text-sm font-semibold hover:bg-[#7c3aed]/10 transition-all">
+                <a href="#clases-en-vivo" class="inline-flex items-center px-3 py-1.5 border border-[#34627c]/30 bg-[#34627c]/5 text-[#34627c] text-sm font-semibold hover:bg-[#34627c]/10 transition-all">
                     <i class="fa-solid fa-video mr-1.5"></i> Clases en Vivo
                 </a>
 
@@ -54,7 +54,7 @@
                 <!-- MENSAJES DE ALERTA -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-4 p-3 bg-[#38657f]/8 border-l-4 border-[#38657f] text-base font-semibold text-[#38657f] flex items-center gap-2">
+                        <div class="mb-4 p-3 bg-[#34627c]/8 border-l-4 border-[#34627c] text-base font-semibold text-[#34627c] flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i>{{ message }}
                         </div>
                     {% endfor %}
@@ -64,28 +64,28 @@
 
                                 <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
                 <div class="flex flex-wrap gap-3 mb-8">
-                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#38657f]{% endif %}"></i> MÓDULOS
+                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#34627c]{% endif %}"></i> MÓDULOS
                     </a>
-                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
-                        <i class="fa-solid fa-file-contract mr-2 text-[#38657f]"></i> SÍLABO
+                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#34627c] hover:text-[#34627c] transition-all">
+                        <i class="fa-solid fa-file-contract mr-2 text-[#34627c]"></i> SÍLABO
                     </a>
-                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
-                        <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
+                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#34627c] hover:text-[#34627c] transition-all">
+                        <i class="fa-solid fa-chart-pie mr-2 text-[#34627c]"></i> SISTEMA DE EVALUACIÓN
                     </a>
-                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
+                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-user-check mr-2 text-[#34627c]"></i> ASISTENCIAS
                     </a>
-                    <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-users mr-2 text-[#38657f]"></i> ESTUDIANTES
+                    <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-users mr-2 text-[#34627c]"></i> ESTUDIANTES
                     </a>
                     
                     {% if course.allow_teacher_edit_syllabus %}
-                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm ml-auto">
-                        <i class="fa-solid fa-file-signature text-[#10b981]"></i> Editar Sílabo
+                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors shadow-sm ml-auto">
+                        <i class="fa-solid fa-file-signature text-[#34627c]"></i> Editar Sílabo
                     </a>
-                    <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
-                        <i class="fa-solid fa-chart-pie text-[#f59e0b]"></i> Editar Evaluación
+                    <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors shadow-sm">
+                        <i class="fa-solid fa-chart-pie text-[#34627c]"></i> Editar Evaluación
                     </a>
                     {% endif %}
                 </div>
@@ -94,21 +94,21 @@
                 <div class="mb-8 flex items-center justify-between" id="modulos">
                     <div>
                         <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-[#38657f]"></i>Módulos del Curso
+                            <i class="fa-solid fa-layer-group text-[#34627c]"></i>Módulos del Curso
                         </h2>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#38657f] transition-colors flex items-center" id="toggle-all-btn">
+                        <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
                             <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
                         </button>
                         <div class="h-px w-8 bg-gray-200"></div>
-                        <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer ml-auto">
+                        <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#34627c] text-white text-sm font-bold hover:bg-[#2a4f64] transition-colors shadow-sm cursor-pointer ml-auto">
                         <i class="fa-solid fa-plus mr-1.5"></i> Añadir Módulo
                     </a>              </div>
                 </div>
 
                 {% for module in modules %}
-                <div class="bg-white border border-gray-200 shadow-sm mb-16 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #38657f;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
+                <div class="bg-white border border-gray-200 shadow-sm mb-16 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #34627c;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
                     <!-- Header del Módulo -->
                     <div class="px-5 py-4 flex items-center justify-between bg-[#fafbff] border-b border-gray-200 cursor-pointer module-header select-none"
                          data-target="module-body-{{ module.id }}">
@@ -129,7 +129,7 @@
                         <div class="flex items-center gap-2 flex-shrink-0 ml-4" onclick="event.stopPropagation()">
                             <!-- Menú Añadir -->
                             <div class="dot-menu-wrapper mr-2">
-                                <button class="dot-menu-btn inline-flex items-center px-2.5 py-1.5 bg-[#38657f]/10 text-[#38657f] text-[11px] font-bold hover:bg-[#38657f]/20 transition-colors cursor-pointer rounded border-0" data-menu="addmenu-{{ module.id }}">
+                                <button class="dot-menu-btn inline-flex items-center px-2.5 py-1.5 bg-[#34627c]/10 text-[#34627c] text-[11px] font-bold hover:bg-[#34627c]/20 transition-colors cursor-pointer rounded border-0" data-menu="addmenu-{{ module.id }}">
                                     <i class="fa-solid fa-plus mr-1"></i> Añadir Recurso
                                 </button>
                                 <div class="dot-menu" id="addmenu-{{ module.id }}">
@@ -149,7 +149,7 @@
                                 </button>
                                 <div class="dot-menu" id="dotmenu-{{ module.id }}">
                                     <a href="{% url 'teacher_module_update' module_id=module.id %}">
-                                        <i class="fa-solid fa-pen-to-square text-[#38657f]"></i> Editar módulo
+                                        <i class="fa-solid fa-pen-to-square text-[#34627c]"></i> Editar módulo
                                     </a>
                                     <form action="{% url 'teacher_module_toggle_visibility' module_id=module.id %}" method="POST" class="m-0">
                                         {% csrf_token %}
@@ -191,7 +191,7 @@
                                                 {% endif %}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate hover:text-[#38657f] transition-colors">
+                                                <p class="text-base font-semibold text-gray-800 truncate hover:text-[#34627c] transition-colors">
                                                     <a href="{% url 'teacher_material_detail' material_id=mat.id %}">{{ mat.title }}</a>
                                                     {% if not mat.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
@@ -201,11 +201,11 @@
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
                                             <form action="{% url 'teacher_material_toggle_visibility' material_id=mat.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
-                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if mat.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                <button type="submit" class="text-gray-400 hover:text-[#34627c] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if mat.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if mat.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
-                                            <a href="{{ mat.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] w-6 h-6 flex items-center justify-center" title="Descargar">
+                                            <a href="{{ mat.file.url }}" target="_blank" class="text-[#34627c] hover:text-[#2a4f64] w-6 h-6 flex items-center justify-center" title="Descargar">
                                                 <i class="fa-solid fa-download"></i>
                                             </a>
                                             <form action="{% url 'teacher_material_delete' material_id=mat.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
@@ -240,7 +240,7 @@
                                                     {% if assign.due_date %} · Entrega: {{ assign.due_date|date:"d/m/Y H:i" }}{% endif %}
                                                 </p>
                                                 {% if assign.attached_file %}
-                                                <a href="{{ assign.attached_file.url }}" target="_blank" class="text-[10px] text-[#38657f] hover:underline font-semibold mt-0.5 inline-block">
+                                                <a href="{{ assign.attached_file.url }}" target="_blank" class="text-[10px] text-[#34627c] hover:underline font-semibold mt-0.5 inline-block">
                                                     <i class="fa-solid fa-paperclip mr-0.5"></i> Doc. Guía
                                                 </a>
                                                 {% endif %}
@@ -249,7 +249,7 @@
                                         <div class="flex items-center gap-2 flex-shrink-0 text-sm">
                                             <form action="{% url 'teacher_assignment_toggle_visibility' assignment_id=assign.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
-                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if assign.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                <button type="submit" class="text-gray-400 hover:text-[#34627c] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if assign.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if assign.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
@@ -258,7 +258,7 @@
                                                 <i class="fa-solid fa-list-check mr-1"></i> Preguntas
                                             </a>
                                             {% endif %}
-                                            <a href="{% url 'teacher_assignment_submissions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-[#38657f]/8 text-[#38657f] font-semibold hover:bg-[#38657f]/15 transition-colors cursor-pointer text-[11px]">
+                                            <a href="{% url 'teacher_assignment_submissions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-[#34627c]/8 text-[#34627c] font-semibold hover:bg-[#34627c]/15 transition-colors cursor-pointer text-[11px]">
                                                 <i class="fa-solid fa-inbox mr-1"></i> Entregas ({{ assign.submissions.count }})
                                             </a>
                                             <!-- Mini menú 3 puntos para tarea -->
@@ -269,7 +269,7 @@
                                                 </button>
                                                 <div class="dot-menu" id="dotmenu-assign-{{ assign.id }}">
                                                     <a href="{% url 'teacher_assignment_update' assignment_id=assign.id %}">
-                                                        <i class="fa-solid fa-pen-to-square text-[#38657f]"></i> Editar
+                                                        <i class="fa-solid fa-pen-to-square text-[#34627c]"></i> Editar
                                                     </a>
                                                     <div style="height:1px; background:#f3f4f6; margin:4px 0;"></div>
                                                     <form action="{% url 'teacher_assignment_delete' assignment_id=assign.id %}" method="POST" class="m-0" onsubmit="return confirm('¿Eliminar esta tarea/evaluación?');">
@@ -301,11 +301,11 @@
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
                                             <form action="{% url 'teacher_announcement_toggle_visibility' pk=ann.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
-                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if ann.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                <button type="submit" class="text-gray-400 hover:text-[#34627c] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if ann.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if ann.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
-                                            <a href="{% url 'teacher_announcement_update' pk=ann.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                            <a href="{% url 'teacher_announcement_update' pk=ann.id %}" class="text-gray-400 hover:text-[#34627c] w-6 h-6 flex items-center justify-center" title="Editar">
                                                 <i class="fa-solid fa-pen"></i>
                                             </a>
                                             <form action="{% url 'teacher_announcement_delete' pk=ann.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este aviso?');">
@@ -335,11 +335,11 @@
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
                                             <form action="{% url 'teacher_link_toggle_visibility' pk=link.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
-                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if link.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                <button type="submit" class="text-gray-400 hover:text-[#34627c] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if link.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if link.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
-                                            <a href="{% url 'teacher_link_update' pk=link.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                            <a href="{% url 'teacher_link_update' pk=link.id %}" class="text-gray-400 hover:text-[#34627c] w-6 h-6 flex items-center justify-center" title="Editar">
                                                 <i class="fa-solid fa-pen"></i>
                                             </a>
                                             <form action="{% url 'teacher_link_delete' pk=link.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este enlace?');">
@@ -359,7 +359,7 @@
                                                 <i class="fa-solid fa-comments text-emerald-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <a href="{% url 'teacher_forum_detail' pk=forum.id %}" class="text-base font-semibold text-gray-800 hover:text-[#38657f] transition-colors truncate">
+                                                <a href="{% url 'teacher_forum_detail' pk=forum.id %}" class="text-base font-semibold text-gray-800 hover:text-[#34627c] transition-colors truncate">
                                                     {{ forum.title }}
                                                     {% if not forum.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                     {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
@@ -373,11 +373,11 @@
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
                                             <form action="{% url 'teacher_forum_toggle_visibility' pk=forum.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
-                                                <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if forum.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
+                                                <button type="submit" class="text-gray-400 hover:text-[#34627c] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if forum.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
                                                     <i class="fa-solid {% if forum.is_visible %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                                                 </button>
                                             </form>
-                                            <a href="{% url 'teacher_forum_update' pk=forum.id %}" class="text-gray-400 hover:text-[#38657f] w-6 h-6 flex items-center justify-center" title="Editar">
+                                            <a href="{% url 'teacher_forum_update' pk=forum.id %}" class="text-gray-400 hover:text-[#34627c] w-6 h-6 flex items-center justify-center" title="Editar">
                                                 <i class="fa-solid fa-pen"></i>
                                             </a>
                                             <form action="{% url 'teacher_forum_delete' pk=forum.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este foro?');">
@@ -400,8 +400,8 @@
                 </div>
                 {% empty %}
                 <div class="bg-white border-2 border-dashed border-gray-200 p-12 text-center text-gray-400 mb-8">
-                    <div class="w-12 h-12 bg-[#38657f]/10 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-layer-group text-2xl text-[#38657f]"></i>
+                    <div class="w-12 h-12 bg-[#34627c]/10 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-layer-group text-2xl text-[#34627c]"></i>
                     </div>
                     <p class="text-base font-semibold">Este curso aún no tiene módulos.</p>
                     <p class="text-sm mt-1">¡Comienza creando uno con el botón de arriba!</p>
@@ -412,11 +412,11 @@
                 <!-- ========== SECCIÓN DE CLASES EN VIVO ========== -->
                 <div id="clases-en-vivo" class="mb-4 flex items-center justify-between mt-8">
                     <h2 class="text-base font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-video text-[#7c3aed]"></i>Clases en Vivo
+                        <i class="fa-solid fa-video text-[#34627c]"></i>Clases en Vivo
                     </h2>
                     <div class="flex items-center gap-3">
                         <div class="h-px w-12 bg-gray-200"></div>
-                        <a href="{% url 'teacher_live_session_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#7c3aed] text-white text-sm font-bold hover:bg-[#6d28d9] transition-colors shadow-sm cursor-pointer">
+                        <a href="{% url 'teacher_live_session_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#34627c] text-white text-sm font-bold hover:bg-[#6d28d9] transition-colors shadow-sm cursor-pointer">
                             <i class="fa-solid fa-plus mr-1.5"></i> Programar Sesión
                         </a>
                     </div>
@@ -438,7 +438,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-base text-gray-600">
                                 {% for s in live_sessions %}
-                                <tr class="hover:bg-[#e5e9ff]/40 transition-colors">
+                                <tr class="hover:bg-[#f0f4f7]/40 transition-colors">
                                     <td class="px-5 py-3.5 font-bold text-gray-800 text-sm">{{ s.title }}</td>
                                     <td class="px-5 py-3.5">
                                         {% if s.platform == 'meet' %}
@@ -455,11 +455,11 @@
                                         {% if s.is_finished %}
                                             <span class="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-500 text-[11px] font-bold rounded"><i class="fa-solid fa-check-double mr-1"></i> Culminada</span>
                                         {% else %}
-                                            <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-2.5 py-1 bg-[#7c3aed] text-white text-[11px] font-bold hover:bg-[#6d28d9] transition-colors"><i class="fa-solid fa-external-link mr-1"></i> Abrir</a>
+                                            <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-2.5 py-1 bg-[#34627c] text-white text-[11px] font-bold hover:bg-[#6d28d9] transition-colors"><i class="fa-solid fa-external-link mr-1"></i> Abrir</a>
                                         {% endif %}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
-                                        <a href="{% url 'teacher_live_session_update' session_id=s.id %}" class="text-[#38657f] hover:text-[#2b5068] text-sm cursor-pointer mr-3 inline-block" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <a href="{% url 'teacher_live_session_update' session_id=s.id %}" class="text-[#34627c] hover:text-[#2a4f64] text-sm cursor-pointer mr-3 inline-block" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
                                         <form action="{% url 'teacher_live_session_delete' session_id=s.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta sesión?');">
                                             {% csrf_token %}
                                             <button type="submit" class="text-red-400 hover:text-red-600 text-sm cursor-pointer bg-transparent border-0" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
@@ -473,15 +473,15 @@
                 </div>
                 {% else %}
                 <div class="bg-white border-2 border-dashed border-gray-200 p-8 text-center text-gray-400 mb-8">
-                    <div class="w-10 h-10 bg-[#7c3aed]/10 flex items-center justify-center mx-auto mb-2">
-                        <i class="fa-solid fa-video text-[#7c3aed]"></i>
+                    <div class="w-10 h-10 bg-[#34627c]/10 flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-video text-[#34627c]"></i>
                     </div>
                     <p class="text-sm font-semibold">No hay sesiones en vivo programadas para este curso.</p>
                 </div>
                 {% endif %}
 
                 <!-- Aviso de Grabaciones Meet -->
-                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-sm p-4 flex items-start gap-3 shadow-sm">
                     <i class="fa-brands fa-google-drive text-blue-500 text-lg mt-0.5"></i>
                     <div>
                         <h4 class="text-sm font-bold text-blue-800">Grabaciones de Google Meet</h4>

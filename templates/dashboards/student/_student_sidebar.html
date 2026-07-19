@@ -6,13 +6,13 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
 
 <style>
     :root {
-        --hse-green:   #1B5E37;
-        --hse-green-dk:#134529;
-        --hse-blue:    #38657f;
-        --hse-blue-dk: #2b5068;
-        --hse-gold:    #B8973A;
-        --hse-hover:   #e5e9ff;
-        --hse-purple:  #7c3aed;
+        --hse-green:   #4c8a67;
+        --hse-green-dk:#3d7055;
+        --hse-primary:   #34627c;
+        --hse-primary-dk:#2a4f64;
+        --hse-gold:    #ad913c;
+        --hse-hover:   #f0f4f7;
+        
     }
     body { font-family: 'Inter', sans-serif; }
 
@@ -44,8 +44,8 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
     }
     .sidebar-item:hover {
         background: var(--hse-hover);
-        border-left-color: var(--hse-blue);
-        color: var(--hse-blue);
+        border-left-color: var(--hse-primary);
+        color: var(--hse-primary);
     }
     .sidebar-item-active {
         background: var(--hse-hover);
@@ -72,16 +72,16 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
 
     /* Breadcrumbs */
     .breadcrumb-nav a { transition: color 0.15s; }
-    .breadcrumb-nav a:hover { color: var(--hse-blue); }
+    .breadcrumb-nav a:hover { color: var(--hse-primary); }
 
     /* CKEditor link fixes (Tailwind reset fix) */
     .ck-content a {
-        color: var(--hse-blue);
+        color: var(--hse-primary);
         text-decoration: underline;
         font-weight: 500;
     }
     .ck-content a:hover {
-        color: var(--hse-blue-dk);
+        color: var(--hse-primary-dk);
     }
 </style>
 
@@ -99,8 +99,8 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
                 <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-8 w-auto object-contain flex-shrink-0">
             {% endif %}
             <div class="logo-text min-w-0">
-                <span class="text-base font-black text-[#38657f] tracking-tight leading-none block truncate">{{ platform_settings.company_name|default:"QHSE Academy" }}</span>
-                <span class="text-[10px] font-semibold text-[#B8973A] uppercase tracking-widest">Estudiante</span>
+                <span class="text-base font-black text-[#34627c] tracking-tight leading-none block truncate">{{ platform_settings.company_name|default:"QHSE Academy" }}</span>
+                <span class="text-[10px] font-semibold text-[#ad913c] uppercase tracking-widest">Estudiante</span>
             </div>
         </a>
     </div>
@@ -109,9 +109,9 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
     <div class="flex-shrink-0 border-b border-gray-100 p-4 block">
         <div class="flex items-center space-x-3">
             {% if request.user.profile_picture %}
-                <img src="{{ request.user.profile_picture.url }}" alt="Perfil" class="w-11 h-11 rounded-full object-cover flex-shrink-0 border-2 border-[#38657f]/20">
+                <img src="{{ request.user.profile_picture.url }}" alt="Perfil" class="w-11 h-11 rounded-full object-cover flex-shrink-0 border-2 border-[#34627c]/20">
             {% else %}
-                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#38657f] to-[#1B5E37] flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#34627c] to-[#4c8a67] flex items-center justify-center flex-shrink-0 shadow-sm">
                     <span class="text-lg font-black text-white leading-none">{{ request.user.first_name|first|upper }}</span>
                 </div>
             {% endif %}
@@ -128,24 +128,24 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
 
             <!-- Tablero -->
             <a href="{% url 'student_dashboard' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'dashboard' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-graduation-cap w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-graduation-cap w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label">Mi Tablero</span>
             </a>
 
             <!-- Sección: Académico -->
             <div class="pt-5 pb-2 px-3 sidebar-section-label">
-                <p class="text-[10px] font-black text-[#B8973A] uppercase tracking-[0.2em]">Académico</p>
+                <p class="text-[10px] font-black text-[#ad913c] uppercase tracking-[0.2em]">Académico</p>
             </div>
 
             <!-- Calificaciones -->
             <a href="{% url 'student_grades' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'grades' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-chart-column w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-chart-column w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label">Calificaciones</span>
             </a>
 
             <!-- Actividades Pendientes -->
             <a href="{% url 'student_pending' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'pending' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-clock w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-clock w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label flex items-center gap-2">
                     Pendientes
                     {% if pending_count and pending_count > 0 %}
@@ -156,12 +156,12 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
 
             <!-- Sección: Recursos -->
             <div class="pt-5 pb-2 px-3 sidebar-section-label">
-                <p class="text-[10px] font-black text-[#B8973A] uppercase tracking-[0.2em]">Recursos</p>
+                <p class="text-[10px] font-black text-[#ad913c] uppercase tracking-[0.2em]">Recursos</p>
             </div>
 
             <!-- Mis Archivos -->
             <a href="{% url 'student_files' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 text-sm {% if sidebar_active == 'files' %}sidebar-item-active{% else %}text-gray-600{% endif %}">
-                <i class="fa-solid fa-folder-open w-4 text-center text-[#38657f] flex-shrink-0"></i>
+                <i class="fa-solid fa-folder-open w-4 text-center text-[#34627c] flex-shrink-0"></i>
                 <span class="sidebar-label">Mis Archivos</span>
             </a>
 
@@ -170,7 +170,7 @@ Variables esperadas: sidebar_active ('dashboard'|'grades'|'pending'|'files'), pe
 
     <!-- Sidebar Toggle -->
     <div class="flex-shrink-0 border-t border-gray-100">
-        <button id="sidebar-toggle" class="w-full h-12 flex items-center justify-center text-gray-400 hover:text-[#38657f] hover:bg-[#e5e9ff] transition-colors cursor-pointer" title="Colapsar/Expandir panel">
+        <button id="sidebar-toggle" class="w-full h-12 flex items-center justify-center text-gray-400 hover:text-[#34627c] hover:bg-[#f0f4f7] transition-colors cursor-pointer" title="Colapsar/Expandir panel">
             <i class="fa-solid fa-angles-left text-base toggle-icon"></i>
         </button>
     </div>

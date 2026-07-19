@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-50 p-6 sm:p-12">
     
-    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="max-w-2xl mx-auto bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
         
         <div class="bg-[#2b3494] px-6 py-4 flex items-center justify-between">
             <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-user-plus mr-2"></i> {{ action }} Cuenta de Usuario</h2>
@@ -31,8 +31,8 @@
             </div>
 
             <div class="pt-6 border-t border-gray-100 flex justify-end space-x-3">
-                <a href="{% url 'admin_user_list' %}" class="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">Cancelar</a>
-                <button type="submit" class="px-5 py-2.5 bg-[#2b3494] text-white text-sm font-semibold rounded-xl hover:bg-[#1e246b] transition-colors shadow-md">
+                <a href="{% url 'admin_user_list' %}" class="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors">Cancelar</a>
+                <button type="submit" class="px-5 py-2.5 bg-[#2b3494] text-white text-sm font-semibold rounded hover:bg-[#1e246b] transition-colors shadow-md">
                     Guardar Cambios
                 </button>
             </div>

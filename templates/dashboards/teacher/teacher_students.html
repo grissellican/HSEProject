@@ -19,14 +19,14 @@
         <!-- BARRA SUPERIOR -->
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2">
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <a href="{% url 'teacher_course_detail' course_id=course.id %}" class="text-gray-400 hover:text-[#38657f] transition-colors">
+                <a href="{% url 'teacher_course_detail' course_id=course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h1 class="text-base font-bold text-[#38657f] leading-tight">Estudiantes — {{ course.title }}</h1>
+                    <h1 class="text-base font-bold text-[#34627c] leading-tight">Estudiantes — {{ course.title }}</h1>
                     <p class="text-[10px] text-gray-400">Listado de matriculados</p>
                 </div>
             </div>
@@ -46,25 +46,25 @@
 
                 <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
                 <div class="flex flex-wrap gap-3 mb-8">
-                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#38657f]{% endif %}"></i> MÓDULOS
+                    <a href="{% url 'teacher_course_detail' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-layer-group mr-2 {% if request.resolver_match.url_name == 'teacher_course_detail' %}{% else %}text-[#34627c]{% endif %}"></i> MÓDULOS
                     </a>
-                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
-                        <i class="fa-solid fa-file-contract mr-2 text-[#38657f]"></i> SÍLABO
+                    <a href="{% url 'course_syllabus' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#34627c] hover:text-[#34627c] transition-all">
+                        <i class="fa-solid fa-file-contract mr-2 text-[#34627c]"></i> SÍLABO
                     </a>
-                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#38657f] hover:text-[#38657f] transition-all">
-                        <i class="fa-solid fa-chart-pie mr-2 text-[#38657f]"></i> SISTEMA DE EVALUACIÓN
+                    <a href="{% url 'course_evaluation' course.id %}" class="inline-flex items-center px-4 py-2 border-2 border-gray-200 text-sm font-bold text-gray-600 bg-white hover:border-[#34627c] hover:text-[#34627c] transition-all">
+                        <i class="fa-solid fa-chart-pie mr-2 text-[#34627c]"></i> SISTEMA DE EVALUACIÓN
                     </a>
-                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-user-check mr-2 text-[#38657f]"></i> ASISTENCIAS
+                    <a href="{% url 'teacher_attendance_upload' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_attendance_upload' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-user-check mr-2 text-[#34627c]"></i> ASISTENCIAS
                     </a>
-                    <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#38657f] text-[#38657f]{% else %}border-gray-200 text-gray-600 hover:border-[#38657f] hover:text-[#38657f]{% endif %} text-sm font-bold bg-white transition-all">
-                        <i class="fa-solid fa-users mr-2 text-[#38657f]"></i> ESTUDIANTES
+                    <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
+                        <i class="fa-solid fa-users mr-2 text-[#34627c]"></i> ESTUDIANTES
                     </a>
                 </div>
 
                 <!-- Info del curso -->
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 mb-6">
+                <div class="bg-white rounded border border-gray-200 shadow-xs p-6 mb-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h3 class="text-lg font-bold text-gray-800">{{ course.title }}</h3>
@@ -75,7 +75,7 @@
                             {% if active_cohorts %}
                             <form method="GET" class="flex items-center space-x-2">
                                 <label for="cohort_id" class="text-sm font-semibold text-gray-600">Grupo:</label>
-                                <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-2 px-3" onchange="this.form.submit()">
+                                <select name="cohort_id" id="cohort_id" class="rounded-sm border-gray-300 text-sm focus:border-[#34627c] focus:ring-[#34627c] py-2 px-3" onchange="this.form.submit()">
                                     {% for c in active_cohorts %}
                                     <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>
                                     {% endfor %}
@@ -83,7 +83,7 @@
                             </form>
                             {% endif %}
                             
-                            <div class="p-3 rounded-xl bg-green-50 text-green-600 hidden md:block">
+                            <div class="p-3 rounded bg-green-50 text-green-600 hidden md:block">
                                 <i class="fa-solid fa-users text-xl"></i>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                 </div>
 
                 <!-- Tabla de Calificaciones -->
-                <div class="bg-white shadow-xs border border-gray-200/60 rounded-xl">
+                <div class="bg-white shadow-xs border border-gray-200/60 rounded">
                     <div class="px-6 py-4 border-b border-gray-100">
                         <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-ranking-star mr-2 text-amber-500"></i>Resumen de Calificaciones</h3>
                         <p class="text-sm text-gray-400 mt-0.5">Promedio ponderado de todas las tareas y evaluaciones calificadas.</p>

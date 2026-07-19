@@ -18,14 +18,14 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
         <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
-                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#38657f] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
-                <button onclick="history.back()" class="text-gray-500 hover:text-[#38657f] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
+                <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#38657f] font-medium transition-colors">Mi Tablero</a>
+                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#38657f] font-medium truncate max-w-[150px] transition-colors">{{ course.title }}</a>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[150px] transition-colors">{{ course.title }}</a>
                     <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <span class="text-[#38657f] font-semibold">Módulos</span>
+                    <span class="text-[#34627c] font-semibold">Módulos</span>
                 </nav>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
@@ -37,18 +37,18 @@
                 <div class="flex items-center justify-between mb-8">
                     <div>
                         <h2 class="text-lg font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-[#38657f]"></i> Módulos del Curso
+                            <i class="fa-solid fa-layer-group text-[#34627c]"></i> Módulos del Curso
                         </h2>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#38657f] transition-colors flex items-center" id="toggle-all-btn">
+                        <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
                             <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
                         </button>
                     </div>
                 </div>
 
                 {% for module in modules %}
-                <div class="bg-white rounded-md border border-gray-200 shadow-sm mb-10 overflow-hidden" style="border-left: 3px solid #38657f;">
+                <div class="bg-white rounded-sm border border-gray-200 shadow-sm mb-10 overflow-hidden" style="border-left: 3px solid #34627c;">
                     <!-- Module Header -->
                     <div class="px-5 py-4 bg-[#fafbff] border-b border-gray-200 cursor-pointer select-none module-header" data-target="student-module-{{ module.id }}">
                         <div class="flex items-center gap-3">
@@ -70,14 +70,14 @@
                                 {% with mat=item.obj %}
                                 {% if mat.is_visible %}
                                 <a href="{% url 'student_material_detail' material_id=mat.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center {% if mat.material_type == 'pdf' %}text-red-500{% elif mat.material_type == 'video' %}text-purple-500{% else %}text-blue-500{% endif %}">
+                                    <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center {% if mat.material_type == 'pdf' %}text-red-500{% elif mat.material_type == 'video' %}text-purple-500{% else %}text-blue-500{% endif %}">
                                         <i class="{% if mat.material_type == 'pdf' %}fa-solid fa-file-pdf{% elif mat.material_type == 'video' %}fa-solid fa-play{% else %}fa-solid fa-file{% endif %} text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ mat.title }}</p>
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#34627c] transition-colors">{{ mat.title }}</p>
                                         <p class="text-xs text-gray-400">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y H:i" }}</p>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#34627c] transition-colors text-xs"></i>
                                 </a>
                                 {% endif %}
                                 {% endwith %}
@@ -86,17 +86,17 @@
                                 {% if asg.is_visible %}
                                 <a href="{% if asg.assignment_type == 'tarea' %}{% url 'student_assignment_detail' assignment_id=asg.id %}{% elif asg.assignment_type == 'evaluacion' %}{% url 'student_evaluation_detail' assignment_id=asg.id %}{% else %}{% url 'student_exam_detail' assignment_id=asg.id %}{% endif %}"
                                    class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center {% if asg.assignment_type == 'tarea' %}text-amber-600{% elif asg.assignment_type == 'evaluacion' %}text-orange-600{% else %}text-teal-600{% endif %}">
+                                    <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center {% if asg.assignment_type == 'tarea' %}text-amber-600{% elif asg.assignment_type == 'evaluacion' %}text-orange-600{% else %}text-teal-600{% endif %}">
                                         <i class="{% if asg.assignment_type == 'tarea' %}fa-solid fa-file-pen{% elif asg.assignment_type == 'evaluacion' %}fa-solid fa-clipboard-question{% else %}fa-solid fa-laptop-code{% endif %} text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ asg.title }}</p>
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#34627c] transition-colors">{{ asg.title }}</p>
                                         <p class="text-xs text-gray-400">
                                             {{ asg.get_assignment_type_display }} · Máx: {{ asg.max_score }} pts
                                             {% if asg.due_date %} · Entrega: {{ asg.due_date|date:"d/m/Y H:i" }}{% endif %}
                                         </p>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#34627c] transition-colors text-xs"></i>
                                 </a>
                                 {% endif %}
                                 {% endwith %}
@@ -104,14 +104,14 @@
                                 {% with ann=item.obj %}
                                 {% if ann.is_visible %}
                                 <a href="{% url 'student_announcement_detail' announcement_id=ann.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-rose-500">
+                                    <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center text-rose-500">
                                         <i class="fa-solid fa-bullhorn text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ ann.title }}</p>
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#34627c] transition-colors">{{ ann.title }}</p>
                                         <p class="text-xs text-gray-400">Aviso · Publicado: {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#34627c] transition-colors text-xs"></i>
                                 </a>
                                 {% endif %}
                                 {% endwith %}
@@ -119,14 +119,14 @@
                                 {% with link=item.obj %}
                                 {% if link.is_visible %}
                                 <a href="{{ link.url }}" target="_blank" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-indigo-500">
+                                    <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center text-indigo-500">
                                         <i class="fa-solid fa-link text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ link.title }}</p>
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#34627c] transition-colors">{{ link.title }}</p>
                                         <p class="text-xs text-gray-400">Enlace Externo · {{ link.url|truncatechars:40 }}</p>
                                     </div>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-[#34627c] transition-colors text-xs"></i>
                                 </a>
                                 {% endif %}
                                 {% endwith %}
@@ -134,17 +134,17 @@
                                 {% with forum=item.obj %}
                                 {% if forum.is_visible %}
                                 <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-emerald-500">
+                                    <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center text-emerald-500">
                                         <i class="fa-solid fa-comments text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#34627c] transition-colors">
                                             {{ forum.title }}
                                             {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
                                         </p>
                                         <p class="text-xs text-gray-400">Foro de discusión · {{ forum.replies.count }} respuestas</p>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#34627c] transition-colors text-xs"></i>
                                 </a>
                                 {% endif %}
                                 {% endwith %}
@@ -159,9 +159,9 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-md">
-                    <div class="w-14 h-14 bg-[#38657f]/10 rounded-md flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-layer-group text-2xl text-[#38657f]"></i>
+                <div class="bg-white border-2 border-dashed border-gray-200 p-14 text-center text-gray-400 rounded-sm">
+                    <div class="w-14 h-14 bg-[#34627c]/10 rounded-sm flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-layer-group text-2xl text-[#34627c]"></i>
                     </div>
                     <p class="text-base font-semibold text-gray-500">No hay módulos disponibles aún.</p>
                 </div>
