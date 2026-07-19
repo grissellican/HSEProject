@@ -328,7 +328,7 @@ def teacher_module_create(request, course_id):
     else:
         # Auto-set order to next sequential number
         next_order = (course.modules.filter(cohort__isnull=True).count()) + 1
-        form = ModuleForm(initial={'order': next_order})
+        form = ModuleForm(initial={'order': next_order}, course=course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -343,13 +343,13 @@ def teacher_module_create(request, course_id):
 def teacher_module_update(request, module_id):
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = ModuleForm(request.POST, instance=module)
+        form = ModuleForm(request.POST, instance=module, course=module.course)
         if form.is_valid():
             form.save()
             messages.success(request, f'Módulo "{module.title}" actualizado.')
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
-        form = ModuleForm(instance=module)
+        form = ModuleForm(instance=module, course=module.course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -557,7 +557,7 @@ def teacher_announcement_create(request, module_id):
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
         from django.utils import timezone
-        form = AnnouncementForm(initial={'publish_date': timezone.now()})
+        form = AnnouncementForm(initial={'publish_date': timezone.now()}, course=module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Nuevo Aviso — {module.title}', 'course': module.course,
         'back_url': 'teacher_course_detail', 'back_id': module.course.id,
@@ -569,13 +569,13 @@ def teacher_announcement_update(request, pk):
     from .forms import AnnouncementForm
     ann = _get_teacher_object(request, ModuleAnnouncement, 'module__course__teacher', id=pk)
     if request.method == 'POST':
-        form = AnnouncementForm(request.POST, instance=ann)
+        form = AnnouncementForm(request.POST, instance=ann, course=ann.module.course)
         if form.is_valid():
             form.save()
             messages.success(request, f'Aviso "{ann.title}" actualizado.')
             return redirect('teacher_course_detail', course_id=ann.module.course.id)
     else:
-        form = AnnouncementForm(instance=ann)
+        form = AnnouncementForm(instance=ann, course=ann.module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Editar Aviso: {ann.title}', 'course': ann.module.course,
         'back_url': 'teacher_course_detail', 'back_id': ann.module.course.id,
@@ -617,13 +617,13 @@ def teacher_link_update(request, pk):
     from .forms import LinkForm
     link = _get_teacher_object(request, ModuleLink, 'module__course__teacher', id=pk)
     if request.method == 'POST':
-        form = LinkForm(request.POST, instance=link)
+        form = LinkForm(request.POST, instance=link, course=link.module.course)
         if form.is_valid():
             form.save()
             messages.success(request, f'Enlace "{link.title}" actualizado.')
             return redirect('teacher_course_detail', course_id=link.module.course.id)
     else:
-        form = LinkForm(instance=link)
+        form = LinkForm(instance=link, course=link.module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Editar Enlace: {link.title}', 'course': link.module.course,
         'back_url': 'teacher_course_detail', 'back_id': link.module.course.id,
@@ -657,7 +657,7 @@ def teacher_forum_create(request, module_id):
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
         from django.utils import timezone
-        form = ForumForm(initial={'start_date': timezone.now()})
+        form = ForumForm(initial={'start_date': timezone.now()}, course=module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Nuevo Foro — {module.title}', 'course': module.course,
         'back_url': 'teacher_course_detail', 'back_id': module.course.id,
@@ -669,13 +669,13 @@ def teacher_forum_update(request, pk):
     from .forms import ForumForm
     forum = _get_teacher_object(request, ModuleForum, 'module__course__teacher', id=pk)
     if request.method == 'POST':
-        form = ForumForm(request.POST, instance=forum)
+        form = ForumForm(request.POST, instance=forum, course=forum.module.course)
         if form.is_valid():
             form.save()
             messages.success(request, f'Foro "{forum.title}" actualizado.')
             return redirect('teacher_course_detail', course_id=forum.module.course.id)
     else:
-        form = ForumForm(instance=forum)
+        form = ForumForm(instance=forum, course=forum.module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Editar Foro: {forum.title}', 'course': forum.module.course,
         'back_url': 'teacher_course_detail', 'back_id': forum.module.course.id,
@@ -925,13 +925,13 @@ def teacher_live_session_delete(request, session_id):
 def teacher_live_session_update(request, session_id):
     session = _get_teacher_object(request, LiveSession, 'course__teacher', id=session_id)
     if request.method == 'POST':
-        form = LiveSessionForm(request.POST, instance=session)
+        form = LiveSessionForm(request.POST, instance=session, course=session.course)
         if form.is_valid():
             form.save()
             messages.success(request, 'Clase en vivo actualizada exitosamente.')
             return redirect('teacher_course_detail', course_id=session.course.id)
     else:
-        form = LiveSessionForm(instance=session)
+        form = LiveSessionForm(instance=session, course=session.course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
