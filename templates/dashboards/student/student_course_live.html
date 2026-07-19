@@ -35,7 +35,7 @@
             <div class="max-w-4xl mx-auto">
 
                 <div class="mb-10">
-                    <h2 class="text-2xl font-normal text-[#34627c] mb-2 border-b border-gray-200 pb-3 flex items-center gap-3">
+                    <h2 class="text-2xl font-normal text-blue-600 mb-2 border-b border-gray-200 pb-3 flex items-center gap-3">
                         <i class="fa-solid fa-video"></i> Clases en Vivo
                     </h2>
                     <p class="text-sm text-gray-500">Sesiones programadas para este curso.</p>
@@ -43,7 +43,7 @@
 
                 <div class="space-y-4">
                     {% for s in sessions %}
-                    <div class="bg-white border border-gray-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-gray-50" {% if not s.is_finished %}style="border-left: 4px solid #34627c;"{% else %}style="border-left: 4px solid #d1d5db;"{% endif %}>
+                    <div class="bg-white border border-gray-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-gray-50" {% if not s.is_finished %}style="border-left: 4px solid #2563eb;"{% else %}style="border-left: 4px solid #d1d5db;"{% endif %}>
                         <div class="flex-1 min-w-0">
                             <h3 class="text-lg font-semibold {% if s.is_finished %}text-gray-500{% else %}text-gray-800{% endif %} mb-2">{{ s.title }}</h3>
                             <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -64,7 +64,7 @@
                                 <a href="{{ s.google_calendar_url }}" target="_blank" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 hover:text-blue-600 transition-colors shadow-sm" title="Añadir a Google Calendar">
                                     <i class="fa-regular fa-calendar-plus"></i>
                                 </a>
-                                <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-5 py-2 bg-[#34627c] text-white text-sm font-medium hover:bg-[#6d28d9] transition-colors shadow-sm">
+                                <a href="{{ s.meeting_link }}" target="_blank" class="inline-flex items-center px-5 py-2 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
                                     <i class="fa-solid fa-external-link mr-2"></i> Unirme a la clase
                                 </a>
                             {% endif %}

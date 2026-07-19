@@ -965,17 +965,29 @@ def teacher_students_list(request, course_id):
     total_assignments = all_assignments.count()
     
     for student in students:
+        # Determinar cohorte del estudiante
         if current_cohort:
+            student_cohort = current_cohort
             submissions = Submission.objects.filter(
                 student=student,
                 assignment__module__course=course,
                 cohort=current_cohort
             )
         else:
+            student_cohort = Cohort.objects.filter(course=course, students=student, status='active').first()
             submissions = Submission.objects.filter(
                 student=student,
                 assignment__module__course=course
             )
+            
+        student_total_assignments = 0
+        for a in all_assignments:
+            if a.target_type == 'specific':
+                if student_cohort and a.specific_cohorts.filter(id=student_cohort.id).exists():
+                    student_total_assignments += 1
+            else:
+                student_total_assignments += 1
+
         graded_submissions = submissions.filter(score__isnull=False)
         
         # Calcular promedio ponderado sobre el puntaje máximo
@@ -991,7 +1003,7 @@ def teacher_students_list(request, course_id):
             'student': student,
             'submitted': submissions.count(),
             'graded': graded_submissions.count(),
-            'total_assignments': total_assignments,
+            'total_assignments': student_total_assignments,
             'avg_percentage': avg_percentage,
             'total_score': round(total_score, 2),
             'total_max': round(total_max, 2),
@@ -1020,11 +1032,19 @@ def teacher_student_grades_detail(request, course_id, student_id):
     
     modules = course.modules.all().prefetch_related('assignments')
     
+    # Obtener la cohorte activa del estudiante en este curso
+    cohort = Cohort.objects.filter(course=course, students=student, status='active').first()
+    
     module_data = []
     
     for module in modules:
         assignments_data = []
         for assignment in module.assignments.all():
+            # Filtrar si la tarea está asignada a grupos específicos y el alumno no está en ese grupo
+            if assignment.target_type == 'specific':
+                if not cohort or not assignment.specific_cohorts.filter(id=cohort.id).exists():
+                    continue
+                    
             submission = Submission.objects.filter(student=student, assignment=assignment).first()
             
             status = 'No entregado'
