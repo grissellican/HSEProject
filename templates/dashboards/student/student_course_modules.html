@@ -55,7 +55,6 @@
                             <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="s-chevron-{{ module.id }}"></i>
                             <div>
                                 <h4 class="text-base font-bold text-gray-800 flex items-center gap-2">
-                                    <span class="text-[#38657f] font-black text-sm">{{ module.order }}</span>
                                     {{ module.title }}
                                 </h4>
                                 {% if module.description %}<p class="text-sm text-gray-400 mt-0.5">{{ module.description }}</p>{% endif %}
@@ -65,130 +64,93 @@
 
                     <!-- Module Body -->
                     <div class="module-body" id="student-module-{{ module.id }}">
-                        {% if module.materials.all %}
-                        <!-- Materials Header -->
-                        <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-file-lines text-gray-400 text-xs"></i>
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Materiales</h5>
-                        </div>
-                        
-                        <!-- Materials List -->
-                        {% for mat in module.materials.all %}
-                            {% if mat.is_visible %}
-                            <a href="{% url 'student_material_detail' material_id=mat.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center
-                                    {% if mat.material_type == 'pdf' %}bg-red-50 text-red-500{% elif mat.material_type == 'video' %}bg-purple-50 text-purple-500{% else %}bg-blue-50 text-blue-500{% endif %}">
-                                    <i class="{% if mat.material_type == 'pdf' %}fa-solid fa-file-pdf{% elif mat.material_type == 'video' %}fa-solid fa-play{% else %}fa-solid fa-file{% endif %} text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ mat.title }}</p>
-                                    <p class="text-xs text-gray-400">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y" }}</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
-                            </a>
+                        {% if module.all_resources %}
+                        {% for item in module.all_resources %}
+                            {% if item.type == 'material' %}
+                                {% with mat=item.obj %}
+                                {% if mat.is_visible %}
+                                <a href="{% url 'student_material_detail' material_id=mat.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center {% if mat.material_type == 'pdf' %}text-red-500{% elif mat.material_type == 'video' %}text-purple-500{% else %}text-blue-500{% endif %}">
+                                        <i class="{% if mat.material_type == 'pdf' %}fa-solid fa-file-pdf{% elif mat.material_type == 'video' %}fa-solid fa-play{% else %}fa-solid fa-file{% endif %} text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ mat.title }}</p>
+                                        <p class="text-xs text-gray-400">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                </a>
+                                {% endif %}
+                                {% endwith %}
+                            {% elif item.type == 'assignment' %}
+                                {% with asg=item.obj %}
+                                {% if asg.is_visible %}
+                                <a href="{% if asg.assignment_type == 'tarea' %}{% url 'student_assignment_detail' assignment_id=asg.id %}{% elif asg.assignment_type == 'evaluacion' %}{% url 'student_evaluation_detail' assignment_id=asg.id %}{% else %}{% url 'student_exam_detail' assignment_id=asg.id %}{% endif %}"
+                                   class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center {% if asg.assignment_type == 'tarea' %}text-amber-600{% elif asg.assignment_type == 'evaluacion' %}text-orange-600{% else %}text-teal-600{% endif %}">
+                                        <i class="{% if asg.assignment_type == 'tarea' %}fa-solid fa-file-pen{% elif asg.assignment_type == 'evaluacion' %}fa-solid fa-clipboard-question{% else %}fa-solid fa-laptop-code{% endif %} text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ asg.title }}</p>
+                                        <p class="text-xs text-gray-400">
+                                            {{ asg.get_assignment_type_display }} · Máx: {{ asg.max_score }} pts
+                                            {% if asg.due_date %} · Entrega: {{ asg.due_date|date:"d/m/Y H:i" }}{% endif %}
+                                        </p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                </a>
+                                {% endif %}
+                                {% endwith %}
+                            {% elif item.type == 'announcement' %}
+                                {% with ann=item.obj %}
+                                {% if ann.is_visible %}
+                                <a href="{% url 'student_announcement_detail' announcement_id=ann.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-rose-500">
+                                        <i class="fa-solid fa-bullhorn text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ ann.title }}</p>
+                                        <p class="text-xs text-gray-400">Aviso · Publicado: {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                </a>
+                                {% endif %}
+                                {% endwith %}
+                            {% elif item.type == 'link' %}
+                                {% with link=item.obj %}
+                                {% if link.is_visible %}
+                                <a href="{{ link.url }}" target="_blank" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-indigo-500">
+                                        <i class="fa-solid fa-link text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ link.title }}</p>
+                                        <p class="text-xs text-gray-400">Enlace Externo · {{ link.url|truncatechars:40 }}</p>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                </a>
+                                {% endif %}
+                                {% endwith %}
+                            {% elif item.type == 'forum' %}
+                                {% with forum=item.obj %}
+                                {% if forum.is_visible %}
+                                <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                    <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center text-emerald-500">
+                                        <i class="fa-solid fa-comments text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">
+                                            {{ forum.title }}
+                                            {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
+                                        </p>
+                                        <p class="text-xs text-gray-400">Foro de discusión · {{ forum.replies.count }} respuestas</p>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
+                                </a>
+                                {% endif %}
+                                {% endwith %}
                             {% endif %}
                         {% endfor %}
-                        {% endif %}
-
-                        {% if module.assignments.all %}
-                        <!-- Assignments Header -->
-                        <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-pen-to-square text-gray-400 text-xs"></i>
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tareas y Evaluaciones</h5>
-                        </div>
-
-                        <!-- Assignments List -->
-                        {% for asg in module.assignments.all %}
-                            {% if asg.is_visible %}
-                            <a href="{% if asg.assignment_type == 'tarea' %}{% url 'student_assignment_detail' assignment_id=asg.id %}{% elif asg.assignment_type == 'evaluacion' %}{% url 'student_evaluation_detail' assignment_id=asg.id %}{% else %}{% url 'student_exam_detail' assignment_id=asg.id %}{% endif %}"
-                               class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center
-                                    {% if asg.assignment_type == 'tarea' %}bg-amber-50 text-amber-600{% elif asg.assignment_type == 'evaluacion' %}bg-orange-50 text-orange-600{% else %}bg-indigo-50 text-indigo-600{% endif %}">
-                                    <i class="{% if asg.assignment_type == 'tarea' %}fa-solid fa-file-pen{% elif asg.assignment_type == 'evaluacion' %}fa-solid fa-clipboard-question{% else %}fa-solid fa-laptop-code{% endif %} text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ asg.title }}</p>
-                                    <p class="text-xs text-gray-400">
-                                        {{ asg.get_assignment_type_display }} · Máx: {{ asg.max_score }} pts
-                                        {% if asg.due_date %} · Entrega: {{ asg.due_date|date:"d/m/Y H:i" }}{% endif %}
-                                    </p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-                        {% endif %}
-
-                        <!-- AVISOS -->
-                        {% if module.announcements.all %}
-                        <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-bullhorn text-gray-400 text-xs"></i>
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Avisos</h5>
-                        </div>
-                        {% for ann in module.announcements.all %}
-                            {% if ann.is_visible %}
-                            <a href="{% url 'student_announcement_detail' announcement_id=ann.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center bg-rose-50 text-rose-500">
-                                    <i class="fa-solid fa-bullhorn text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ ann.title }}</p>
-                                    <p class="text-xs text-gray-400">Aviso · Publicado: {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-                        {% endif %}
-
-                        <!-- ENLACES -->
-                        {% if module.links.all %}
-                        <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-link text-gray-400 text-xs"></i>
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Enlaces</h5>
-                        </div>
-                        {% for link in module.links.all %}
-                            {% if link.is_visible %}
-                            <a href="{{ link.url }}" target="_blank" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center bg-indigo-50 text-indigo-500">
-                                    <i class="fa-solid fa-link text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">{{ link.title }}</p>
-                                    <p class="text-xs text-gray-400">Enlace Externo · {{ link.url|truncatechars:40 }}</p>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-                        {% endif %}
-
-                        <!-- FOROS -->
-                        {% if module.forums.all %}
-                        <div class="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-comments text-gray-400 text-xs"></i>
-                            <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Foros</h5>
-                        </div>
-                        {% for forum in module.forums.all %}
-                            {% if forum.is_visible %}
-                            <a href="{% url 'student_forum_detail' forum_id=forum.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                                <div class="w-9 h-9 rounded-md flex-shrink-0 flex items-center justify-center bg-emerald-50 text-emerald-500">
-                                    <i class="fa-solid fa-comments text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-700 group-hover:text-[#38657f] transition-colors">
-                                        {{ forum.title }}
-                                        {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
-                                    </p>
-                                    <p class="text-xs text-gray-400">Foro de discusión · {{ forum.replies.count }} respuestas</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#38657f] transition-colors text-xs"></i>
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-                        {% endif %}
-
-                        {% if not module.materials.all and not module.assignments.all and not module.announcements.all and not module.links.all and not module.forums.all %}
+                        {% else %}
                         <div class="px-5 py-6 text-center text-gray-400 text-sm">
                             <i class="fa-solid fa-inbox text-xl mb-2 block"></i>
                             No hay contenido en este módulo aún.

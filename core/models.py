@@ -126,8 +126,25 @@ class Module(models.Model):
         ordering = ['order', 'id']
 
     def __str__(self):
-        return f"{self.order}. {self.title}"
+        return self.title
 
+    @property
+    def all_resources(self):
+        resources = []
+        for mat in self.materials.all():
+            resources.append({'obj': mat, 'type': 'material', 'date': mat.uploaded_at})
+        for assign in self.assignments.all():
+            resources.append({'obj': assign, 'type': 'assignment', 'date': assign.created_at})
+        for link in self.links.all():
+            resources.append({'obj': link, 'type': 'link', 'date': link.created_at})
+        for forum in self.forums.all():
+            resources.append({'obj': forum, 'type': 'forum', 'date': forum.created_at})
+        for ann in getattr(self, 'announcements', []).all() if hasattr(self, 'announcements') else []:
+            resources.append({'obj': ann, 'type': 'announcement', 'date': ann.created_at})
+            
+        from django.utils import timezone
+        resources.sort(key=lambda x: x['date'] if x['date'] else timezone.now())
+        return resources
 
 class Material(models.Model):
     MATERIAL_TYPES = (

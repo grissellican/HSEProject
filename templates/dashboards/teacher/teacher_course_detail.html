@@ -116,7 +116,6 @@
                             <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="chevron-{{ module.id }}"></i>
                             <div class="min-w-0">
                                 <h4 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                    <span class="text-[#38657f] font-black text-base">{{ module.order }}</span>
                                     {{ module.title }}
                                     {% if not module.is_visible %}
                                         <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-black bg-gray-200 text-gray-500 uppercase tracking-wider"><i class="fa-solid fa-eye-slash mr-1"></i>Oculto</span>
@@ -175,17 +174,14 @@
                     <div class="module-body" id="module-body-{{ module.id }}" style="max-height: 2000px; opacity: 1;">
                         <div class="p-5 space-y-4">
 
-                            <!-- Materiales -->
-                            {% if module.materials.all %}
-                            <div>
-                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-file-lines text-gray-400"></i> Materiales
-                                </p>
-                                <div class="space-y-1.5">
-                                    {% for mat in module.materials.all %}
+                            {% if module.all_resources %}
+                            <div class="space-y-1.5 mt-2">
+                                {% for item in module.all_resources %}
+                                    {% if item.type == 'material' %}
+                                    {% with mat=item.obj %}
                                     <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not mat.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 {% if mat.material_type == 'pdf' %}bg-red-50{% elif mat.material_type == 'video' %}bg-purple-50{% else %}bg-blue-50{% endif %}">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 {% if mat.material_type == 'pdf' %}
                                                     <i class="fa-solid fa-file-pdf text-red-500 text-base"></i>
                                                 {% elif mat.material_type == 'video' %}
@@ -199,7 +195,7 @@
                                                     <a href="{% url 'teacher_material_detail' material_id=mat.id %}">{{ mat.title }}</a>
                                                     {% if not mat.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
-                                                <p class="text-xs text-gray-500">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y" }}</p>
+                                                <p class="text-xs text-gray-500">{{ mat.get_material_type_display }} · {{ mat.uploaded_at|date:"d/m/Y H:i" }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
@@ -220,25 +216,12 @@
                                             </form>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            <!-- Tareas y Evaluaciones -->
-                            {% if module.assignments.all %}
-                            <div>
-                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-file-pen text-gray-400"></i> Tareas y Evaluaciones
-                                </p>
-                                <div class="space-y-1.5">
-                                    {% for assign in module.assignments.all %}
+                                    {% endwith %}
+                                    {% elif item.type == 'assignment' %}
+                                    {% with assign=item.obj %}
                                     <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not assign.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0
-                                                {% if assign.assignment_type == 'evaluacion' %}bg-orange-50
-                                                {% elif assign.assignment_type == 'examen_online' %}bg-teal-50
-                                                {% else %}bg-amber-50{% endif %}">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 {% if assign.assignment_type == 'evaluacion' %}
                                                     <i class="fa-solid fa-clipboard-question text-orange-500 text-base"></i>
                                                 {% elif assign.assignment_type == 'examen_online' %}
@@ -299,22 +282,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            <!-- Avisos -->
-                            {% if module.announcements.all %}
-                            <div>
-                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-bullhorn text-gray-400"></i> Avisos
-                                </p>
-                                <div class="space-y-1.5">
-                                    {% for ann in module.announcements.all %}
+                                    {% endwith %}
+                                    {% elif item.type == 'announcement' %}
+                                    {% with ann=item.obj %}
                                     <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not ann.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-rose-50">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-bullhorn text-rose-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
@@ -322,7 +295,7 @@
                                                     {{ ann.title }}
                                                     {% if not ann.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
-                                                <p class="text-xs text-gray-500">Publicado: {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
+                                                <p class="text-xs text-gray-500">Aviso · {{ ann.publish_date|date:"d/m/Y H:i" }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
@@ -343,22 +316,12 @@
                                             </form>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            <!-- Enlaces -->
-                            {% if module.links.all %}
-                            <div>
-                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-link text-gray-400"></i> Enlaces
-                                </p>
-                                <div class="space-y-1.5">
-                                    {% for link in module.links.all %}
+                                    {% endwith %}
+                                    {% elif item.type == 'link' %}
+                                    {% with link=item.obj %}
                                     <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not link.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-indigo-50">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-link text-indigo-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
@@ -387,22 +350,12 @@
                                             </form>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            <!-- Foros -->
-                            {% if module.forums.all %}
-                            <div>
-                                <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-comments text-gray-400"></i> Foros
-                                </p>
-                                <div class="space-y-1.5">
-                                    {% for forum in module.forums.all %}
+                                    {% endwith %}
+                                    {% elif item.type == 'forum' %}
+                                    {% with forum=item.obj %}
                                     <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not forum.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0 bg-emerald-50">
+                                            <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-comments text-emerald-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
@@ -412,8 +365,7 @@
                                                     {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}
                                                 </a>
                                                 <p class="text-xs text-gray-500">
-                                                    Respuestas: {{ forum.replies.count }} · 
-                                                    Apertura: {{ forum.start_date|date:"d/m/Y H:i" }}
+                                                    Foro · Respuestas: {{ forum.replies.count }} · Apertura: {{ forum.start_date|date:"d/m/Y H:i" }}
                                                     {% if forum.end_date %} · Cierre: {{ forum.end_date|date:"d/m/Y H:i" }}{% endif %}
                                                 </p>
                                             </div>
@@ -436,12 +388,11 @@
                                             </form>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
+                                    {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
                             </div>
-                            {% endif %}
-
-                            {% if not module.materials.all and not module.assignments.all and not module.announcements.all and not module.links.all and not module.forums.all %}
+                            {% else %}
                             <p class="text-sm text-gray-400 italic text-center py-4">Sin contenido aún. Usa los botones de arriba para agregar recursos.</p>
                             {% endif %}
                         </div>
