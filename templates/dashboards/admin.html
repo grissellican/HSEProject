@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     {% if platform_settings and platform_settings.logo and platform_settings.logo.name %}
-        <link rel="icon" href="{{ platform_settings.logo.url }}">
+        <link rel="icon" type="image/tiff" href="{% static 'images/Logo-gris.tif' %}">
     {% else %}
-        <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+        <link rel="icon" type="image/tiff" href="{% static 'images/Logo-gris.tif' %}">
     {% endif %}
 </head>
 <body class="h-full flex overflow-hidden font-sans text-gray-900">

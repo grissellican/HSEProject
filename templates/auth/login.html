@@ -14,9 +14,9 @@
         }
     </style>
     {% if platform_settings and platform_settings.logo and platform_settings.logo.name %}
-        <link rel="icon" href="{{ platform_settings.logo.url }}">
+        <link rel="icon" type="image/tiff" href="{% static 'images/Logo-gris.tif' %}">
     {% else %}
-        <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+        <link rel="icon" type="image/tiff" href="{% static 'images/Logo-gris.tif' %}">
     {% endif %}
 </head>
 <body class="h-full w-full bg-cover bg-center bg-no-repeat flex items-center justify-start pl-12 md:pl-24 lg:pl-36">
