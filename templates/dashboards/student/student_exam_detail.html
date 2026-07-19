@@ -123,7 +123,7 @@
                                 <button onclick="document.getElementById('start-exam-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">Cancelar</button>
                                 <form action="{% url 'student_exam_start' assignment_id=assignment.id %}" method="POST" class="inline m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="px-5 py-2 bg-[#34627c] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors">Aceptar e Iniciar</button>
+                                    <button type="submit" class="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded hover:bg-black transition-colors">Aceptar e Iniciar</button>
                                 </form>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                     <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-8 text-center">
                         <i class="fa-solid fa-clipboard-question text-4xl text-[#34627c] mb-4"></i>
                         <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Una vez que comiences, el tiempo empezará a correr y no podrás pausarlo.</p>
-                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-[#34627c] text-white text-base font-bold rounded shadow hover:bg-[#2c5065] transition-colors">
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-8 py-3 bg-gray-900 text-white text-base font-bold rounded shadow hover:bg-black transition-colors">
                             Empezar Examen
                         </button>
                     </div>
@@ -173,7 +173,7 @@
                         <p class="text-gray-600 font-medium text-sm mb-6 max-w-sm mx-auto">Tu examen todavía no ha sido calificado por tu docente</p>
                         {% endif %}
                         {% if can_retake %}
-                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-[#34627c] text-white text-sm font-semibold rounded hover:bg-[#2c5065] transition-colors mb-3">Volver a Intentar</button>
+                        <button onclick="document.getElementById('start-exam-modal').classList.remove('hidden')" class="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded hover:bg-black transition-colors mb-3">Volver a Intentar</button>
                         {% endif %}
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="inline-flex items-center px-5 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">
                             Volver al curso

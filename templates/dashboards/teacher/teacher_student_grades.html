@@ -113,7 +113,7 @@
                                             </td>
                                             <td class="px-6 py-4 text-center">
                                                 {% if a_data.submission %}
-                                                    <a href="{% url 'teacher_grade_submission' submission_id=a_data.submission.id %}" class="inline-flex items-center px-3 py-1.5 bg-[#34627c] text-white text-xs font-bold rounded hover:bg-[#2a4f64] transition-colors">
+                                                    <a href="{% url 'teacher_grade_submission' submission_id=a_data.submission.id %}" class="inline-flex items-center px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded hover:bg-black transition-colors">
                                                         {% if a_data.submission.score != None %}Ver/Editar{% else %}Calificar{% endif %}
                                                     </a>
                                                 {% else %}
