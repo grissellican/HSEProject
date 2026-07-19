@@ -119,7 +119,14 @@ class CohortForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if course:
             # Solo mostrar estudiantes que ya están matriculados en el curso
-            self.fields['students'].queryset = course.students.filter(is_active=True)
+            # y que NO estén ya en otra cohorte activa de este mismo curso.
+            active_cohort_students = course.cohorts.filter(status='active').exclude(
+                id=self.instance.id if self.instance.pk else None
+            ).values_list('students', flat=True)
+            
+            self.fields['students'].queryset = course.students.filter(
+                is_active=True
+            ).exclude(id__in=active_cohort_students)
 
 
 class CohortCloseForm(forms.Form):
