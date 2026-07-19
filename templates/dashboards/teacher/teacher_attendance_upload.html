@@ -135,7 +135,6 @@
                 </div>
 
                 <!-- Formulario de Subida -->
-                {% if request.user.role == 'teacher' %}
                 <div class="bg-white border border-gray-200 shadow-sm rounded-md p-6 mb-8">
                     <form method="POST" enctype="multipart/form-data" class="space-y-4">
                         {% csrf_token %}
@@ -164,7 +163,6 @@
                         </div>
                     </form>
                 </div>
-                {% endif %}
 
                 <!-- Historial de Asistencias -->
                 <h3 class="text-md font-bold text-gray-700 mb-4 flex items-center gap-2">

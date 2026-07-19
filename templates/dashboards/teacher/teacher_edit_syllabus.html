@@ -91,21 +91,17 @@
                                 {% endfor %}
                             </div>
                             
-                            {% if request.user.role == 'teacher' %}
                             <button type="button" id="add-unit-btn" class="mt-4 text-sm font-semibold text-[#38657f] hover:text-[#2b5068] flex items-center transition-colors">
                                 <i class="fa-solid fa-plus-circle mr-1"></i> Agregar nueva unidad
                             </button>
-                            {% endif %}
                         </div>
                     </div>
 
                     <div class="mt-8 flex justify-end gap-3">
                         <a href="{% url 'teacher_course_detail' course.id %}" class="px-5 py-2.5 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition-colors">Cancelar</a>
-                        {% if request.user.role == 'teacher' %}
                         <button type="submit" class="px-5 py-2.5 bg-[#38657f] text-white rounded-xl font-bold hover:bg-[#2b5068] transition-colors shadow-sm">
                             <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
                         </button>
-                        {% endif %}
                     </div>
                 </form>
             </div>

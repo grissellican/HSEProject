@@ -232,7 +232,6 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_material_toggle_visibility' material_id=mat.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if mat.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -243,14 +242,12 @@
                                             <a href="{{ mat.file.url }}" target="_blank" class="text-[#38657f] hover:text-[#2b5068] w-6 h-6 flex items-center justify-center" title="Descargar">
                                                 <i class="fa-solid fa-download"></i>
                                             </a>
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_material_delete' material_id=mat.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
-                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -297,7 +294,6 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2 flex-shrink-0 text-sm">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_assignment_toggle_visibility' assignment_id=assign.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if assign.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -313,7 +309,6 @@
                                             <a href="{% url 'teacher_assignment_submissions' assignment_id=assign.id %}" class="inline-flex items-center px-2.5 py-1 bg-[#38657f]/8 text-[#38657f] font-semibold hover:bg-[#38657f]/15 transition-colors cursor-pointer text-[11px]">
                                                 <i class="fa-solid fa-inbox mr-1"></i> Entregas ({{ assign.submissions.count }})
                                             </a>
-                                            {% if request.user.role == 'teacher' %}
                                             <!-- Mini menú 3 puntos para tarea -->
                                             <div class="dot-menu-wrapper">
                                                 <button class="dot-menu-btn w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors cursor-pointer border-0 bg-transparent"
@@ -333,7 +328,6 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -363,7 +357,6 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_announcement_toggle_visibility' pk=ann.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if ann.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -409,7 +402,6 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_link_toggle_visibility' pk=link.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if link.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -460,7 +452,6 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 flex-shrink-0 text-sm">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_forum_toggle_visibility' pk=forum.id %}" method="POST" class="inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-gray-400 hover:text-[#38657f] cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="{% if forum.is_visible %}Ocultar{% else %}Mostrar{% endif %}">
@@ -506,14 +497,12 @@
                     <h2 class="text-base font-black text-gray-700 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-video text-[#7c3aed]"></i>Clases en Vivo
                     </h2>
-                    {% if request.user.role == 'teacher' %}
                     <div class="flex items-center gap-3">
                         <div class="h-px w-12 bg-gray-200"></div>
                         <a href="{% url 'teacher_live_session_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#7c3aed] text-white text-sm font-bold hover:bg-[#6d28d9] transition-colors shadow-sm cursor-pointer">
                             <i class="fa-solid fa-plus mr-1.5"></i> Programar Sesión
                         </a>
                     </div>
-                    {% endif %}
                 </div>
 
                 {% if live_sessions %}
@@ -553,7 +542,6 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
-                                        {% if request.user.role == 'teacher' %}
                                         <a href="{% url 'teacher_live_session_update' session_id=s.id %}" class="text-[#38657f] hover:text-[#2b5068] text-sm cursor-pointer mr-3 inline-block" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
                                         <form action="{% url 'teacher_live_session_delete' session_id=s.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta sesión?');">
                                             {% csrf_token %}
@@ -561,7 +549,6 @@
                                         </form>
                                         {% else %}
                                         -
-                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

@@ -98,7 +98,6 @@
                         {{ forum.content|safe }}
                     </div>
 
-                    {% if forum.is_active and request.user.role == 'teacher' %}
                     <div class="mt-6 flex justify-end">
                         <button id="main-reply-btn" onclick="moveReplyForm('')" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer rounded-sm">
                             <i class="fa-solid fa-reply mr-1.5"></i> Responder
@@ -112,11 +111,9 @@
                     <div class="mt-6 p-4 bg-gray-50 text-center text-gray-500 font-medium text-sm border border-gray-200">
                         Este foro está cerrado. No se pueden publicar nuevas respuestas.
                     </div>
-                    {% endif %}
                 </div>
 
                 <!-- Default Location for Formulario de Respuesta -->
-                {% if request.user.role == 'teacher' %}
                 <div id="default-form-location">
                     <div id="reply-form-container" class="hidden bg-white shadow-sm border border-gray-300 p-6 mb-8 border-t-4 border-t-[#38657f]">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-reply text-[#38657f]"></i> Redactar Respuesta</h3>
@@ -135,7 +132,6 @@
                         </form>
                     </div>
                 </div>
-                {% endif %}
 
                 <!-- Lista de Respuestas -->
                 <div class="mb-8">
@@ -170,24 +166,20 @@
                                             </p>
                                         </div>
                                         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-                                            {% if request.user.role == 'teacher' %}
                                             <form action="{% url 'teacher_forum_reply_delete' reply.id %}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta respuesta?');">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-red-400 hover:text-red-600 transition-colors text-sm p-1" title="Eliminar respuesta">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
-                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="ck-content mt-2 text-gray-700 text-sm">
                                         {{ reply.content|safe }}
                                     </div>
-                                    {% if forum.is_active and request.user.role == 'teacher' %}
                                     <button type="button" onclick="moveReplyForm('{{ reply.id }}')" class="text-xs text-[#38657f] font-bold uppercase hover:underline mt-3 flex items-center gap-1">
                                         <i class="fa-solid fa-reply"></i> Responder
                                     </button>
-                                    {% endif %}
                                 </div>
                             </div>
                             
@@ -215,14 +207,12 @@
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-1 opacity-0 group-hover/nested:opacity-100">
-                                                {% if request.user.role == 'teacher' %}
                                                 <form action="{% url 'teacher_forum_reply_delete' nested.id %}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta respuesta?');">
                                                     {% csrf_token %}
                                                     <button type="submit" class="text-red-400 hover:text-red-600 transition-colors text-sm p-1" title="Eliminar respuesta">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </form>
-                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="ck-content mt-1 text-gray-700 text-sm">
