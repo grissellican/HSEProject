@@ -263,6 +263,23 @@
                 assignmentTypeSelect.addEventListener('change', updateFields);
                 updateFields();
             }
+            
+            // Toggle specific_cohorts visibility based on target_type
+            const targetTypeSelect = document.getElementById('id_target_type');
+            const specificCohortsWrapper = document.getElementById('wrapper_specific_cohorts');
+            
+            if (targetTypeSelect && specificCohortsWrapper) {
+                function updateTargetTypeFields() {
+                    if (targetTypeSelect.value === 'specific') {
+                        specificCohortsWrapper.style.display = 'block';
+                    } else {
+                        specificCohortsWrapper.style.display = 'none';
+                    }
+                }
+                
+                targetTypeSelect.addEventListener('change', updateTargetTypeFields);
+                updateTargetTypeFields();
+            }
         });
     </script>
 </body>

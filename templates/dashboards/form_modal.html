@@ -114,7 +114,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 {% for field in form %}
-                <div class="{% if field.name == 'students' or field.name == 'enrolled_courses' or field.name == 'welcome_description' or field.name == 'capacities' %}md:col-span-2{% endif %}">
+                <div id="wrapper_{{ field.name }}" class="{% if field.name == 'students' or field.name == 'enrolled_courses' or field.name == 'welcome_description' or field.name == 'capacities' %}md:col-span-2{% endif %}">
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1.5">{{ field.label }}</label>
                     {% if field.name == 'students' or field.name == 'enrolled_courses' %}
                     <div class="mb-2">
@@ -153,6 +153,23 @@
                         }
                     });
                 });
+            }
+            
+            // Toggle specific_cohorts visibility based on target_type
+            const targetTypeSelect = document.getElementById('id_target_type');
+            const specificCohortsWrapper = document.getElementById('wrapper_specific_cohorts');
+            
+            if (targetTypeSelect && specificCohortsWrapper) {
+                function updateTargetTypeFields() {
+                    if (targetTypeSelect.value === 'specific') {
+                        specificCohortsWrapper.style.display = 'block';
+                    } else {
+                        specificCohortsWrapper.style.display = 'none';
+                    }
+                }
+                
+                targetTypeSelect.addEventListener('change', updateTargetTypeFields);
+                updateTargetTypeFields();
             }
 
             // Image Preview para input file
