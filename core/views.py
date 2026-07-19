@@ -317,11 +317,12 @@ def course_evaluation(request, course_id):
 def teacher_module_create(request, course_id):
     course = _get_teacher_course(request, course_id)
     if request.method == 'POST':
-        form = ModuleForm(request.POST)
+        form = ModuleForm(request.POST, course=course)
         if form.is_valid():
             module = form.save(commit=False)
             module.course = course
             module.save()
+            form.save_m2m()
             messages.success(request, f'Módulo "{module.title}" creado exitosamente.')
             return redirect('teacher_course_detail', course_id=course.id)
     else:
@@ -382,15 +383,16 @@ def teacher_module_toggle_visibility(request, module_id):
 def teacher_material_create(request, module_id):
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES)
+        form = MaterialForm(request.POST, request.FILES, course=module.course)
         if form.is_valid():
             material = form.save(commit=False)
             material.module = module
             material.save()
+            form.save_m2m()
             messages.success(request, f'Material "{material.title}" subido exitosamente.')
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
-        form = MaterialForm()
+        form = MaterialForm(course=module.course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -439,18 +441,23 @@ def teacher_material_toggle_visibility(request, material_id):
 def teacher_assignment_create(request, module_id):
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = AssignmentForm(request.POST, request.FILES)
+        form = AssignmentForm(request.POST, request.FILES, course=module.course)
         if form.is_valid():
             assignment = form.save(commit=False)
             assignment.module = module
             assignment.save()
+            form.save_m2m()
             
-            # Guardar config para cohorte activa
+            # Guardar config para las cohortes correspondientes
             from .models import CohortAssignmentConfig
-            active_cohort = module.course.cohorts.filter(status='active').first()
-            if active_cohort:
+            if assignment.target_type == 'all':
+                target_cohorts = assignment.module.course.cohorts.filter(status='active')
+            else:
+                target_cohorts = assignment.specific_cohorts.all()
+                
+            for cohort in target_cohorts:
                 CohortAssignmentConfig.objects.update_or_create(
-                    cohort=active_cohort,
+                    cohort=cohort,
                     assignment=assignment,
                     defaults={
                         'due_date': assignment.due_date,
@@ -461,7 +468,7 @@ def teacher_assignment_create(request, module_id):
             messages.success(request, f'{assignment.get_assignment_type_display()} "{assignment.title}" creada exitosamente.')
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
-        form = AssignmentForm()
+        form = AssignmentForm(course=module.course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -477,16 +484,20 @@ def teacher_assignment_create(request, module_id):
 def teacher_assignment_update(request, assignment_id):
     assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
     if request.method == 'POST':
-        form = AssignmentForm(request.POST, request.FILES, instance=assignment)
+        form = AssignmentForm(request.POST, request.FILES, instance=assignment, course=assignment.module.course)
         if form.is_valid():
             assignment = form.save()
             
-            # Actualizar config para cohorte activa
+            # Actualizar config para las cohortes correspondientes
             from .models import CohortAssignmentConfig
-            active_cohort = assignment.module.course.cohorts.filter(status='active').first()
-            if active_cohort:
+            if assignment.target_type == 'all':
+                target_cohorts = assignment.module.course.cohorts.filter(status='active')
+            else:
+                target_cohorts = assignment.specific_cohorts.all()
+                
+            for cohort in target_cohorts:
                 CohortAssignmentConfig.objects.update_or_create(
-                    cohort=active_cohort,
+                    cohort=cohort,
                     assignment=assignment,
                     defaults={
                         'due_date': assignment.due_date,
@@ -497,7 +508,7 @@ def teacher_assignment_update(request, assignment_id):
             messages.success(request, f'{assignment.get_assignment_type_display()} "{assignment.title}" actualizada.')
             return redirect('teacher_course_detail', course_id=assignment.module.course.id)
     else:
-        form = AssignmentForm(instance=assignment)
+        form = AssignmentForm(instance=assignment, course=assignment.module.course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -533,7 +544,7 @@ def teacher_announcement_create(request, module_id):
     from .forms import AnnouncementForm
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = AnnouncementForm(request.POST)
+        form = AnnouncementForm(request.POST, course=module.course)
         if form.is_valid():
             ann = form.save(commit=False)
             ann.module = module
@@ -585,15 +596,16 @@ def teacher_link_create(request, module_id):
     from .forms import LinkForm
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = LinkForm(request.POST)
+        form = LinkForm(request.POST, course=module.course)
         if form.is_valid():
             link = form.save(commit=False)
             link.module = module
             link.save()
+            form.save_m2m()
             messages.success(request, f'Enlace "{link.title}" creado.')
             return redirect('teacher_course_detail', course_id=module.course.id)
     else:
-        form = LinkForm()
+        form = LinkForm(course=module.course)
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form, 'title': f'Nuevo Enlace — {module.title}', 'course': module.course,
         'back_url': 'teacher_course_detail', 'back_id': module.course.id,
@@ -632,7 +644,7 @@ def teacher_forum_create(request, module_id):
     from .forms import ForumForm
     module = _get_teacher_object(request, Module, 'course__teacher', id=module_id)
     if request.method == 'POST':
-        form = ForumForm(request.POST)
+        form = ForumForm(request.POST, course=module.course)
         if form.is_valid():
             forum = form.save(commit=False)
             forum.module = module
@@ -760,7 +772,18 @@ def teacher_forum_reply_delete(request, reply_id):
 @_teacher_required
 def teacher_assignment_submissions(request, assignment_id):
     assignment = _get_teacher_object(request, Assignment, 'module__course__teacher', id=assignment_id)
+    course = assignment.module.course
+    cohort_id = request.GET.get('cohort_id')
+    active_cohorts = Cohort.objects.filter(course=course, status='active')
+    
+    if cohort_id:
+        current_cohort = get_object_or_404(Cohort, id=cohort_id, course=course, status='active')
+    else:
+        current_cohort = active_cohorts.first()
+        
     submissions = assignment.submissions.select_related('student').all()
+    if current_cohort:
+        submissions = submissions.filter(cohort=current_cohort)
     
     # Calcular estadísticas de calificación
     graded = submissions.filter(score__isnull=False)
@@ -781,6 +804,8 @@ def teacher_assignment_submissions(request, assignment_id):
         'avg_score': avg_score,
         'avg_percentage': avg_percentage,
         'all_courses': Course.objects.filter(teacher=request.user, is_active=True),
+        'active_cohorts': active_cohorts,
+        'current_cohort': current_cohort,
     }
     context.update(_sidebar_context(request))
     return render(request, 'dashboards/teacher/teacher_submissions.html', context)
@@ -864,19 +889,16 @@ def teacher_grade_exam_submission(request, submission):
 def teacher_live_session_create(request, course_id):
     course = _get_teacher_course(request, course_id)
     if request.method == 'POST':
-        form = LiveSessionForm(request.POST)
+        form = LiveSessionForm(request.POST, course=course)
         if form.is_valid():
             session = form.save(commit=False)
             session.course = course
-            # Asignar a cohorte activa automáticamente
-            active_cohort = course.cohorts.filter(status='active').first()
-            if active_cohort:
-                session.cohort = active_cohort
             session.save()
+            form.save_m2m()
             messages.success(request, f'Sesión en vivo "{session.title}" programada exitosamente.')
             return redirect('teacher_course_detail', course_id=course.id)
     else:
-        form = LiveSessionForm()
+        form = LiveSessionForm(course=course)
     
     return render(request, 'dashboards/teacher/teacher_form.html', {
         'form': form,
@@ -1670,14 +1692,15 @@ def student_course_teacher(request, course_id):
 # --- CLASES EN VIVO ---
 @_student_required
 def student_course_live(request, course_id):
+    from django.db.models import Q
     course = _get_student_course(request, course_id)
     student_cohort = Cohort.objects.filter(course=course, students=request.user).first()
     
     sessions = course.live_sessions.all()
     if student_cohort:
-        sessions = sessions.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
+        sessions = sessions.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort))
     else:
-        sessions = sessions.filter(cohort__isnull=True)
+        sessions = sessions.filter(target_type='all')
         
     sessions = sessions.order_by('-scheduled_date', '-start_time')
     
@@ -1693,26 +1716,32 @@ def student_course_live(request, course_id):
 # --- MÓDULOS DEL CURSO ---
 @_student_required
 def student_course_modules(request, course_id):
-    from django.db.models import Prefetch
+    from django.db.models import Prefetch, Q
     course = _get_student_course(request, course_id)
     student_cohort = Cohort.objects.filter(course=course, students=request.user).first()
     
     if student_cohort:
         if student_cohort.status in ['completed', 'archived']:
-            announcements_qs = ModuleAnnouncement.objects.filter(cohort=student_cohort)
-            forums_qs = ModuleForum.objects.filter(cohort=student_cohort)
+            announcements_qs = ModuleAnnouncement.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct()
+            forums_qs = ModuleForum.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct()
             modules_qs = course.modules.filter(cohort=student_cohort)
         else:
-            announcements_qs = ModuleAnnouncement.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
-            forums_qs = ModuleForum.objects.filter(Q(cohort=student_cohort) | Q(cohort__isnull=True))
-            modules_qs = course.modules.filter(cohort__isnull=True)
+            announcements_qs = ModuleAnnouncement.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct()
+            forums_qs = ModuleForum.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct()
+            modules_qs = course.modules.filter(cohort__isnull=True).filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct()
     else:
-        announcements_qs = ModuleAnnouncement.objects.filter(cohort__isnull=True)
-        forums_qs = ModuleForum.objects.filter(cohort__isnull=True)
-        modules_qs = course.modules.filter(cohort__isnull=True)
+        announcements_qs = ModuleAnnouncement.objects.filter(target_type='all')
+        forums_qs = ModuleForum.objects.filter(target_type='all')
+        modules_qs = course.modules.filter(cohort__isnull=True, target_type='all')
         
+    materials_qs = Material.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct() if student_cohort else Material.objects.filter(target_type='all')
+    assignments_qs = Assignment.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct() if student_cohort else Assignment.objects.filter(target_type='all')
+    links_qs = ModuleLink.objects.filter(Q(target_type='all') | Q(specific_cohorts=student_cohort)).distinct() if student_cohort else ModuleLink.objects.filter(target_type='all')
+
     modules = modules_qs.filter(is_visible=True).prefetch_related(
-        'materials', 'assignments', 'links',
+        Prefetch('materials', queryset=materials_qs),
+        Prefetch('assignments', queryset=assignments_qs),
+        Prefetch('links', queryset=links_qs),
         Prefetch('announcements', queryset=announcements_qs),
         Prefetch('forums', queryset=forums_qs)
     )
@@ -2887,10 +2916,6 @@ def admin_cohort_create(request, course_id):
     if request.user.role != 'admin': return redirect_dashboard_by_role(request.user)
     course = get_object_or_404(Course, id=course_id)
     
-    # Verificar que no hay cohorte activa
-    if course.cohorts.filter(status='active').exists():
-        messages.error(request, 'Ya existe un grupo activo para este curso. Ciérralo antes de crear uno nuevo.')
-        return redirect('admin_course_cohorts', course_id=course.id)
     
     if request.method == 'POST':
         form = CohortForm(request.POST, course=course)

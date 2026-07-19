@@ -89,6 +89,19 @@
                             {% endif %}
                             {% if assignment.due_date %}<p class="text-[10px] text-gray-400 mt-3"><i class="fa-solid fa-clock mr-1"></i>Fecha límite: {{ assignment.due_date|date:"d/m/Y H:i" }}</p>{% endif %}
                         </div>
+                        
+                        <div class="flex items-center gap-4">
+                            {% if active_cohorts %}
+                            <form method="GET" class="flex items-center space-x-2">
+                                <label for="cohort_id" class="text-sm font-semibold text-gray-600">Grupo:</label>
+                                <select name="cohort_id" id="cohort_id" class="rounded-lg border-gray-300 text-sm focus:border-[#38657f] focus:ring-[#38657f] py-2 px-3" onchange="this.form.submit()">
+                                    {% for c in active_cohorts %}
+                                    <option value="{{ c.id }}" {% if current_cohort and current_cohort.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 

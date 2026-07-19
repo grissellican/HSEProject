@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+TARGET_CHOICES = (
+    ('all', 'Todo el curso'),
+    ('specific', 'Grupos específicos'),
+)
+
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Administrador'),
@@ -114,6 +119,8 @@ class Module(models.Model):
     description = models.TextField(blank=True, verbose_name="Descripción")
     order = models.PositiveIntegerField(default=0, verbose_name="Orden")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='module_specific', verbose_name="Grupos Específicos")
 
     class Meta:
         ordering = ['order', 'id']
@@ -135,6 +142,8 @@ class Material(models.Model):
     file = models.FileField(upload_to='materials/%Y/%m/', verbose_name="Archivo")
     material_type = models.CharField(max_length=20, choices=MATERIAL_TYPES, default='document', verbose_name="Tipo")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='material_specific', verbose_name="Grupos Específicos")
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Subida")
 
     class Meta:
@@ -196,6 +205,8 @@ class Assignment(models.Model):
     max_score = models.DecimalField(max_digits=5, decimal_places=2, default=20, verbose_name="Puntaje Máximo")
     max_attempts = models.PositiveIntegerField(default=1, verbose_name="Número de intentos permitidos", help_text="Déjalo en 0 para intentos ilimitados.")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='specific_assignments', verbose_name="Grupos Específicos")
     allow_backtracking = models.BooleanField(default=False, verbose_name="Permitir retroceder a preguntas anteriores (Exámenes)")
     show_all_questions = models.BooleanField(default=False, verbose_name="Mostrar todas las preguntas en una sola página (Exámenes)", help_text="Si no marcas esta casilla, las preguntas se mostrarán una por una al estudiante.")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
@@ -320,7 +331,8 @@ class LiveSession(models.Model):
         ('otro', 'Otro'),
     )
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='live_sessions', verbose_name="Curso")
-    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='live_sessions', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, esta sesión solo será visible para esta cohorte.")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='livesession_specific', verbose_name="Grupos Específicos")
     title = models.CharField(max_length=200, verbose_name="Título de la Sesión")
     description = models.TextField(blank=True, verbose_name="Descripción")
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='meet', verbose_name="Plataforma")
@@ -562,7 +574,8 @@ class ExamAttempt(models.Model):
 
 class ModuleAnnouncement(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='announcements', verbose_name="Módulo")
-    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='announcements', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, este aviso solo será visible para esta cohorte.")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='announcement_specific', verbose_name="Grupos Específicos")
     title = models.CharField(max_length=200, verbose_name="Título del Aviso")
     content = models.TextField(verbose_name="Contenido")
     publish_date = models.DateTimeField(verbose_name="Fecha de Publicación")
@@ -581,6 +594,8 @@ class ModuleLink(models.Model):
     title = models.CharField(max_length=200, verbose_name="Título del Enlace")
     url = models.URLField(verbose_name="URL")
     is_visible = models.BooleanField(default=True, verbose_name="Visible para estudiantes")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='link_specific', verbose_name="Grupos Específicos")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
 
     class Meta:
@@ -592,7 +607,8 @@ class ModuleLink(models.Model):
 
 class ModuleForum(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='forums', verbose_name="Módulo")
-    cohort = models.ForeignKey('Cohort', on_delete=models.CASCADE, related_name='forums', null=True, blank=True, verbose_name="Cohorte", help_text="Si se especifica, este foro solo será visible para esta cohorte.")
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default='all', verbose_name="Visibilidad")
+    specific_cohorts = models.ManyToManyField('Cohort', blank=True, related_name='forum_specific', verbose_name="Grupos Específicos")
     title = models.CharField(max_length=200, verbose_name="Título del Foro")
     content = models.TextField(verbose_name="Contenido del Foro")
     FORUM_TYPES = (

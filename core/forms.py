@@ -183,35 +183,47 @@ class EvaluationImageForm(forms.ModelForm):
             'order': forms.NumberInput(attrs={'class': 'w-full rounded-xl border border-gray-300 px-4 py-2 bg-gray-50 focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494] text-sm', 'min': 0, 'value': 0}),
         }
 
+class TargetTypeMixin:
+    def __init__(self, *args, **kwargs):
+        course = kwargs.pop('course', None)
+        super().__init__(*args, **kwargs)
+        if course and 'specific_cohorts' in self.fields:
+            from .models import Cohort
+            self.fields['specific_cohorts'].queryset = Cohort.objects.filter(course=course, status='active')
 
-class ModuleForm(forms.ModelForm):
+
+class ModuleForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = Module
-        fields = ['title', 'description', 'order', 'is_visible']
+        fields = ['title', 'description', 'order', 'is_visible', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Módulo 1 — Introducción'}),
             'description': forms.Textarea(attrs={'class': _textarea_cls, 'rows': 3, 'placeholder': 'Descripción del módulo...'}),
             'order': forms.NumberInput(attrs={'class': _input_cls, 'min': 0}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
 
-class MaterialForm(forms.ModelForm):
+class MaterialForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = Material
-        fields = ['title', 'description', 'file', 'is_visible']
+        fields = ['title', 'description', 'file', 'is_visible', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Guía de Seguridad Industrial'}),
             'description': CKEditor5Widget(config_name='default'),
             'file': forms.ClearableFileInput(attrs={'class': _input_cls}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
 
-class AssignmentForm(forms.ModelForm):
+class AssignmentForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['assignment_type', 'title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'allow_backtracking', 'show_all_questions']
+        fields = ['assignment_type', 'title', 'description', 'delivery_specifications', 'evaluation_criteria', 'attached_file', 'due_date', 'max_score', 'max_attempts', 'is_visible', 'allow_backtracking', 'show_all_questions', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Análisis de Riesgos Laborales'}),
             'description': CKEditor5Widget(config_name='extends'),
@@ -225,6 +237,8 @@ class AssignmentForm(forms.ModelForm):
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
             'allow_backtracking': forms.CheckboxInput(attrs={'class': _check_cls}),
             'show_all_questions': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
 
@@ -252,10 +266,10 @@ class GradeForm(forms.ModelForm):
         return score
 
 
-class LiveSessionForm(forms.ModelForm):
+class LiveSessionForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = LiveSession
-        fields = ['title', 'description', 'platform', 'meeting_link', 'scheduled_date', 'start_time', 'end_time']
+        fields = ['title', 'description', 'platform', 'meeting_link', 'scheduled_date', 'start_time', 'end_time', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Ej. Clase 1 — Normativa de Seguridad'}),
             'description': forms.Textarea(attrs={'class': _textarea_cls, 'rows': 2, 'placeholder': 'Tema a tratar en la sesión...'}),
@@ -264,6 +278,8 @@ class LiveSessionForm(forms.ModelForm):
             'scheduled_date': forms.DateInput(attrs={'type': 'date', 'class': _input_cls}),
             'start_time': forms.TimeInput(attrs={'type': 'time', 'class': _input_cls}),
             'end_time': forms.TimeInput(attrs={'type': 'time', 'class': _input_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
 
@@ -311,31 +327,35 @@ class QuestionGradeForm(forms.ModelForm):
 from .models import ModuleAnnouncement, ModuleLink, ModuleForum, ForumReply
 from django_ckeditor_5.widgets import CKEditor5Widget
 
-class AnnouncementForm(forms.ModelForm):
+class AnnouncementForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = ModuleAnnouncement
-        fields = ['title', 'content', 'publish_date', 'is_visible']
+        fields = ['title', 'content', 'publish_date', 'is_visible', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Título del aviso...'}),
             'content': CKEditor5Widget(attrs={'class': 'django_ckeditor_5'}, config_name='default'),
             'publish_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
-class LinkForm(forms.ModelForm):
+class LinkForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = ModuleLink
-        fields = ['title', 'url', 'is_visible']
+        fields = ['title', 'url', 'is_visible', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Título del enlace...'}),
             'url': forms.URLInput(attrs={'class': _input_cls, 'placeholder': 'https://...'}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
-class ForumForm(forms.ModelForm):
+class ForumForm(TargetTypeMixin, forms.ModelForm):
     class Meta:
         model = ModuleForum
-        fields = ['title', 'content', 'forum_type', 'start_date', 'end_date', 'is_visible']
+        fields = ['title', 'content', 'forum_type', 'start_date', 'end_date', 'is_visible', 'target_type', 'specific_cohorts']
         widgets = {
             'title': forms.TextInput(attrs={'class': _input_cls, 'placeholder': 'Título del foro...'}),
             'content': CKEditor5Widget(attrs={'class': 'django_ckeditor_5'}, config_name='default'),
@@ -343,6 +363,8 @@ class ForumForm(forms.ModelForm):
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input_cls}),
             'is_visible': forms.CheckboxInput(attrs={'class': _check_cls}),
+            'target_type': forms.Select(attrs={'class': _input_cls, 'onchange': 'toggleSpecificCohorts(this)'}),
+            'specific_cohorts': forms.CheckboxSelectMultiple(attrs={'class': 'mt-2 space-y-1'}),
         }
 
 class ForumReplyForm(forms.ModelForm):
