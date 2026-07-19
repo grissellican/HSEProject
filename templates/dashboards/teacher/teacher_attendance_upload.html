@@ -170,10 +170,15 @@
                     </form>
                 </div>
 
-                <!-- Historial de Asistencias -->
-                <h3 class="text-md font-bold text-gray-700 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-gray-400"></i> Historial de Registros
-                </h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-md font-bold text-gray-700 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-gray-400"></i> Historial de Registros
+                    </h3>
+                    <div class="flex items-center gap-3">
+                        <input type="date" id="filter-date" class="border border-gray-300 rounded-md text-sm px-2 py-1 text-gray-600 focus:outline-none focus:border-[#38657f]" title="Filtrar por fecha">
+                        <input type="text" id="filter-cohort" placeholder="Buscar por grupo..." class="border border-gray-300 rounded-md text-sm px-3 py-1 text-gray-600 focus:outline-none focus:border-[#38657f]">
+                    </div>
+                </div>
                 
                 {% if registers %}
                 <div class="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden mb-8">
@@ -191,7 +196,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-base text-gray-600">
                                 {% for reg in registers %}
-                                <tr class="hover:bg-gray-50 transition-colors">
+                                <tr class="hover:bg-gray-50 transition-colors" data-date="{{ reg.date|date:'Y-m-d' }}" data-cohort="{{ reg.cohort.name|default:'' }}">
                                     <td class="px-5 py-3.5 font-bold text-gray-800 text-sm">{{ reg.date|date:"d M, Y" }}</td>
                                     <td class="px-5 py-3.5 text-sm font-semibold text-blue-600">{{ reg.cohort.name|default:"-" }}</td>
                                     <td class="px-5 py-3.5 text-sm">{{ reg.description|default:"-" }}</td>
@@ -223,18 +228,71 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const select = document.getElementById('download-cohort-select');
+            // 1. Sincronizar selectores de cohorte
+            const topSelect = document.getElementById('download-cohort-select');
             const btn = document.getElementById('download-template-btn');
-            const baseUrl = btn.href;
+            const formSelect = document.getElementById('id_cohort');
+            const baseUrl = btn ? btn.href : '';
             
-            if (select && btn) {
-                select.addEventListener('change', function() {
+            if (topSelect && btn) {
+                topSelect.addEventListener('change', function() {
+                    // Update download link
                     if (this.value) {
                         btn.href = baseUrl + '?cohort=' + this.value;
                     } else {
                         btn.href = baseUrl;
                     }
+                    
+                    // Sync form select
+                    if (formSelect) {
+                        formSelect.value = this.value;
+                    }
                 });
+            }
+            
+            if (formSelect && topSelect) {
+                formSelect.addEventListener('change', function() {
+                    topSelect.value = this.value;
+                    // Trigger change to update link
+                    const event = new Event('change');
+                    topSelect.dispatchEvent(event);
+                });
+            }
+
+            // 2. Filtros para la tabla del historial
+            const filterDate = document.getElementById('filter-date');
+            const filterCohort = document.getElementById('filter-cohort');
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            function applyFilters() {
+                const dateVal = filterDate.value; // YYYY-MM-DD
+                const cohortVal = filterCohort.value.toLowerCase();
+
+                tableRows.forEach(row => {
+                    const rowDate = row.getAttribute('data-date');
+                    const rowCohort = (row.getAttribute('data-cohort') || '').toLowerCase();
+                    
+                    let matchDate = true;
+                    if (dateVal) {
+                        matchDate = (rowDate === dateVal);
+                    }
+                    
+                    let matchCohort = true;
+                    if (cohortVal) {
+                        matchCohort = rowCohort.includes(cohortVal);
+                    }
+                    
+                    if (matchDate && matchCohort) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            if (filterDate && filterCohort) {
+                filterDate.addEventListener('input', applyFilters);
+                filterCohort.addEventListener('input', applyFilters);
             }
         });
     </script>
