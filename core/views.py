@@ -2897,12 +2897,12 @@ def admin_course_cohorts(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     cohorts = course.cohorts.all()
     
-    active_cohort = cohorts.filter(status='active').first()
+    active_cohorts = cohorts.filter(status='active')
     completed_cohorts = cohorts.filter(status='completed')
     
     context = {
         'course': course,
-        'active_cohort': active_cohort,
+        'active_cohorts': active_cohorts,
         'completed_cohorts': completed_cohorts,
         'sidebar_active': 'cursos',
     }

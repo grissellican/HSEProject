@@ -50,39 +50,39 @@
                         <h2 class="text-lg font-black text-[#2b3494] flex items-center">
                             <i class="fa-solid fa-users-rectangle text-amber-500 mr-2"></i> Grupo Activo
                         </h2>
-                        {% if not active_cohort %}
                         <a href="{% url 'admin_cohort_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-[#2b3494] text-white text-sm font-semibold rounded-xl hover:bg-[#1f276d] transition-colors">
                             <i class="fa-solid fa-plus mr-2"></i> Nuevo Grupo
                         </a>
-                        {% endif %}
                     </div>
-
-                    {% if active_cohort %}
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">{{ active_cohort.name }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    <i class="fa-solid fa-calendar-day mr-1"></i> Iniciada: {{ active_cohort.started_at|date:"d/m/Y" }}
-                                    {% if active_cohort.scheduled_end_date %}
-                                    <span class="mx-2">·</span>
-                                    <i class="fa-solid fa-clock text-amber-500 mr-1"></i> Cierre: {{ active_cohort.scheduled_end_date|date:"d/m/Y" }}
-                                    {% endif %}
-                                    <span class="mx-2">·</span>
-                                    <i class="fa-solid fa-user-group mr-1"></i> {{ active_cohort.students.count }} estudiantes
-                                    <span class="mx-2">·</span>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800"><i class="fa-solid fa-circle text-[8px] mr-1"></i> En Curso</span>
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a href="{% url 'admin_cohort_detail' cohort_id=active_cohort.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors">
-                                    <i class="fa-solid fa-eye mr-1.5"></i> Ver
-                                </a>
-                                <a href="{% url 'admin_cohort_close' cohort_id=active_cohort.id %}" class="inline-flex items-center px-3 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 transition-colors">
-                                    <i class="fa-solid fa-flag-checkered mr-1.5"></i> Cerrar Grupo
-                                </a>
+                                        <div class="space-y-4">
+                        {% for cohort in active_cohorts %}
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900">{{ cohort.name }}</h3>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        <i class="fa-solid fa-calendar-day mr-1"></i> Iniciada: {{ cohort.started_at|date:"d/m/Y" }}
+                                        {% if cohort.scheduled_end_date %}
+                                        <span class="mx-2">·</span>
+                                        <i class="fa-solid fa-clock text-amber-500 mr-1"></i> Cierre: {{ cohort.scheduled_end_date|date:"d/m/Y" }}
+                                        {% endif %}
+                                        <span class="mx-2">·</span>
+                                        <i class="fa-solid fa-user-group mr-1"></i> {{ cohort.students.count }} estudiantes
+                                        <span class="mx-2">·</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800"><i class="fa-solid fa-circle text-[8px] mr-1"></i> En Curso</span>
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="{% url 'admin_cohort_detail' cohort_id=cohort.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fa-solid fa-eye mr-1.5"></i> Ver
+                                    </a>
+                                    <a href="{% url 'admin_cohort_close' cohort_id=cohort.id %}" class="inline-flex items-center px-3 py-2 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 transition-colors">
+                                        <i class="fa-solid fa-flag-checkered mr-1.5"></i> Cerrar Grupo
+                                    </a>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                     {% else %}
                     <div class="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center">
