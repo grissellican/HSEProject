@@ -54,7 +54,8 @@
                             <i class="fa-solid fa-plus mr-2"></i> Nuevo Grupo
                         </a>
                     </div>
-                                        <div class="space-y-4">
+                    {% if active_cohorts %}
+                    <div class="space-y-4">
                         {% for cohort in active_cohorts %}
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                             <div class="flex items-center justify-between">
