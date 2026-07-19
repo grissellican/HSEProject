@@ -60,36 +60,7 @@
                     {% endfor %}
                 {% endif %}
 
-                <!-- KPIs del curso -->
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-3 mb-12">
-                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #38657f;">
-                        <div>
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Estudiantes</p>
-                            <p class="text-3xl font-black text-gray-800">{{ students|length }}</p>
-                        </div>
-                        <div class="w-8 h-8 bg-[#B8973A] flex items-center justify-center">
-                            <i class="fa-solid fa-users text-white text-sm"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" style="border-top: 3px solid #38657f;">
-                        <div>
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Módulos</p>
-                            <p class="text-3xl font-black text-gray-800">{{ modules|length }}</p>
-                        </div>
-                        <div class="w-8 h-8 bg-[#38657f] flex items-center justify-center">
-                            <i class="fa-solid fa-layer-group text-white text-sm"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white px-5 py-2 shadow-sm border border-gray-200 flex items-center justify-between" {% if pending_in_course > 0 %}style="border-top: 3px solid #d97706;"{% else %}style="border-top: 3px solid #38657f;"{% endif %}>
-                        <div>
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Pendientes de Revisión</p>
-                            <p class="text-3xl font-black {% if pending_in_course > 0 %}text-amber-600{% else %}text-gray-800{% endif %}">{{ pending_in_course }}</p>
-                        </div>
-                        <div class="w-8 h-8 {% if pending_in_course > 0 %}bg-amber-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
-                            <i class="fa-solid fa-clipboard-check text-white text-sm"></i>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- ========== NAVEGACIÓN SECUNDARIA ========== -->
                 <div class="flex flex-wrap gap-3 mb-8">
