@@ -102,14 +102,10 @@
                                     <div class="sm:col-span-1">
                                         <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Puntaje Asignado</label>
                                         <input type="number" name="score_{{ resp.id }}" value="{{ resp.score|default_if_none:'' }}" min="0" max="{{ resp.question.points }}" step="0.01" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Máx. {{ resp.question.points }}">
-                                        {% else %}
-                                        <p class="text-base font-semibold">{{ resp.score|default_if_none:'Sin calificar' }}</p>
                                     </div>
                                     <div class="sm:col-span-3">
                                         <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Retroalimentación (Opcional)</label>
                                         <input type="text" name="feedback_{{ resp.id }}" value="{{ resp.feedback }}" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-base focus:border-[#2b3494] focus:ring-1 focus:ring-[#2b3494]" placeholder="Ej. Excelente análisis...">
-                                        {% else %}
-                                        <p class="text-base font-semibold">{{ resp.feedback|default_if_none:'-' }}</p>
                                     </div>
                                 </div>
                             {% endif %}

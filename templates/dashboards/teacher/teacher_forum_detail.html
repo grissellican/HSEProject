@@ -98,19 +98,17 @@
                         {{ forum.content|safe }}
                     </div>
 
+                    {% if forum.is_active %}
                     <div class="mt-6 flex justify-end">
                         <button id="main-reply-btn" onclick="moveReplyForm('')" class="inline-flex items-center px-4 py-2 bg-[#38657f] text-white text-sm font-bold hover:bg-[#2b5068] transition-colors shadow-sm cursor-pointer rounded-sm">
                             <i class="fa-solid fa-reply mr-1.5"></i> Responder
                         </button>
                     </div>
-                    {% elif forum.is_active %}
-                    <div class="mt-6 p-4 bg-gray-50 text-center text-gray-500 font-medium text-sm border border-gray-200">
-                        Modo de solo lectura activado.
-                    </div>
                     {% else %}
                     <div class="mt-6 p-4 bg-gray-50 text-center text-gray-500 font-medium text-sm border border-gray-200">
                         Este foro está cerrado. No se pueden publicar nuevas respuestas.
                     </div>
+                    {% endif %}
                 </div>
 
                 <!-- Default Location for Formulario de Respuesta -->
