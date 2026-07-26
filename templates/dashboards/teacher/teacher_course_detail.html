@@ -200,6 +200,9 @@
                                             <a href="{{ mat.file.url }}" target="_blank" class="text-[#34627c] hover:text-[#2a4f64] w-6 h-6 flex items-center justify-center" title="Descargar">
                                                 <i class="fa-solid fa-download"></i>
                                             </a>
+                                            <a href="{% url 'teacher_material_edit' material_id=mat.id %}" class="text-amber-500 hover:text-amber-700 w-6 h-6 flex items-center justify-center" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
                                             <form action="{% url 'teacher_material_delete' material_id=mat.id %}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este material?');">
                                                 {% csrf_token %}
                                                 <button type="submit" class="text-red-400 hover:text-red-600 cursor-pointer bg-transparent border-0 w-6 h-6 flex items-center justify-center" title="Eliminar">
@@ -487,6 +490,23 @@
 
 <script>
 // ── Módulos colapsables ───────────────────────────────────────
+function updateToggleAllButton() {
+    var totalModules = document.querySelectorAll('.module-body').length;
+    var collapsedModules = document.querySelectorAll('.module-body.collapsed').length;
+    var btnText = document.getElementById('toggle-all-text');
+    var btnIcon = document.querySelector('#toggle-all-btn i');
+    
+    if (totalModules > 0 && collapsedModules === totalModules) {
+        allCollapsed = true;
+        if (btnText) btnText.textContent = "Expandir Todo";
+        if (btnIcon) { btnIcon.classList.remove('fa-compress'); btnIcon.classList.add('fa-expand'); }
+    } else {
+        allCollapsed = false;
+        if (btnText) btnText.textContent = "Colapsar Todo";
+        if (btnIcon) { btnIcon.classList.remove('fa-expand'); btnIcon.classList.add('fa-compress'); }
+    }
+}
+
 document.querySelectorAll('.module-header').forEach(function(header) {
     header.addEventListener('click', function() {
         var targetId = this.dataset.target;
@@ -508,6 +528,7 @@ document.querySelectorAll('.module-header').forEach(function(header) {
             body.classList.add('collapsed');
             if (chevron) chevron.classList.add('rotated');
         }
+        updateToggleAllButton();
     });
 });
 

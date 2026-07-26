@@ -419,6 +419,28 @@ def teacher_material_detail(request, material_id):
 
 
 @_teacher_required
+def teacher_material_edit(request, material_id):
+    material = _get_teacher_object(request, Material, 'module__course__teacher', id=material_id)
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, request.FILES, instance=material, course=material.module.course)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Material "{material.title}" actualizado exitosamente.')
+            return redirect('teacher_course_detail', course_id=material.module.course.id)
+    else:
+        form = MaterialForm(instance=material, course=material.module.course)
+    
+    return render(request, 'dashboards/teacher/teacher_form.html', {
+        'form': form,
+        'title': f'Editar Material: {material.title}',
+        'course': material.module.course,
+        'back_url': 'teacher_course_detail',
+        'back_id': material.module.course.id,
+        'is_file_form': True,
+    })
+
+
+@_teacher_required
 def teacher_material_delete(request, material_id):
     material = _get_teacher_object(request, Material, 'module__course__teacher', id=material_id)
     course_id = material.module.course.id

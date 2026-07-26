@@ -172,6 +172,23 @@
     </div>
 
     <script>
+    function updateToggleAllButton() {
+        var totalModules = document.querySelectorAll('.module-body').length;
+        var collapsedModules = document.querySelectorAll('.module-body.collapsed').length;
+        var btnText = document.getElementById('toggle-all-text');
+        var btnIcon = document.querySelector('#toggle-all-btn i');
+        
+        if (totalModules > 0 && collapsedModules === totalModules) {
+            allCollapsed = true;
+            if (btnText) btnText.textContent = "Expandir Todo";
+            if (btnIcon) { btnIcon.classList.remove('fa-compress'); btnIcon.classList.add('fa-expand'); }
+        } else {
+            allCollapsed = false;
+            if (btnText) btnText.textContent = "Colapsar Todo";
+            if (btnIcon) { btnIcon.classList.remove('fa-expand'); btnIcon.classList.add('fa-compress'); }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.module-header').forEach(function(header) {
             header.addEventListener('click', function() {
@@ -181,6 +198,7 @@
                 if (body) {
                     body.classList.toggle('collapsed');
                     if (chevron) chevron.classList.toggle('rotated');
+                    updateToggleAllButton();
                 }
             });
         });
