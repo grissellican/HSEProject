@@ -37,6 +37,11 @@
                     <p class="text-xs text-gray-500">{{ course.title }}</p>
                 </div>
             </div>
+            {% if request.user.role == 'teacher' and course.allow_teacher_edit_syllabus %}
+            <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-bold hover:bg-white hover:text-gray-900 border border-gray-900 transition-all duration-300 active:scale-95 shadow-sm">
+                <i class="fa-solid fa-pen-to-square"></i> Editar
+            </a>
+            {% endif %}
         </div>
 
         <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">

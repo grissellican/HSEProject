@@ -79,15 +79,7 @@
                     <a href="{% url 'teacher_students_list' course.id %}" class="inline-flex items-center px-4 py-2 border-2 {% if request.resolver_match.url_name == 'teacher_students_list' %}border-[#34627c] text-[#34627c]{% else %}border-gray-200 text-gray-600 hover:border-[#34627c] hover:text-[#34627c]{% endif %} text-sm font-bold bg-white transition-all">
                         <i class="fa-solid fa-users mr-2 text-[#34627c]"></i> ESTUDIANTES
                     </a>
-                    
-                    {% if course.allow_teacher_edit_syllabus %}
-                    <a href="{% url 'teacher_edit_syllabus' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors shadow-sm ml-auto">
-                        <i class="fa-solid fa-file-signature text-[#34627c]"></i> Editar Sílabo
-                    </a>
-                    <a href="{% url 'teacher_edit_evaluation' course.id %}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded hover:bg-gray-50 transition-colors shadow-sm">
-                        <i class="fa-solid fa-chart-pie text-[#34627c]"></i> Editar Evaluación
-                    </a>
-                    {% endif %}
+
                 </div>
 
                 <!-- ========== SECCIÓN DE MÓDULOS ========== -->
@@ -102,20 +94,20 @@
                             <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
                         </button>
                         <div class="h-px w-8 bg-gray-200"></div>
-                        <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-bold hover:bg-black transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-colors shadow-sm cursor-pointer ml-auto">
+                        <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-bold hover:bg-white hover:text-gray-900 border border-gray-900 transition-all duration-300 active:scale-95 shadow-sm cursor-pointer ml-auto">
                         <i class="fa-solid fa-plus mr-1.5"></i> Añadir Módulo
                     </a>              </div>
                 </div>
 
                 {% for module in modules %}
-                <div class="bg-white border border-gray-200 shadow-sm mb-16 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #34627c;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
+                <div class="bg-white border border-gray-200 shadow-sm mb-10 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #34627c;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
                     <!-- Header del Módulo -->
                     <div class="px-5 py-4 flex items-center justify-between bg-[#fafbff] border-b border-gray-200 cursor-pointer module-header select-none"
                          data-target="module-body-{{ module.id }}">
                         <div class="flex items-center gap-3 min-w-0">
                             <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="chevron-{{ module.id }}"></i>
                             <div class="min-w-0">
-                                <h4 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <h4 class="text-base font-bold text-gray-800 flex items-center gap-2">
                                     {{ module.title }}
                                     {% if not module.is_visible %}
                                         <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-black bg-gray-200 text-gray-500 uppercase tracking-wider"><i class="fa-solid fa-eye-slash mr-1"></i>Oculto</span>
@@ -172,14 +164,14 @@
 
                     <!-- Cuerpo colapsable del módulo -->
                     <div class="module-body" id="module-body-{{ module.id }}" style="max-height: 2000px; opacity: 1;">
-                        <div class="p-5 space-y-4">
+                        <div class="space-y-1.5">
 
                             {% if module.all_resources %}
                             <div class="space-y-1.5 mt-2">
                                 {% for item in module.all_resources %}
                                     {% if item.type == 'material' %}
                                     {% with mat=item.obj %}
-                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not mat.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not mat.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 {% if mat.material_type == 'pdf' %}
@@ -191,7 +183,7 @@
                                                 {% endif %}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate hover:text-[#34627c] transition-colors">
+                                                <p class="text-sm font-semibold text-gray-800 truncate hover:text-[#34627c] transition-colors">
                                                     <a href="{% url 'teacher_material_detail' material_id=mat.id %}">{{ mat.title }}</a>
                                                     {% if not mat.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
@@ -219,7 +211,7 @@
                                     {% endwith %}
                                     {% elif item.type == 'assignment' %}
                                     {% with assign=item.obj %}
-                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not assign.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not assign.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 {% if assign.assignment_type == 'evaluacion' %}
@@ -231,7 +223,7 @@
                                                 {% endif %}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                <p class="text-sm font-semibold text-gray-800 truncate">
                                                     {{ assign.title }}
                                                     {% if not assign.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
@@ -285,13 +277,13 @@
                                     {% endwith %}
                                     {% elif item.type == 'announcement' %}
                                     {% with ann=item.obj %}
-                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not ann.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not ann.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-bullhorn text-rose-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                <p class="text-sm font-semibold text-gray-800 truncate">
                                                     {{ ann.title }}
                                                     {% if not ann.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
@@ -319,13 +311,13 @@
                                     {% endwith %}
                                     {% elif item.type == 'link' %}
                                     {% with link=item.obj %}
-                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not link.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not link.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-link text-indigo-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-base font-semibold text-gray-800 truncate">
+                                                <p class="text-sm font-semibold text-gray-800 truncate">
                                                     <a href="{{ link.url }}" target="_blank" class="hover:underline text-gray-800">{{ link.title }}</a>
                                                     {% if not link.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                 </p>
@@ -353,13 +345,13 @@
                                     {% endwith %}
                                     {% elif item.type == 'forum' %}
                                     {% with forum=item.obj %}
-                                    <div class="content-row border-b border-gray-200 pb-3 mb-1 -mx-5 px-5 {% if not forum.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not forum.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-comments text-emerald-500 text-base"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <a href="{% url 'teacher_forum_detail' pk=forum.id %}" class="text-base font-semibold text-gray-800 hover:text-[#34627c] transition-colors truncate">
+                                                <a href="{% url 'teacher_forum_detail' pk=forum.id %}" class="text-sm font-semibold text-gray-800 hover:text-[#34627c] transition-colors truncate">
                                                     {{ forum.title }}
                                                     {% if not forum.is_visible %}<span class="ml-1 text-[10px] uppercase text-gray-500 font-bold">(Oculto)</span>{% endif %}
                                                     {% if not forum.is_active %}<span class="ml-1 text-[10px] uppercase text-red-500 font-bold">(Cerrado)</span>{% endif %}

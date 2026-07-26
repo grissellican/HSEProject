@@ -1970,6 +1970,9 @@ def student_assignment_detail(request, assignment_id):
     if submission:
         if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
             can_submit = False
+        # If teacher already graded, block further attempts
+        if submission.is_graded:
+            can_submit = False
     
     form = StudentSubmissionForm()
     
@@ -2087,6 +2090,9 @@ def student_evaluation_detail(request, assignment_id):
             can_submit = False
         if submission:
             if assignment.max_attempts > 0 and submission.attempts >= assignment.max_attempts:
+                can_submit = False
+            # If teacher already graded, block further attempts
+            if submission.is_graded:
                 can_submit = False
     
     form = StudentSubmissionForm()
