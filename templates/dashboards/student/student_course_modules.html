@@ -16,22 +16,22 @@
     {% include 'dashboards/student/_student_sidebar.html' %}
 
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white border-b border-gray-200">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between bg-white border-b border-gray-200">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2"><i class="fa-solid fa-bars text-lg"></i></button>
                 <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
-                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hover:text-[#34627c] font-medium truncate max-w-[150px] transition-colors">{{ course.title }}</a>
-                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_dashboard' %}" class="hidden md:inline hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
+                    <i class="hidden md:inline fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_course_home' course_id=course.id %}" class="hidden md:inline hover:text-[#34627c] font-medium truncate max-w-[150px] transition-colors">{{ course.title }}</a>
+                    <i class="hidden md:inline fa-solid fa-chevron-right text-[9px]"></i>
                     <span class="text-[#34627c] font-semibold">Módulos</span>
                 </nav>
             </div>
-            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir</button></form>
+            <form action="{% url 'logout' %}" method="POST" class="inline">{% csrf_token %}<button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> <span class="hidden md:inline">Salir</span></button></form>
         </div>
 
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6">
             <div class="max-w-4xl mx-auto">
 
                 <div class="flex items-center justify-between mb-8">
@@ -42,7 +42,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
-                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text">Expandir Todo</span>
+                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text" class="hidden md:inline">Expandir Todo</span>
                         </button>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                 {% for module in modules %}
                 <div class="bg-white rounded-sm border border-gray-200 shadow-sm mb-10 overflow-hidden" style="border-left: 3px solid #34627c;">
                     <!-- Module Header -->
-                    <div class="px-5 py-4 bg-[#fafbff] border-b border-gray-200 cursor-pointer select-none module-header" data-target="student-module-{{ module.id }}">
+                    <div class="px-4 py-3 md:px-5 md:py-4 bg-[#fafbff] border-b border-gray-200 cursor-pointer select-none module-header" data-target="student-module-{{ module.id }}">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0 rotated" id="s-chevron-{{ module.id }}"></i>
                             <div>
@@ -69,7 +69,7 @@
                             {% if item.type == 'material' %}
                                 {% with mat=item.obj %}
                                 {% if mat.is_visible %}
-                                <a href="{% url 'student_material_detail' material_id=mat.id %}" class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                <a href="{% url 'student_material_detail' material_id=mat.id %}" class="flex items-center gap-3 px-4 py-3 md:px-5 md:py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
                                     <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center {% if mat.material_type == 'pdf' %}text-red-500{% elif mat.material_type == 'video' %}text-purple-500{% else %}text-blue-500{% endif %}">
                                         <i class="{% if mat.material_type == 'pdf' %}fa-solid fa-file-pdf{% elif mat.material_type == 'video' %}fa-solid fa-play{% else %}fa-solid fa-file{% endif %} text-sm"></i>
                                     </div>
@@ -85,7 +85,7 @@
                                 {% with asg=item.obj %}
                                 {% if asg.is_visible %}
                                 <a href="{% if asg.assignment_type == 'tarea' %}{% url 'student_assignment_detail' assignment_id=asg.id %}{% elif asg.assignment_type == 'evaluacion' %}{% url 'student_evaluation_detail' assignment_id=asg.id %}{% else %}{% url 'student_exam_detail' assignment_id=asg.id %}{% endif %}"
-                                   class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
+                                   class="flex items-center gap-3 px-4 py-3 md:px-5 md:py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors group">
                                     <div class="w-9 h-9 rounded-sm flex-shrink-0 flex items-center justify-center {% if asg.assignment_type == 'tarea' %}text-amber-600{% elif asg.assignment_type == 'evaluacion' %}text-orange-600{% else %}text-teal-600{% endif %}">
                                         <i class="{% if asg.assignment_type == 'tarea' %}fa-solid fa-file-pen{% elif asg.assignment_type == 'evaluacion' %}fa-solid fa-clipboard-question{% else %}fa-solid fa-laptop-code{% endif %} text-sm"></i>
                                     </div>

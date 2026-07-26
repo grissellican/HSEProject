@@ -21,7 +21,7 @@
     {% endif %}
 
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between bg-white shadow-sm">
             <div class="flex items-center space-x-2 md:space-x-3">
                 {% if request.user.role == 'student' %}
                 <a href="{% url 'student_course_home' course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
@@ -44,8 +44,8 @@
             {% endif %}
         </div>
 
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6 bg-[#f5f7fa]">
-            <div class="max-w-4xl mx-auto bg-white border border-gray-300 p-10 md:p-14 shadow-sm rounded-none">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6 bg-[#f5f7fa]">
+            <div class="max-w-4xl mx-auto bg-white border border-gray-300 p-5 md:p-14 shadow-sm rounded-none">
                 
                 <!-- Título del documento -->
                 <div class="mb-12">

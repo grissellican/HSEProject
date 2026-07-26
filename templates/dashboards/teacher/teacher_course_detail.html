@@ -19,7 +19,7 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
 
         <!-- BARRA SUPERIOR -->
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
@@ -41,14 +41,13 @@
                 <form action="{% url 'logout' %}" method="POST" class="inline">
                     {% csrf_token %}
                     <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
-                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
-                    </button>
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> <span class="hidden md:inline">Salir</span></button>
                 </form>
             </div>
         </div>
 
         <!-- CUERPO PRINCIPAL -->
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6">
             <div class="max-w-5xl mx-auto">
 
                 <!-- MENSAJES DE ALERTA -->
@@ -91,20 +90,19 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
-                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text">Expandir Todo</span>
+                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text" class="hidden md:inline">Expandir Todo</span>
                         </button>
                         <div class="h-px w-8 bg-gray-200"></div>
                         <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-bold hover:bg-white hover:text-gray-900 border border-gray-900 transition-all duration-300 active:scale-95 shadow-sm cursor-pointer ml-auto">
-                        <i class="fa-solid fa-plus mr-1.5"></i> Añadir Módulo
+                        <i class="fa-solid fa-plus mr-1.5"></i> <span class="hidden md:inline">Añadir Módulo</span>
                     </a>              </div>
                 </div>
 
                 {% for module in modules %}
                 <div class="bg-white border border-gray-200 shadow-sm mb-10 overflow-visible {% if not module.is_visible %}opacity-70{% endif %}" {% if module.is_visible %}style="border-left: 3px solid #34627c;"{% else %}style="border-left: 3px solid #9ca3af;"{% endif %}>
-                    <!-- Header del Módulo -->
-                    <div class="px-5 py-4 flex items-center justify-between bg-[#fafbff] border-b border-gray-200 cursor-pointer module-header select-none"
-                         data-target="module-body-{{ module.id }}">
-                        <div class="flex items-center gap-3 min-w-0">
+                    <!-- Cabecera del Módulo -->
+                    <div class="px-4 py-3 md:px-5 md:py-4 bg-[#fafbff] border-b border-gray-200 cursor-pointer select-none module-header flex items-center justify-between" data-target="module-body-{{ module.id }}">
+                        <div class="flex items-center gap-3 min-w-0 pr-2">
                             <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0 rotated" id="chevron-{{ module.id }}"></i>
                             <div class="min-w-0">
                                 <h4 class="text-base font-bold text-gray-800 flex items-center gap-2">
@@ -122,7 +120,7 @@
                             <!-- Menú Añadir -->
                             <div class="dot-menu-wrapper mr-2">
                                 <button class="dot-menu-btn inline-flex items-center px-2.5 py-1.5 bg-[#34627c]/10 text-[#34627c] text-[11px] font-bold hover:bg-[#34627c]/20 transition-colors cursor-pointer rounded border-0" data-menu="addmenu-{{ module.id }}">
-                                    <i class="fa-solid fa-plus mr-1"></i> Añadir Recurso
+                                    <i class="fa-solid fa-plus md:mr-1"></i> <span class="hidden md:inline">Añadir Recurso</span>
                                 </button>
                                 <div class="dot-menu" id="addmenu-{{ module.id }}">
                                     <a href="{% url 'teacher_material_create' module_id=module.id %}"><i class="fa-solid fa-file-lines text-blue-500"></i> Material</a>
@@ -171,7 +169,7 @@
                                 {% for item in module.all_resources %}
                                     {% if item.type == 'material' %}
                                     {% with mat=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not mat.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not mat.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 {% if mat.material_type == 'pdf' %}
@@ -213,13 +211,13 @@
                                     </div>
                                     {% endwith %}
                                     {% elif item.type == 'assignment' %}
-                                    {% with assign=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not assign.is_visible %}opacity-60{% endif %}">
+                                    {% with asg=item.obj %}
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not asg.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
-                                                {% if assign.assignment_type == 'evaluacion' %}
+                                                {% if asg.assignment_type == 'evaluacion' %}
                                                     <i class="fa-solid fa-clipboard-question text-orange-500 text-base"></i>
-                                                {% elif assign.assignment_type == 'examen_online' %}
+                                                {% elif asg.assignment_type == 'examen_online' %}
                                                     <i class="fa-solid fa-laptop-code text-teal-500 text-base"></i>
                                                 {% else %}
                                                     <i class="fa-solid fa-file-pen text-amber-500 text-base"></i>
@@ -280,7 +278,7 @@
                                     {% endwith %}
                                     {% elif item.type == 'announcement' %}
                                     {% with ann=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not ann.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not ann.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-bullhorn text-rose-500 text-base"></i>
@@ -314,7 +312,7 @@
                                     {% endwith %}
                                     {% elif item.type == 'link' %}
                                     {% with link=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not link.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not link.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-link text-indigo-500 text-base"></i>
@@ -348,7 +346,7 @@
                                     {% endwith %}
                                     {% elif item.type == 'forum' %}
                                     {% with forum=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-5 py-3.5 {% if not forum.is_visible %}opacity-60{% endif %}">
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not forum.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
                                                 <i class="fa-solid fa-comments text-emerald-500 text-base"></i>

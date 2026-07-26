@@ -21,7 +21,7 @@
     {% endif %}
 
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between bg-white shadow-sm">
             <div class="flex items-center space-x-2 md:space-x-3">
                 {% if request.user.role == 'student' %}
                 <a href="{% url 'student_course_home' course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
@@ -44,9 +44,9 @@
             {% endif %}
         </div>
 
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6">
             <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded shadow-sm border border-gray-200 p-6 md:p-10">
+                <div class="bg-white rounded shadow-sm border border-gray-200 p-4 md:p-10">
                     <div class="flex items-center gap-4 mb-8 border-b border-gray-100 pb-5">
                         <div class="w-12 h-12 rounded bg-gradient-to-br from-[#f59e0b] to-[#d97706] shadow-inner flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-chart-pie text-white text-xl"></i>

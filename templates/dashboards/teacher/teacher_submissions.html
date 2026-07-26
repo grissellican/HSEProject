@@ -20,7 +20,7 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
 
         <!-- BARRA SUPERIOR -->
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
@@ -36,13 +36,12 @@
             <form action="{% url 'logout' %}" method="POST" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all cursor-pointer">
-                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
-                </button>
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> <span class="hidden md:inline">Salir</span></button>
             </form>
         </div>
 
         <!-- CUERPO -->
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6">
             <div class="max-w-5xl mx-auto">
 
                 <!-- MENSAJES -->

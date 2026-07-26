@@ -17,7 +17,7 @@
     {% include 'dashboards/teacher/_teacher_sidebar.html' %}
 
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between bg-white shadow-sm">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between bg-white shadow-sm">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <a href="{% url 'teacher_course_detail' course.id %}" class="text-gray-400 hover:text-[#34627c] transition-colors">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-6">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-3 md:p-6">
             <div class="max-w-4xl mx-auto space-y-6">
                 {% if messages %}
                     {% for message in messages %}

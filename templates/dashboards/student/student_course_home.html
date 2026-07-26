@@ -22,7 +22,7 @@
     <div class="main-content flex flex-col flex-1 w-0 overflow-hidden">
 
         <!-- Top bar -->
-        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-4 md:px-6 justify-between border-b border-gray-200 bg-white">
+        <div class="header-topbar relative z-10 flex-shrink-0 flex h-14 items-center px-3 md:px-3 md:px-6 justify-between border-b border-gray-200 bg-white">
             <div class="flex items-center space-x-2 md:space-x-3">
                 <button onclick="window.toggleMobileSidebar()" class="md:hidden text-gray-500 hover:text-[#34627c] focus:outline-none mr-2">
                     <i class="fa-solid fa-bars text-lg"></i>
@@ -30,16 +30,15 @@
                 <!-- Breadcrumbs -->
                 <button onclick="history.back()" class="text-gray-500 hover:text-[#34627c] focus:outline-none mr-3 transition-colors" title="Volver atrás"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                 <nav class="breadcrumb-nav flex items-center text-sm text-gray-400 space-x-1.5">
-                    <a href="{% url 'student_dashboard' %}" class="hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
-                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    <a href="{% url 'student_dashboard' %}" class="hidden md:inline hover:text-[#34627c] font-medium transition-colors">Mi Tablero</a>
+                    <i class="hidden md:inline fa-solid fa-chevron-right text-[9px]"></i>
                     <span class="text-[#34627c] font-semibold truncate max-w-[200px]">{{ course.title }}</span>
                 </nav>
             </div>
             <form action="{% url 'logout' %}" method="POST" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-gray-500 hover:text-red-600 transition-all cursor-pointer">
-                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Salir
-                </button>
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> <span class="hidden md:inline">Salir</span></button>
             </form>
         </div>
 
