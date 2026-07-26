@@ -190,9 +190,15 @@
 
                     {% elif submission %}
                     <div class="bg-white rounded-sm border border-gray-200 shadow-sm p-8 text-center">
-                        <i class="fa-solid fa-check text-3xl text-green-600 mb-3"></i>
-                        <h3 class="text-lg font-bold text-gray-800 mb-2">Tarea entregada</h3>
-                        <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Tu docente revisará la entrega y te asignará una calificación.</p>
+                        {% if submission.is_graded %}
+                            <i class="fa-solid fa-check-double text-3xl text-green-600 mb-3"></i>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Tarea calificada</h3>
+                            <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Tu docente ya ha calificado esta entrega. Revisa la sección de detalles y retroalimentación.</p>
+                        {% else %}
+                            <i class="fa-solid fa-check text-3xl text-green-600 mb-3"></i>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Tarea entregada</h3>
+                            <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Tu docente revisará la entrega y te asignará una calificación.</p>
+                        {% endif %}
                         <a href="{% url 'student_course_home' course_id=course.id %}" class="inline-flex items-center px-5 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200 transition-colors">
                             Volver al curso
                         </a>
