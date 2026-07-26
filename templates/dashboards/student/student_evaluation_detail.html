@@ -220,7 +220,7 @@
                         {% if submission.is_graded %}
                             <i class="fa-solid fa-check-double text-3xl text-green-600 mb-3"></i>
                             <h3 class="text-lg font-bold text-gray-800 mb-2">Evaluación calificada</h3>
-                            <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">esta entrega ya ha sido calificada.</p>
+                            <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">esta entrega ya ha sido calificada. Revisa los detalles y la retroalimentación.</p>
                         {% else %}
                             <i class="fa-solid fa-check text-3xl text-green-600 mb-3"></i>
                             <h3 class="text-lg font-bold text-gray-800 mb-2">Evaluación entregada</h3>
@@ -242,7 +242,7 @@
                         
                         <div class="space-y-4 mb-5">
                             <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Intentos Permitidos</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Intentos</p>
                                 <p class="text-sm font-semibold text-gray-700">
                                     {% if assignment.max_attempts > 0 %}
                                         {% if submission %}

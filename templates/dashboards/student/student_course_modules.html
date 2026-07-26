@@ -42,7 +42,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
-                            <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
+                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text">Expandir Todo</span>
                         </button>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                     <!-- Module Header -->
                     <div class="px-5 py-4 bg-[#fafbff] border-b border-gray-200 cursor-pointer select-none module-header" data-target="student-module-{{ module.id }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="s-chevron-{{ module.id }}"></i>
+                            <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0 rotated" id="s-chevron-{{ module.id }}"></i>
                             <div>
                                 <h4 class="text-base font-bold text-gray-800 flex items-center gap-2">
                                     {{ module.title }}
@@ -63,7 +63,7 @@
                     </div>
 
                     <!-- Module Body -->
-                    <div class="module-body" id="student-module-{{ module.id }}">
+                    <div class="module-body collapsed" id="student-module-{{ module.id }}">
                         {% if module.all_resources %}
                         {% for item in module.all_resources %}
                             {% if item.type == 'material' %}
@@ -186,7 +186,7 @@
         });
     });
 
-    let allCollapsed = false;
+    let allCollapsed = true;
     function toggleAllModules() {
         allCollapsed = !allCollapsed;
         var btnText = document.getElementById('toggle-all-text');

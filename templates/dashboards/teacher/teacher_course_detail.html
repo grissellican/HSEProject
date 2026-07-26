@@ -91,7 +91,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="toggleAllModules()" class="flex-shrink-0 text-sm font-semibold text-gray-500 hover:text-[#34627c] transition-colors flex items-center" id="toggle-all-btn">
-                            <i class="fa-solid fa-compress mr-1.5"></i> <span id="toggle-all-text">Colapsar Todo</span>
+                            <i class="fa-solid fa-expand mr-1.5"></i> <span id="toggle-all-text">Expandir Todo</span>
                         </button>
                         <div class="h-px w-8 bg-gray-200"></div>
                         <a href="{% url 'teacher_module_create' course_id=course.id %}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-bold hover:bg-white hover:text-gray-900 border border-gray-900 transition-all duration-300 active:scale-95 shadow-sm cursor-pointer ml-auto">
@@ -105,7 +105,7 @@
                     <div class="px-5 py-4 flex items-center justify-between bg-[#fafbff] border-b border-gray-200 cursor-pointer module-header select-none"
                          data-target="module-body-{{ module.id }}">
                         <div class="flex items-center gap-3 min-w-0">
-                            <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0" id="chevron-{{ module.id }}"></i>
+                            <i class="fa-solid fa-chevron-down chevron-icon text-gray-400 text-sm flex-shrink-0 rotated" id="chevron-{{ module.id }}"></i>
                             <div class="min-w-0">
                                 <h4 class="text-base font-bold text-gray-800 flex items-center gap-2">
                                     {{ module.title }}
@@ -163,7 +163,7 @@
                     </div>
 
                     <!-- Cuerpo colapsable del módulo -->
-                    <div class="module-body" id="module-body-{{ module.id }}" style="max-height: 2000px; opacity: 1;">
+                    <div class="module-body collapsed" id="module-body-{{ module.id }}" style="max-height: 0; opacity: 0; overflow: hidden;">
                         <div class="space-y-1.5">
 
                             {% if module.all_resources %}
@@ -511,7 +511,7 @@ document.querySelectorAll('.module-header').forEach(function(header) {
     });
 });
 
-let allCollapsed = false;
+let allCollapsed = true;
 function toggleAllModules() {
     allCollapsed = !allCollapsed;
     var btnText = document.getElementById('toggle-all-text');
