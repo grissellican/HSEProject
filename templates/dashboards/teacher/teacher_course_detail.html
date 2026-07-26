@@ -211,13 +211,13 @@
                                     </div>
                                     {% endwith %}
                                     {% elif item.type == 'assignment' %}
-                                    {% with asg=item.obj %}
-                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not asg.is_visible %}opacity-60{% endif %}">
+                                    {% with assign=item.obj %}
+                                    <div class="content-row border-b border-gray-100 -mx-0 px-4 py-3 md:px-5 md:py-3.5 {% if not assign.is_visible %}opacity-60{% endif %}">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-8 h-8 flex items-center justify-center rounded flex-shrink-0">
-                                                {% if asg.assignment_type == 'evaluacion' %}
+                                                {% if assign.assignment_type == 'evaluacion' %}
                                                     <i class="fa-solid fa-clipboard-question text-orange-500 text-base"></i>
-                                                {% elif asg.assignment_type == 'examen_online' %}
+                                                {% elif assign.assignment_type == 'examen_online' %}
                                                     <i class="fa-solid fa-laptop-code text-teal-500 text-base"></i>
                                                 {% else %}
                                                     <i class="fa-solid fa-file-pen text-amber-500 text-base"></i>
